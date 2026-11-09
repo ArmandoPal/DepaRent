@@ -20,6 +20,7 @@ repositorio y se pueden regenerar (sección 9).
 | Perfil competitivo (K-Means, k = 4) | Silhouette / estabilidad | 0.21 / ARI = 1.00 | Semana 7: 0.18 |
 | Tendencia distrital (SARIMA) | MAE mediano en 4 trimestres reservados | 2.00 S/ por m² | Naive estacional: 2.54 · Naive: 2.40 |
 | Escenarios de publicación (reglas) | Reglas cumplidas en 297 análisis reales | **100%** | — |
+| Recomendador por perfil del inquilino (modelo 7) | precision@12 en 60 perfiles de prueba | **82%** | Mejor orden del buscador: 24% · al azar: 25% |
 | Producto | Pruebas automáticas | **47 de 47 pasan** | — |
 
 **Lo que funciona:** el modelo de precio no se degradó en ocho semanas y reduce casi a la mitad el error de
@@ -206,6 +207,51 @@ primera visita tras 15 minutos de inactividad tarda 30–60 s mientras el servic
 
 ---
 
+## 6b. Recomendador según el perfil del inquilino (modelo 7)
+
+**Qué hace.** El inquilino crea una cuenta y responde un cuestionario: tipo de hogar (familia con hijos, pareja,
+estudiante o joven profesional, con mascota, persona mayor), presupuesto, dormitorios mínimos, hasta 3
+prioridades (precio, espacio, transporte, amenidades, seguridad), distritos y, si quiere, su lugar de trabajo o
+estudio. El sistema filtra por presupuesto, distritos, dormitorios y mascotas, y ordena el resto con un puntaje de
+contenido: lo que suele necesitar ese hogar (40%), sus prioridades (30%), la cercanía al trabajo (15%) y el
+precio frente al estimado del modelo 3 (15%). La lista final no pone más del 40% en un mismo distrito. La app
+**no muestra el puntaje**: muestra los 12 mejores con lo que tiene cada uno ("Tiene: seguridad 24/7 · 3
+dormitorios · juegos infantiles"), un esquema referencial de su distribución y un botón para guardarlo.
+
+**Cómo se evaluó sin historial de usuarios** (`code/evaluar_recomendador.py`). Se armaron **60 perfiles de prueba**
+(5 hogares × 3 presupuestos × con o sin distritos × sin o con prioridades y lugar de trabajo). Cada perfil tiene
+una **lista de requisitos** escrita como la diría una persona, distinta de los pesos del recomendador (por
+ejemplo, familia: "3 dormitorios o más, 80 m² o más, con seguridad, juegos o áreas verdes"; persona mayor:
+"ascensor y paradero a 400 m o menos"; más un requisito por cada prioridad y "distrito a 6 km o menos del
+trabajo"). El recomendador no conoce esas listas: solo recibe el cuestionario. Sobre **los mismos candidatos**
+se compara con los órdenes que ya ofrece el buscador y con un orden al azar.
+
+| Orden de los 12 primeros | precision@12 (cumple todo) | Requisitos cumplidos | nDCG@12 | Perfiles con al menos 1 que cumple todo | Distritos distintos |
+|---|---:|---:|---:|---:|---:|
+| **Recomendador** | **81.8%** | **94.3%** | **0.975** | **98.3%** | 5.1 |
+| Al azar (promedio de 30) | 25.0% | 63.3% | 0.650 | 83.2% | 5.9 |
+| Buscador: más barato que el estimado | 23.9% | 60.2% | 0.624 | 78.3% | 4.1 |
+| Buscador: mayor área | 21.9% | 60.1% | 0.624 | 68.3% | 5.1 |
+| Buscador: menor precio | 18.1% | 51.6% | 0.528 | 55.0% | 4.4 |
+
+Por tipo de hogar (precision@12): estudiante 91%, persona mayor 90%, con mascota 88%, familia 74%, pareja 66%;
+los órdenes del buscador quedan entre 0% y 49%. Ordenar por menor precio es el peor para una familia (0%): los
+más baratos son los más chicos. La precisión baja cuando hay pocos candidatos que cumplan todo, por ejemplo una
+pareja con S/ 1,800 en Barranco, Miraflores o San Isidro (19 candidatos): ahí el sistema muestra lo más cercano
+y lo que falta aparece en "Ten en cuenta".
+
+**Explicaciones verdaderas.** Se comprobaron contra los datos del anuncio los **3,193 motivos** "Tiene:" de las 60
+listas (dormitorios, m², paradero, amenidades, distancia al trabajo, porcentaje frente al estimado): **100% correctos**.
+
+**Cobertura y diversidad.** Entre los 60 perfiles se recomendaron 248 anuncios distintos (8.1% del mercado); cada
+lista trae 5 distritos en promedio, igual que el orden por área y más que el orden por precio.
+
+**Límites de esta evaluación.** Los requisitos son distintos de los pesos, pero miran los mismos atributos: la
+tabla demuestra que el sistema **ordena según lo que el usuario declara** mucho mejor que el buscador, no que a
+personas reales les gusten sus recomendaciones. Eso se mide en las pruebas con usuarios (tarea 7 de
+`GuionPruebasUsuarios.md`). Las amenidades salen del texto de los anuncios con reglas y pueden faltar, y la
+cercanía se mide al centro del distrito porque el mercado no guarda direcciones.
+
 ## 7. Casos de estudio
 
 Ejecutados con la API de la app sobre el mercado del 9 de noviembre (`code/casos_estudio.py` →
@@ -286,6 +332,7 @@ foto del mercado del 9 de noviembre, no una lista de ofertas vigentes.
 - **Paraderos ATU de 2021.** La accesibilidad usa el centro aproximado del distrito si no se marca la ubicación.
 - **Descarga diaria inestable.** Los portales bloquean parte de las descargas (error 403); del 28-oct al 8-nov
   no hubo una captura completa.
+- **Recomendador evaluado sin usuarios reales.** Se midió con 60 perfiles de prueba; falta saber si a personas reales les gustan sus recomendaciones.
 - **Sin pruebas con usuarios todavía.** La utilidad está argumentada con casos de estudio, no medida.
 
 ---
@@ -301,6 +348,7 @@ cd deliveries\week10\code
 cd ..\..\week12\code
 ..\..\..\.venv\Scripts\python.exe evaluar_producto.py   # error por rango + coherencia (secciones 3.3 y 6)
 ..\..\..\.venv\Scripts\python.exe casos_estudio.py      # casos de estudio (sección 7)
+..\..\..\.venv\Scripts\python.exe evaluar_recomendador.py  # recomendador contra el buscador (sección 6b)
 ```
 
 | Archivo | Contenido |
@@ -312,6 +360,7 @@ cd ..\..\week12\code
 | `resultados/error_por_rango_precio.csv` | Sección 3.3 |
 | `resultados/coherencia_producto.json` | Sección 6 |
 | `resultados/casos_estudio.json` | Sección 7 |
+| `resultados/recomendador_evaluacion.json`, `recomendador_por_perfil.csv` | Sección 6b |
 
 ---
 

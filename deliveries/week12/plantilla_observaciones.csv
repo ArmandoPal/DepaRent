@@ -5,3 +5,5 @@ fecha,participante,tipo,conduce,anota,tarea,completo,tiempo_min,donde_dudo,frase
 2026-11-__,P1,propietario,,,T4 probar mejora,,,,,,,,,,,,,
 2026-11-__,P1,propietario,,,T6 publicar,,,,,,,,,,,,,
 2026-11-__,P1,propietario,,,cierre,,,,,,1-5,1-5,1-5,1-5,1-5,,,
+2026-11-__,P2,inquilino,,,T7 recomendados (notas 1-5 de los 5 primeros: n1;n2;n3;n4;n5),,,,,,,,,,,,,
+2026-11-__,P2,inquilino,,,T7 buscador por precio (notas 1-5 de los 5 primeros: n1;n2;n3;n4;n5),,,,,,,,,,,,,

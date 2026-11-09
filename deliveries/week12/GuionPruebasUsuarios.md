@@ -79,6 +79,18 @@ Preguntar: *"¿Qué crees que significa 'por debajo del estimado'? ¿Te genera c
 Éxito: crea una cuenta (con un correo de prueba como `prueba1@ejemplo.com`), agrega el departamento y lo
 publica.
 
+### Tarea 7 — Recomendados para ti (inquilinos, y propietarios si hay tiempo; 6 min)
+> "Ahora imagina que buscas departamento para ti o tu familia. Entra a 'Recomendados para ti', crea una cuenta y
+> responde las preguntas pensando en tu situación real. Luego revisa lo que te recomienda y guarda los que te
+> gustarían visitar."
+
+Éxito: crea la cuenta (`pruebaN@ejemplo.com`), completa el cuestionario, llega a sus recomendaciones y guarda al
+menos uno.
+Al terminar, con la lista abierta, pedir que **califique del 1 al 5 los 5 primeros** ("¿qué tanto te sirve este
+departamento?") y anotar las 5 notas. Luego abrir **Buscar** con su mismo presupuesto y distritos, ordenado por
+precio, y que califique igual los 5 primeros. Así se compara el recomendador con el buscador.
+Preguntar: *"¿Entiendes por qué te recomendó cada uno? ¿El esquema de distribución te ayuda o te confunde?"*
+
 ---
 
 ## Cierre (4 min)
@@ -109,7 +121,8 @@ Preguntas abiertas:
    - **Crítico:** impidió completar una tarea.
    - **Importante:** causó duda o error, pero la completó.
    - **Menor:** comentario o sugerencia.
-3. Calcular: tasa de éxito por tarea, tiempo mediano por tarea y promedio de C1–C5.
+3. Calcular: tasa de éxito por tarea, tiempo mediano por tarea y promedio de C1–C5. En la tarea 7, la nota
+   promedio de los 5 primeros del recomendador frente a los 5 primeros del buscador (por persona y en total).
 4. Pasarle la tabla a quien actualiza el informe: van a la sección 6 de `EvaluationReport.md` como
    "Observaciones de uso", con los 3 cambios que se harán antes de la Semana 15.
 

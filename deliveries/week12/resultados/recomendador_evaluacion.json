@@ -1,0 +1,109 @@
+{
+  "perfiles_evaluados": 60,
+  "K": 12,
+  "semillas_azar": 30,
+  "mercado": "data/mercado.csv, captura del 2026-11-09",
+  "resumen": {
+    "azar": {
+      "precision": 0.25,
+      "cumplimiento": 0.633,
+      "ndcg": 0.65,
+      "acierto": 0.832,
+      "distritos": 5.87
+    },
+    "buscador_area": {
+      "precision": 0.219,
+      "cumplimiento": 0.601,
+      "ndcg": 0.624,
+      "acierto": 0.683,
+      "distritos": 5.1
+    },
+    "buscador_oportunidad": {
+      "precision": 0.239,
+      "cumplimiento": 0.602,
+      "ndcg": 0.624,
+      "acierto": 0.783,
+      "distritos": 4.067
+    },
+    "buscador_precio": {
+      "precision": 0.181,
+      "cumplimiento": 0.516,
+      "ndcg": 0.528,
+      "acierto": 0.55,
+      "distritos": 4.4
+    },
+    "recomendador": {
+      "precision": 0.818,
+      "cumplimiento": 0.943,
+      "ndcg": 0.975,
+      "acierto": 0.983,
+      "distritos": 5.117
+    }
+  },
+  "precision_por_hogar": {
+    "estudiante": {
+      "azar": 0.478,
+      "buscador_area": 0.333,
+      "buscador_oportunidad": 0.375,
+      "buscador_precio": 0.465,
+      "recomendador": 0.91
+    },
+    "familia": {
+      "azar": 0.088,
+      "buscador_area": 0.201,
+      "buscador_oportunidad": 0.181,
+      "buscador_precio": 0.0,
+      "recomendador": 0.736
+    },
+    "mascota": {
+      "azar": 0.352,
+      "buscador_area": 0.451,
+      "buscador_oportunidad": 0.486,
+      "buscador_precio": 0.333,
+      "recomendador": 0.882
+    },
+    "mayor": {
+      "azar": 0.169,
+      "buscador_area": 0.062,
+      "buscador_oportunidad": 0.042,
+      "buscador_precio": 0.021,
+      "recomendador": 0.903
+    },
+    "pareja": {
+      "azar": 0.164,
+      "buscador_area": 0.049,
+      "buscador_oportunidad": 0.111,
+      "buscador_precio": 0.083,
+      "recomendador": 0.66
+    }
+  },
+  "precision_por_variante": {
+    "completo": {
+      "azar": 0.194,
+      "buscador_area": 0.172,
+      "buscador_oportunidad": 0.178,
+      "buscador_precio": 0.122,
+      "recomendador": 0.786
+    },
+    "simple": {
+      "azar": 0.306,
+      "buscador_area": 0.267,
+      "buscador_oportunidad": 0.3,
+      "buscador_precio": 0.239,
+      "recomendador": 0.85
+    }
+  },
+  "cobertura_recomendador": {
+    "anuncios_distintos": 248,
+    "mercado": 3074,
+    "porcentaje": 8.1
+  },
+  "explicaciones": {
+    "verdaderos": 3193,
+    "falsos": 0,
+    "sin_regla": 0,
+    "ejemplos_falsos": [],
+    "porcentaje_verdaderos": 100.0
+  },
+  "lectura": "Requisitos escritos aparte de los pesos del recomendador, pero sobre los mismos atributos: mide si ordena según lo declarado mejor que el buscador, no si a personas reales les gusta (eso va en las pruebas con usuarios)."
+}
