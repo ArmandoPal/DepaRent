@@ -1,0 +1,80 @@
+{
+  "fecha": "2026-11-09",
+  "mercado": "data/mercado.csv, captura del 2026-11-09",
+  "muestra": 300,
+  "semilla": 42,
+  "reglas_cumplidas": {
+    "responde_200": 297,
+    "json_estricto": 297,
+    "precio_igual_al_modelo": 297,
+    "tres_escenarios": 297,
+    "escenarios_ordenados": 297,
+    "escenarios_dentro_del_rango": 297,
+    "equilibrado_igual_al_esperado": 297,
+    "una_sola_sugerencia": 297,
+    "ocho_comparables": 297,
+    "comparables_sin_repetir": 297,
+    "perfil_asignado": 297,
+    "nivel_accesibilidad": 297,
+    "tendencia_valida": 297
+  },
+  "analizadas": 297,
+  "reglas_cumplidas_porcentaje": {
+    "responde_200": 100.0,
+    "json_estricto": 100.0,
+    "precio_igual_al_modelo": 100.0,
+    "tres_escenarios": 100.0,
+    "escenarios_ordenados": 100.0,
+    "escenarios_dentro_del_rango": 100.0,
+    "equilibrado_igual_al_esperado": 100.0,
+    "una_sola_sugerencia": 100.0,
+    "ocho_comparables": 100.0,
+    "comparables_sin_repetir": 100.0,
+    "perfil_asignado": 100.0,
+    "nivel_accesibilidad": 100.0,
+    "tendencia_valida": 100.0
+  },
+  "rechazadas_por_validacion": {
+    "anuncios": 3,
+    "detalle": [
+      {
+        "status": 422,
+        "detalle": "[{'type': 'int_type', 'loc': ['body', 'vivienda', 'dormitorios'], 'msg': 'Input should be a valid integer', 'input': None}]"
+      },
+      {
+        "status": 422,
+        "detalle": "[{'type': 'int_type', 'loc': ['body', 'vivienda', 'dormitorios'], 'msg': 'Input should be a valid integer', 'input': None}]"
+      },
+      {
+        "status": 422,
+        "detalle": "[{'type': 'int_type', 'loc': ['body', 'vivienda', 'dormitorios'], 'msg': 'Input should be a valid integer', 'input': None}]"
+      }
+    ],
+    "nota": "Anuncios del mercado sin dormitorios o baños: la API los rechaza con 422 y un mensaje, como debe (el formulario los exige). Los porcentajes se calculan sobre las analizadas."
+  },
+  "comparables": {
+    "porcentaje_en_el_mismo_distrito_medio": 100.0,
+    "similitud_mediana": 0.419
+  },
+  "escenario_sugerido": {
+    "Equilibrado": 133,
+    "Renta superior": 164
+  },
+  "perfiles": {
+    "Estándar tradicional": 143,
+    "Amplio de alta gama": 30,
+    "Moderno que admite mascotas": 47,
+    "Compacto moderno con amenidades": 77
+  },
+  "niveles_accesibilidad": {
+    "Media": 160,
+    "Alta": 136,
+    "Baja": 1
+  },
+  "tiempo_respuesta_ms": {
+    "mediana": 82.9,
+    "p95": 147.4,
+    "maximo": 474.7,
+    "nota": "Medido en local con TestClient; no incluye red ni el arranque en frío de Render."
+  }
+}

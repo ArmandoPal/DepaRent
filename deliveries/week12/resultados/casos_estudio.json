@@ -1,0 +1,440 @@
+{
+  "mercado": "9 de noviembre de 2026",
+  "propietario": {
+    "vivienda": {
+      "distrito_norm": "jesus maria",
+      "area_total": 70,
+      "dormitorios": 2,
+      "banos": 2,
+      "estacionamientos": 0,
+      "antiguedad": 8,
+      "mantenimiento": 250,
+      "ascensor": 1,
+      "balcon": 0,
+      "terraza": 0,
+      "piscina": 0,
+      "gimnasio": 0,
+      "pet_friendly": 0
+    },
+    "precio_que_pensaba_pedir": 2800,
+    "precio": {
+      "precio_estimado_soles": 2527.94,
+      "limite_inferior_soles": 1170.99,
+      "limite_superior_soles": 3884.89,
+      "baseline_distrital_soles": 2500.0,
+      "anuncios_entrenamiento_distrito": 123,
+      "advertencias": []
+    },
+    "evidencia_distrital": {
+      "distrito": "jesus maria",
+      "anuncios_prueba": 32,
+      "error_absoluto_medio_soles": 245.74628781193468,
+      "muestra_pequena": false
+    },
+    "perfil": {
+      "cluster": 1,
+      "perfil": "Estándar tradicional",
+      "anuncios_en_perfil": 1497,
+      "precio_mediana_perfil_soles": 2500.0,
+      "precio_p25_perfil_soles": 1850.0,
+      "precio_p75_perfil_soles": 3100.0
+    },
+    "comparables": [
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 65.0,
+        "Dormitorios": 2.0,
+        "Baños": 2.0,
+        "Antigüedad": 4.0,
+        "Precio pedido (S/)": 2000.0,
+        "Similitud": 0.72
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 77.0,
+        "Dormitorios": 2.0,
+        "Baños": 2.0,
+        "Antigüedad": 4.0,
+        "Precio pedido (S/)": 2400.0,
+        "Similitud": 0.625
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 65.0,
+        "Dormitorios": 2.0,
+        "Baños": 1.0,
+        "Antigüedad": 10.0,
+        "Precio pedido (S/)": 1700.0,
+        "Similitud": 0.451
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 90.0,
+        "Dormitorios": 3.0,
+        "Baños": 2.0,
+        "Antigüedad": 0.0,
+        "Precio pedido (S/)": 2990.0,
+        "Similitud": 0.422
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 100.0,
+        "Dormitorios": 2.0,
+        "Baños": 1.0,
+        "Antigüedad": 10.0,
+        "Precio pedido (S/)": 2200.0,
+        "Similitud": 0.409
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 60.0,
+        "Dormitorios": 2.0,
+        "Baños": 1.0,
+        "Antigüedad": 20.0,
+        "Precio pedido (S/)": 1650.0,
+        "Similitud": 0.392
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 97.0,
+        "Dormitorios": 3.0,
+        "Baños": 2.0,
+        "Antigüedad": 4.0,
+        "Precio pedido (S/)": 4100.0,
+        "Similitud": 0.385
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 129.0,
+        "Dormitorios": 3.0,
+        "Baños": 2.0,
+        "Antigüedad": 0.0,
+        "Precio pedido (S/)": 4000.0,
+        "Similitud": 0.361
+      }
+    ],
+    "comparables_resumen": {
+      "precio_p25_soles": 1925.0,
+      "precio_mediana_soles": 2300.0,
+      "precio_p75_soles": 3242.5,
+      "en_mismo_distrito": 8
+    },
+    "comparables_que_piden_menos_que_lo_pensado": 5,
+    "accesibilidad": {
+      "origen": "centro aproximado del distrito",
+      "dist_paradero_min_m": 355.9,
+      "paraderos_500m": 4,
+      "nivel": "Media",
+      "porcentaje_anuncios_mas_lejos": 21.9
+    },
+    "tendencia": {
+      "tendencia": "Estable",
+      "cambio_porcentaje": 0.68,
+      "serie_propia": true
+    },
+    "publicacion": {
+      "escenarios": [
+        {
+          "escenario": "Competitivo",
+          "precio_soles": 2230.0,
+          "diferencia_vs_esperado_porcentaje": -11.79,
+          "comparables_mas_baratos_porcentaje": 50.0,
+          "sugerido": false
+        },
+        {
+          "escenario": "Equilibrado",
+          "precio_soles": 2530.0,
+          "diferencia_vs_esperado_porcentaje": 0.08,
+          "comparables_mas_baratos_porcentaje": 62.5,
+          "sugerido": true
+        },
+        {
+          "escenario": "Renta superior",
+          "precio_soles": 2890.0,
+          "diferencia_vs_esperado_porcentaje": 14.32,
+          "comparables_mas_baratos_porcentaje": 62.5,
+          "sugerido": false
+        }
+      ],
+      "sugerido": "Equilibrado",
+      "motivo": "La serie del distrito se mantiene estable; el precio esperado es el punto de partida razonable."
+    },
+    "simulador_balcon": {
+      "tipo": "CONSULTA_MODELO_ENTRENADO_ENTRADAS_HIPOTETICAS",
+      "base_entrada": {
+        "distrito_norm": "jesus maria",
+        "area_total": 70,
+        "dormitorios": 2,
+        "banos": 2,
+        "estacionamientos": 0,
+        "antiguedad": 8,
+        "mantenimiento": 250,
+        "ascensor": 1,
+        "balcon": 0,
+        "terraza": 0,
+        "piscina": 0,
+        "gimnasio": 0,
+        "pet_friendly": 0
+      },
+      "alternativa_entrada": {
+        "distrito_norm": "jesus maria",
+        "area_total": 70,
+        "dormitorios": 2,
+        "banos": 2,
+        "estacionamientos": 0,
+        "antiguedad": 8,
+        "mantenimiento": 250,
+        "ascensor": 1,
+        "balcon": 1,
+        "terraza": 0,
+        "piscina": 0,
+        "gimnasio": 0,
+        "pet_friendly": 0
+      },
+      "base_resultado": {
+        "precio_estimado_soles": 2527.94,
+        "limite_inferior_soles": 1170.99,
+        "limite_superior_soles": 3884.89,
+        "baseline_distrital_soles": 2500.0,
+        "anuncios_entrenamiento_distrito": 123,
+        "advertencias": []
+      },
+      "alternativa_resultado": {
+        "precio_estimado_soles": 2552.21,
+        "limite_inferior_soles": 1195.27,
+        "limite_superior_soles": 3909.16,
+        "baseline_distrital_soles": 2500.0,
+        "anuncios_entrenamiento_distrito": 123,
+        "advertencias": []
+      },
+      "cambios": {
+        "balcon": {
+          "base": 0,
+          "alternativa": 1
+        }
+      },
+      "diferencia_soles": 24.27,
+      "diferencia_porcentaje": 0.96,
+      "interpretacion_intervalos": "Rangos de precio separados con radio global calibrado; no constituyen un intervalo estadístico para la diferencia.",
+      "soporte": "El conteo distrital no prueba que la combinación concreta de atributos tenga soporte suficiente."
+    },
+    "laboratorio_area": {
+      "naturaleza": "SENSIBILIDAD_MODELO_ENTRADAS_HIPOTETICAS",
+      "solo_cambia": "area_total",
+      "entrada_base": {
+        "distrito_norm": "jesus maria",
+        "area_total": 70,
+        "dormitorios": 2,
+        "banos": 2,
+        "estacionamientos": 0,
+        "antiguedad": 8,
+        "mantenimiento": 250,
+        "ascensor": 1,
+        "balcon": 0,
+        "terraza": 0,
+        "piscina": 0,
+        "gimnasio": 0,
+        "pet_friendly": 0
+      },
+      "puntos": [
+        {
+          "factor_area": 0.8,
+          "entrada": {
+            "distrito_norm": "jesus maria",
+            "area_total": 56,
+            "dormitorios": 2,
+            "banos": 2,
+            "estacionamientos": 0,
+            "antiguedad": 8,
+            "mantenimiento": 250,
+            "ascensor": 1,
+            "balcon": 0,
+            "terraza": 0,
+            "piscina": 0,
+            "gimnasio": 0,
+            "pet_friendly": 0
+          },
+          "resultado": {
+            "precio_estimado_soles": 2337.71,
+            "limite_inferior_soles": 980.76,
+            "limite_superior_soles": 3694.66,
+            "baseline_distrital_soles": 2500.0,
+            "anuncios_entrenamiento_distrito": 123,
+            "advertencias": []
+          }
+        },
+        {
+          "factor_area": 1.0,
+          "entrada": {
+            "distrito_norm": "jesus maria",
+            "area_total": 70,
+            "dormitorios": 2,
+            "banos": 2,
+            "estacionamientos": 0,
+            "antiguedad": 8,
+            "mantenimiento": 250,
+            "ascensor": 1,
+            "balcon": 0,
+            "terraza": 0,
+            "piscina": 0,
+            "gimnasio": 0,
+            "pet_friendly": 0
+          },
+          "resultado": {
+            "precio_estimado_soles": 2527.94,
+            "limite_inferior_soles": 1170.99,
+            "limite_superior_soles": 3884.89,
+            "baseline_distrital_soles": 2500.0,
+            "anuncios_entrenamiento_distrito": 123,
+            "advertencias": []
+          }
+        },
+        {
+          "factor_area": 1.2,
+          "entrada": {
+            "distrito_norm": "jesus maria",
+            "area_total": 84,
+            "dormitorios": 2,
+            "banos": 2,
+            "estacionamientos": 0,
+            "antiguedad": 8,
+            "mantenimiento": 250,
+            "ascensor": 1,
+            "balcon": 0,
+            "terraza": 0,
+            "piscina": 0,
+            "gimnasio": 0,
+            "pet_friendly": 0
+          },
+          "resultado": {
+            "precio_estimado_soles": 2727.56,
+            "limite_inferior_soles": 1370.62,
+            "limite_superior_soles": 4084.51,
+            "baseline_distrital_soles": 2500.0,
+            "anuncios_entrenamiento_distrito": 123,
+            "advertencias": []
+          }
+        }
+      ],
+      "resumen": {
+        "area_base_m2": 70,
+        "area_mayor_m2": 84,
+        "diferencia_base_a_mayor_soles": 199.62,
+        "variacion_base_a_mayor_porcentaje": 7.9,
+        "hay_descenso_al_aumentar_area": false
+      },
+      "advertencia": "Solo cambia el área; las demás entradas permanecen iguales. Son perfiles hipotéticos, no anuncios nuevos ni efectos causales. Los rangos son individuales: no son un intervalo de confianza para las diferencias. Más área no garantiza una estimación mayor.",
+      "aviso": "Solo cambia el área; las demás entradas permanecen iguales. Son perfiles hipotéticos, no anuncios nuevos ni efectos causales. Los rangos son individuales: no son un intervalo de confianza para las diferencias. Más área no garantiza una estimación mayor."
+    }
+  },
+  "inquilino": {
+    "filtros": {
+      "distritos": [
+        "jesus maria",
+        "lince",
+        "surquillo"
+      ],
+      "precio_max": 2500,
+      "dormitorios_min": 2,
+      "paradero_max_m": 300,
+      "orden": "oportunidad",
+      "limite": 60
+    },
+    "total": 118,
+    "conteos": {
+      "por_debajo": 37,
+      "en_linea": 68,
+      "por_encima": 13
+    },
+    "resumen": {
+      "precio_p25_soles": 2100.0,
+      "precio_mediana_soles": 2300.0,
+      "precio_p75_soles": 2500.0,
+      "por_debajo_del_estimado": 37
+    },
+    "por_debajo_total": 37,
+    "primeros_por_debajo": [
+      {
+        "distrito": "lince",
+        "precio_soles": 2400.0,
+        "precio_estimado_soles": 3218.63,
+        "diferencia_estimado_porcentaje": -25.4,
+        "valoracion": "Por debajo del estimado",
+        "area_total": 90.0,
+        "dormitorios": 3.0,
+        "banos": 2.0,
+        "dist_paradero_min_m": 164.5,
+        "perfil": "Estándar tradicional"
+      },
+      {
+        "distrito": "surquillo",
+        "precio_soles": 2250.0,
+        "precio_estimado_soles": 2942.95,
+        "diferencia_estimado_porcentaje": -23.5,
+        "valoracion": "Por debajo del estimado",
+        "area_total": 82.0,
+        "dormitorios": 2.0,
+        "banos": 2.0,
+        "dist_paradero_min_m": 294.9,
+        "perfil": "Estándar tradicional"
+      },
+      {
+        "distrito": "surquillo",
+        "precio_soles": 2200.0,
+        "precio_estimado_soles": 2857.45,
+        "diferencia_estimado_porcentaje": -23.0,
+        "valoracion": "Por debajo del estimado",
+        "area_total": 110.0,
+        "dormitorios": 3.0,
+        "banos": 2.0,
+        "dist_paradero_min_m": 271.4,
+        "perfil": "Moderno que admite mascotas"
+      },
+      {
+        "distrito": "jesus maria",
+        "precio_soles": 2400.0,
+        "precio_estimado_soles": 3006.17,
+        "diferencia_estimado_porcentaje": -20.2,
+        "valoracion": "Por debajo del estimado",
+        "area_total": 77.0,
+        "dormitorios": 2.0,
+        "banos": 2.0,
+        "dist_paradero_min_m": 283.2,
+        "perfil": "Estándar tradicional"
+      },
+      {
+        "distrito": "jesus maria",
+        "precio_soles": 1800.0,
+        "precio_estimado_soles": 2250.62,
+        "diferencia_estimado_porcentaje": -20.0,
+        "valoracion": "Por debajo del estimado",
+        "area_total": 85.0,
+        "dormitorios": 2.0,
+        "banos": 1.0,
+        "dist_paradero_min_m": 6.7,
+        "perfil": "Estándar tradicional"
+      }
+    ],
+    "campos_resultado": [
+      "amenidades",
+      "antiguedad",
+      "area_total",
+      "banos",
+      "diferencia_estimado_porcentaje",
+      "dist_paradero_min_m",
+      "distrito",
+      "dormitorios",
+      "estacionamientos",
+      "id",
+      "mantenimiento",
+      "nombre",
+      "origen",
+      "paraderos_500m",
+      "perfil",
+      "precio_estimado_soles",
+      "precio_soles",
+      "valoracion"
+    ],
+    "aviso": "Anuncios del 9 de noviembre de 2026 sin dirección ni contacto en DepaRent: es una foto del mercado ese día, no una lista de ofertas vigentes. La comparación es orientativa: el modelo se entrenó con anuncios de septiembre y se validó con los de noviembre."
+  }
+}

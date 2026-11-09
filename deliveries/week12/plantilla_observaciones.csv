@@ -1,0 +1,7 @@
+fecha,participante,tipo,conduce,anota,tarea,completo,tiempo_min,donde_dudo,frase_textual,severidad,C1_entendi,C2_confio,C3_ayudo_decidir,C4_facil,C5_usaria,mas_util,mas_confuso,cambiaria
+2026-11-__,P1,propietario,,,T1 primera impresion,si / con ayuda / no,,,,critico / importante / menor,,,,,,,,
+2026-11-__,P1,propietario,,,T2 estimar precio,,,,,,,,,,,,,
+2026-11-__,P1,propietario,,,T3 precio de publicacion,,,,,,,,,,,,,
+2026-11-__,P1,propietario,,,T4 probar mejora,,,,,,,,,,,,,
+2026-11-__,P1,propietario,,,T6 publicar,,,,,,,,,,,,,
+2026-11-__,P1,propietario,,,cierre,,,,,,1-5,1-5,1-5,1-5,1-5,,,

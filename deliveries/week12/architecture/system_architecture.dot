@@ -1,0 +1,46 @@
+digraph G {
+  rankdir=LR; bgcolor="white"; pad=0.3; nodesep=0.35; ranksep=0.6;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, color="#33415c", fillcolor="#f4f6fa", penwidth=1.2];
+  edge [fontname="Helvetica", fontsize=9, color="#5c677d"];
+  label="DepaRent — arquitectura del sistema (Semana 12, noviembre 2026)"; labelloc=t; fontname="Helvetica-Bold"; fontsize=15;
+
+  subgraph cluster_users { label="Usuarios"; style="rounded,dashed"; color="#adb5bd"; fontname="Helvetica";
+    P [label="Propietario", shape=oval, fillcolor="#fff3cd"];
+    I [label="Inquilino", shape=oval, fillcolor="#fff3cd"];
+  }
+
+  subgraph cluster_render { label="Render (plan gratuito) · un solo servicio web · despliega cada push a main"; style="rounded"; color="#4361ee"; fontname="Helvetica-Bold"; fontcolor="#4361ee";
+    F [label="Frontend\nHTML + CSS + JS en módulos\nLeaflet (mapa)\nInicio · Buscar · Probar · Mis departamentos"];
+    A [label="API FastAPI (code/api.py)\n/api/analizar · /api/buscar · /api/estimar\n/api/comparar · /api/area · /api/cuentas/*", fillcolor="#e0e7ff"];
+    subgraph cluster_models { label="Componentes analíticos"; style="rounded"; color="#adb5bd"; fontname="Helvetica";
+      PRE [label="preprocesar.py\n(mismas reglas que la Semana 7)"];
+      M1 [label="1 · Perfil competitivo\nK-Means k=4 + 8 comparables"];
+      M2 [label="2 · Accesibilidad\nparaderos ATU (cKDTree)"];
+      M3 [label="3 · Precio esperado\nHistGradientBoosting + rango calibrado", fillcolor="#d8f3dc"];
+      M4 [label="4 · Tendencia distrital\nSARIMA (BCRP)"];
+      M5 [label="5 · Escenarios de publicación\nreglas: competitivo / equilibrado / renta superior"];
+      M6 [label="6 · Simulador y laboratorio de área\n(sensibilidad del modelo 3)"];
+    }
+    B [label="busqueda.py\nmercado + publicados en DepaRent"];
+    C [label="cuentas.py\nPBKDF2 + sal · sesiones con hash"];
+  }
+
+  DB [label="Postgres (Neon)\ncuentas, departamentos, interesados\n(SQLite en local)", shape=cylinder, fillcolor="#fde2e4"];
+  ART [label="Artefactos en el repo\nmodels/*.joblib · resultados/*.json\ndata/mercado.csv · week07/data/", shape=cylinder, fillcolor="#e9ecef"];
+
+  subgraph cluster_pipeline { label="Actualización del mercado"; style="rounded,dashed"; color="#adb5bd"; fontname="Helvetica";
+    S [label="Descarga diaria\nscraper/descarga_diaria.py\nAdondevivir + Urbania"];
+    SN [label="data_diaria/snapshots\n(fuera de git: tiene direcciones)", shape=cylinder, fillcolor="#e9ecef"];
+    PM [label="preparar_mercado.py\nentrenar_perfil.py\npruebas → commit en main"];
+  }
+  GH [label="GitHub\n(repo + Actions diario,\nrespaldo: tarea local de Windows)", shape=component, fillcolor="#e9ecef"];
+
+  P -> F; I -> F;
+  F -> A [label="fetch JSON"];
+  A -> PRE; PRE -> M1; PRE -> M2; PRE -> M3;
+  M3 -> M5; M1 -> M5; M4 -> M5; M3 -> M6;
+  A -> M4; A -> B; A -> C;
+  C -> DB; B -> DB [style=dashed, label="publicados"];
+  ART -> A [label="se carga al arrancar"];
+  S -> SN -> PM -> GH; GH -> ART [label="push a main"];
+}
