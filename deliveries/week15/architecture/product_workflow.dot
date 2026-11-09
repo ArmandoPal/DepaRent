@@ -1,0 +1,32 @@
+digraph W {
+  rankdir=TB; bgcolor="white"; pad=0.3; nodesep=0.3; ranksep=0.45;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, color="#33415c", fillcolor="#f4f6fa", penwidth=1.2];
+  edge [fontname="Helvetica", fontsize=9, color="#5c677d"];
+  label="DepaRent — flujos de uso (Semana 12)"; labelloc=t; fontname="Helvetica-Bold"; fontsize=15;
+
+  H [label="Página de inicio\nestimador en vivo · cifras del modelo", fillcolor="#fff3cd"];
+
+  subgraph cluster_owner { label="Propietario"; style="rounded"; color="#2d6a4f"; fontname="Helvetica-Bold"; fontcolor="#2d6a4f";
+    O1 [label="Probar el análisis (sin cuenta)\no Agregar departamento (con cuenta)"];
+    O2 [label="Datos del departamento\n+ ubicación en el mapa o por dirección"];
+    O3 [label="Análisis\nprecio esperado y rango · error del distrito\nperfil y 8 comparables · accesibilidad · tendencia", fillcolor="#d8f3dc"];
+    O4 [label="Tres precios de publicación\n(uno sugerido según la tendencia)"];
+    O5 [label="Simulador de mejoras\nlaboratorio de área"];
+    O6 [label="Publicar en DepaRent\n(Mis departamentos)"];
+    O7 [label="Recibe interesados", shape=oval, fillcolor="#d8f3dc"];
+    O1 -> O2 -> O3 -> O4 -> O6 -> O7; O3 -> O5 [style=dashed]; O5 -> O4 [style=dashed, label="vuelve a decidir"];
+  }
+
+  subgraph cluster_tenant { label="Inquilino"; style="rounded"; color="#4361ee"; fontname="Helvetica-Bold"; fontcolor="#4361ee";
+    T1 [label="Buscar departamentos"];
+    T2 [label="Filtros\ndistrito · precio · área · dormitorios · baños\nparadero máximo · amenidades"];
+    T3 [label="Resultados con valoración\npor debajo / en línea / por encima del estimado\nordenar por oportunidad", fillcolor="#e0e7ff"];
+    T4 [label="Ficha del anuncio\ncomparables · accesibilidad"];
+    T5 [label="Contactar\n(publicado en DepaRent → mensaje al propietario)\n(anuncio de mercado → portal original)", shape=oval, fillcolor="#e0e7ff"];
+    T1 -> T2 -> T3 -> T4 -> T5; T4 -> T3 [style=dashed, label="compara otro"];
+  }
+
+  H -> O1; H -> T1;
+  O6 -> T3 [style=dotted, label="aparece primero\nen la búsqueda", color="#2d6a4f"];
+  T5 -> O7 [style=dotted, color="#2d6a4f"];
+}
