@@ -2,6 +2,7 @@ import { obtenerOpciones, sesion } from "./api.js";
 import { vistaAnuncio } from "./anuncio.js";
 import { vistaInicio } from "./inicio.js";
 import { activarMovimiento } from "./movimiento.js";
+import { vistaRecomendaciones } from "./recomendaciones.js";
 import { $, esc } from "./util.js";
 import {
   cerrarSesion, vistaBuscar, vistaDetalleDepartamento, vistaError, vistaIngresar, vistaMisDepartamentos,
@@ -11,6 +12,7 @@ import {
 // [patrón, vista, requiere sesión, sección, título en la barra del teléfono]
 const RUTAS = [
   [/^\/$/, vistaInicio, false, "inicio", ""],
+  [/^\/para-ti$/, vistaRecomendaciones, false, "para-ti", "Recomendados para ti"],
   [/^\/buscar$/, vistaBuscar, false, "buscar", "Buscar departamentos"],
   [/^\/anuncio\/([md]\d+)$/, vistaAnuncio, false, "buscar", "Anuncio"],
   [/^\/probar$/, vistaProbar, false, "probar", "Probar el análisis"],
@@ -25,6 +27,7 @@ function menuInicio() {
   const actual = sesion();
   $("#menu").innerHTML = `
     <div class="menu-links">
+      <a href="#/para-ti">Para ti</a>
       <a href="#/buscar">Buscar</a>
       <a href="#/probar">Probar</a>
       ${actual ? '<a href="#/mis-departamentos">Mis departamentos</a>' : '<a href="#/ingresar">Ingresar</a>'}
@@ -44,6 +47,7 @@ function marco(main, seccion, titulo) {
         <a class="app-brand" href="#/"><span class="app-mark" aria-hidden="true">D</span>
           <span><b>DepaRent</b><span data-captura>Lima</span></span></a>
         <p class="group-label">Explorar</p>
+        ${item("#/para-ti", "para-ti", "Recomendados para ti")}
         ${item("#/buscar", "buscar", "Buscar departamentos")}
         ${item("#/probar", "probar", "Probar el análisis")}
         ${item("#/", "inicio", "Inicio")}

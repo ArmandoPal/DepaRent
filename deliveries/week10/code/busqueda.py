@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from modelo import BINARY, ROOT, normalizar, preparar
+from recomendador import EXTRAS
 
 ORDENES = {"precio": ("precio_soles", True), "precio_desc": ("precio_soles", False), "area": ("area_total", False),
            "paradero": ("dist_paradero_min_m", True), "oportunidad": ("relacion_estimado", True)}
@@ -38,6 +39,9 @@ def construir_mercado(modelo_precio, modelo_perfil, archivo=MERCADO):
     tabla["nombre"] = None
     for col in ("precio_soles", "dist_paradero_min_m", "paraderos_500m", "url", "fuente", "fecha_scraping"):
         tabla[col] = frame[col].to_numpy()
+    # Amenidades extra para el recomendador (modelo 7); no son entradas del modelo de precio.
+    for col in EXTRAS:
+        tabla[col] = frame[col].to_numpy() if col in frame else 0
     perfiles = modelo_perfil["referencia"].set_index("anuncio_id")["cluster"].map(modelo_perfil["nombres"])
     tabla["perfil"] = tabla["id"].map(perfiles).to_numpy()
     tabla["precio_estimado"] = modelo_precio["pipeline"].predict(X)

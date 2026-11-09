@@ -22,7 +22,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 import cuentas
-from accesibilidad import accesibilidad, cargar_red, centro_distrito, nivel_accesibilidad
+from accesibilidad import accesibilidad, cargar_red, centro_distrito, nivel_accesibilidad, validar_coordenadas
 from ayuda_interfaz import ETIQUETAS, avisos_coherencia
 from busqueda import AVISO as AVISO_MERCADO, buscar, construir_mercado, formatear, ubicar, vivienda_de
 from escenarios import ADVERTENCIA, CAMBIABLES, comparar, verificar_modelo_congelado
@@ -33,6 +33,7 @@ from laboratorio_area import AVISO as AVISO_AREA, explorar_area
 from modelo import BINARY, LIMITS, ROOT, predecir, preparar
 from perfil_competitivo import ARCHIVO as ARCHIVO_PERFIL, asignar_perfil, comparables
 from tendencia import cargar_tendencias, tendencia_distrital
+from recomendador import AVISO as AVISO_RECOMENDADOR, HOGARES, NOMBRES_PRIORIDAD, recomendar
 
 verificar_modelo_congelado()
 MODELO_PRECIO = joblib.load(ROOT / "models/modelo_docente.joblib")
@@ -96,6 +97,16 @@ class Vivienda(BaseModel):
 class Ubicacion(BaseModel):
     latitud: float
     longitud: float
+
+
+class PerfilInquilino(BaseModel):
+    hogar: str
+    presupuesto_max: Optional[float] = None
+    distritos: List[str] = []
+    dormitorios_min: Optional[int] = None
+    prioridades: List[str] = []
+    lugar: Optional[Ubicacion] = None
+    limite: int = Field(12, ge=1, le=30)
 
 
 class Analisis(BaseModel):
@@ -258,6 +269,7 @@ def opciones():
                      "tendencia": {k: tendencias[k] for k in ("metodo", "validacion", "regla_tendencia", "limites")}},
         "mercado": {"anuncios": int(len(MERCADO)), "distritos": int(MERCADO["distrito_norm"].nunique()),
                     "captura": MERCADO_INFO["captura"], "captura_texto": MERCADO_INFO["captura_texto"]},
+        "recomendador": {"hogares": {k: v["nombre"] for k, v in HOGARES.items()}, "prioridades": NOMBRES_PRIORIDAD},
         "validacion": None if VALIDACION is None else {
             "captura": VALIDACION["captura"], "mes": MES_VALIDACION, "evaluados": VALIDACION["flujo"]["evaluados"],
             "mae_soles": VALIDACION["metricas_octubre"]["HistGradientBoosting"]["MAE_soles"],
@@ -374,6 +386,19 @@ def retirar_publicacion(departamento_id: int, usuario=Depends(usuario_actual), c
 
 
 # ---------- Búsqueda para inquilinos ----------
+
+@app.post("/api/recomendar")
+def recomendar_departamentos(perfil: PerfilInquilino, conexion=Depends(base_datos)):
+    """Modelo 7: departamentos recomendados según el perfil del inquilino, con sus motivos."""
+    datos = perfil.model_dump()
+    limite = datos.pop("limite")
+    if datos["lugar"]:
+        lugar = datos["lugar"]
+        datos["lugar"] = dict(zip(("latitud", "longitud"), validar_coordenadas(lugar["latitud"], lugar["longitud"])))
+    propios = tabla_publicados(conexion)
+    tabla = pd.concat([propios, MERCADO], ignore_index=True) if len(propios) else MERCADO
+    resultado = recomendar(tabla, datos, cargar_red()["centros"], limite=limite, formatear=formatear)
+    return limpiar({**resultado, "aviso": AVISO_RECOMENDADOR.format(captura=MERCADO_INFO["captura_texto"])})
 
 @app.post("/api/buscar")
 def buscar_departamentos(filtros: Filtros, conexion=Depends(base_datos)):

@@ -324,3 +324,51 @@ tr[data-href] { cursor: pointer; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; } }
 .rows .empty, .grid > .empty { grid-column: 1 / -1; width: 100%; }
+
+/* ---------- Recomendados para ti (modelo 7) ---------- */
+.perfil-form { display: grid; gap: 20px; }
+.perfil-grupo { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
+.perfil-grupo legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.perfil-grupo legend small, .perfil-grupo small { font-weight: 400; color: var(--muted); }
+.hogares { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.hogar { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); cursor: pointer; transition: border-color var(--t-hover) var(--ease-out), background var(--t-hover) var(--ease-out); }
+.hogar input { margin-top: 3px; accent-color: var(--text); flex: none; }
+.hogar span { display: grid; gap: 4px; }
+.hogar small { color: var(--muted); font-size: var(--fs-small); line-height: 1.35; }
+.hogar:has(input:checked) { border-color: var(--text); background: var(--raised); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; cursor: pointer; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip span { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border: 1px solid var(--control); border-radius: 999px; background: var(--surface); font-size: var(--fs-small); transition: background var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out); }
+.chip input:checked + span { background: var(--text); border-color: var(--text); color: var(--primary-ink); }
+.chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.reco-count { margin: 0 0 12px; }
+.reco-list { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }
+.reco-link { display: grid; grid-template-columns: 40px 1fr; gap: 16px; align-items: start; padding: 16px var(--card-pad); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); color: inherit; text-decoration: none; transition: border-color var(--t-hover) var(--ease-out); }
+.reco-rank { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--raised); font-weight: 600; font-variant-numeric: tabular-nums; }
+.reco-list li:first-child .reco-rank { background: var(--accent-pale); color: #7a3206; }
+.reco-body { display: grid; gap: 6px; min-width: 0; }
+.reco-body p { margin: 0; }
+.reco-title { font-size: var(--fs-section); }
+.reco-price { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); }
+.reco-price b { color: var(--text); font-size: var(--fs-section); font-variant-numeric: tabular-nums; }
+.reco-why span, .reco-miss span, .reco-extra span { font-weight: 600; }
+.reco-why span { color: var(--positive); }
+.reco-miss { color: var(--muted); }
+.reco-extra { color: var(--muted); font-size: var(--fs-small); }
+@media (hover: hover) and (pointer: fine) { .reco-link:hover { border-color: var(--control); } .hogar:hover { border-color: var(--control); } }
+@media (max-width: 640px) { .reco-link { grid-template-columns: 1fr; gap: 8px; } }
+.reco-card { position: relative; }
+.reco-link { padding-right: 120px; }
+.reco-save { position: absolute; top: 14px; right: var(--card-pad); }
+.reco-save[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--primary-ink); }
+.reco-tabs { margin: 16px 0 12px; }
+.perfil-card { margin-bottom: 0; }
+.perfil-card h2 { margin: 0 0 12px; font-size: var(--fs-section); }
+.perfil-card dl { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 24px; }
+.perfil-card dt { color: var(--muted); font-size: var(--fs-small); }
+.perfil-card dd { margin: 2px 0 0; }
+@media (max-width: 640px) {
+  .reco-link { padding-right: var(--card-pad); padding-bottom: 60px; }
+  .reco-save { top: auto; bottom: 14px; left: var(--card-pad); right: auto; }
+}
