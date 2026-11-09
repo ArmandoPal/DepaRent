@@ -29,6 +29,18 @@ AMENITY_KEYWORDS = {
 AMENITY_NEGATIONS = {
     "pet_friendly": r"no\s+se\s+(?:aceptan?|admiten?|permiten?)\s+mascotas|\b(?:no|sin)\s+(?:(?:aceptan?|admiten?|permiten?)\s+)?(?:mascotas|pets?)\b|mascotas\s*:?\s*no\b",
 }
+# Negaciones que la regla de la Semana 7 no veía. Los portales quitan los saltos de línea y pegan las palabras
+# ("no mascotasdistribución", "adelantono mascotas"), y hay frases que no conocía ("no apto para mascotas",
+# "ni mascotas", "no está permitido las mascotas"). En la captura del 9-nov, 29 anuncios que decían que no admiten
+# mascotas aparecían como que sí. Solo se aplican a capturas nuevas: el entrenamiento de septiembre se reproduce
+# con la regla original.
+NEGACIONES_ESTRICTAS = {
+    "pet_friendly": (r"(?:no|\bsin|\bni)\s+(?:mascotas?|pets?\b|pet[\s-]?friendly)"
+                     r"|\bn[oó]\s+(?:s[eé]\s+)?(?:aceptan?|aceptamos|admiten?|admitimos|permiten?|permitimos)\s+"
+                     r"(?:(?:las|los)\s+)?(?:mascotas?|animales|pets?\b)"
+                     r"|\bno\s+(?:est[aá]n?\s+permitid[oa]s?|apto\s+para|hay\s+espacio\s+para)\s+(?:(?:las|la|crianza\s+de)\s+)?mascotas?"
+                     r"|mascotas?\s*:?\s*no\b|prohibid[oa]s?\s+(?:las\s+)?mascotas|mascotas?\s+prohibid"),
+}
 DISTRITO_MAP = {"Santiago de Surco": "Surco", "Magdalena del Mar": "Magdalena", "Jesús María": "Jesus Maria",
                 "Cercado de Lima": "Lima", "Barranca": "Barranco"}
 # Nombres con que los portales publican algunos distritos en capturas posteriores. Solo se aplican a capturas
@@ -69,29 +81,35 @@ def recuperar_del_texto(df):
     return df
 
 
-def extraer_amenidades(df):
-    """Amenidades por palabras clave, con las negaciones de pet_friendly (Semana 7, celda 13)."""
+def extraer_amenidades(df, negaciones_estrictas=False):
+    """Amenidades por palabras clave, con las negaciones de pet_friendly (Semana 7, celda 13).
+
+    negaciones_estrictas: suma NEGACIONES_ESTRICTAS; se usa con capturas nuevas, nunca para reproducir septiembre.
+    """
     texto = df["texto_amenidades_crudo"].fillna("").str.lower()
     for col, palabras in AMENITY_KEYWORDS.items():
         if df[col].isna().all():
             df[col] = texto.apply(lambda t, kws=palabras: 1 if any(k in t for k in kws) else 0)
             if col in AMENITY_NEGATIONS:
                 df.loc[texto.str.contains(AMENITY_NEGATIONS[col], regex=True), col] = 0
+            if negaciones_estrictas and col in NEGACIONES_ESTRICTAS:
+                df.loc[texto.str.contains(NEGACIONES_ESTRICTAS[col], regex=True), col] = 0
     if "cochera" not in df.columns or df["cochera"].isna().all():
         df["cochera"] = np.where(df["estacionamientos"].notna(), (df["estacionamientos"] > 0).astype(int), np.nan)
     return df
 
 
-def procesar(crudo, distritos_conocidos=None, alias_portal=False):
+def procesar(crudo, distritos_conocidos=None, alias_portal=False, negaciones_estrictas=False):
     """Captura cruda → filas válidas con las columnas del modelo.
 
     distritos_conocidos: distritos con los que se entrenó el modelo (en minúsculas o con su nombre).
     Con una captura nueva se pasan siempre: los demás van a "Otros", como en el entrenamiento.
     Sin ellos se recalcula el umbral de 20 anuncios, que es lo que hizo la Semana 7 con septiembre.
     alias_portal: corrige los nombres de ALIAS_PORTAL; se usa con capturas nuevas, nunca para reproducir septiembre.
+    negaciones_estrictas: detecta "no mascotas" aunque venga pegado a otra palabra (ver NEGACIONES_ESTRICTAS).
     """
     df = recuperar_del_texto(crudo.copy())
-    df = extraer_amenidades(df)
+    df = extraer_amenidades(df, negaciones_estrictas)
     for col in ["antiguedad", "mantenimiento", "estacionamientos", "banos", "area_construida"]:
         df[f"{col}_imputado"] = df[col].isna().astype(int)
     # Anuncios de venta y alquiler: el precio capturado es de venta (Semana 7, celda 19).

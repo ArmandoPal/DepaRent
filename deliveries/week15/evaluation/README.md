@@ -15,7 +15,7 @@ de precio proporcional.
 | Coherencia de la app de punta a punta | `deliveries/week12/resultados/coherencia_producto.json` |
 | Recomendador según el perfil del inquilino (modelo 7) | `deliveries/week12/EvaluationReport.md` §6b · `deliveries/week12/resultados/recomendador_*.{json,csv}` |
 | Casos de estudio | `deliveries/week12/EvaluationReport.md` §7 · `deliveries/week12/resultados/casos_estudio.json` |
-| Pruebas automáticas (47) | `deliveries/week10/code/test_*.py` |
+| Pruebas automáticas (65) | `deliveries/week10/code/test_*.py` |
 | Pruebas con usuarios | `deliveries/week12/plantilla_observaciones.csv` (pendiente) |
 
 ## Cifras para el informe y la presentación
@@ -28,4 +28,4 @@ de precio proporcional.
 | Perfiles | k = 4, silhouette 0.21, ARI 1.00 |
 | SARIMA | MAE mediano 2.00 S/ por m² contra 2.54 del naive estacional y 2.40 del naive |
 | Coherencia | 297 de 297 análisis cumplen las 13 reglas |
-| Recomendador (60 perfiles de prueba) | precision@12 82% contra 18–24% de los órdenes del buscador y 25% al azar · 3,193 motivos verificados, 100% correctos |
+| Recomendador (60 perfiles de prueba) | precision@12 82% contra 17–24% de los órdenes del buscador y 25% al azar · 3,187 motivos verificados, 100% correctos |

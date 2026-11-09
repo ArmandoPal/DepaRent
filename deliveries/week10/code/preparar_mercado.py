@@ -35,7 +35,7 @@ MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto
 def preparar(archivo_captura):
     distritos = joblib.load(ROOT / "models/modelo_docente.joblib")["distritos"]
     crudo = pd.read_csv(archivo_captura, low_memory=False)
-    limpio = procesar(crudo, distritos_conocidos=distritos, alias_portal=True)
+    limpio = procesar(crudo, distritos_conocidos=distritos, alias_portal=True, negaciones_estrictas=True)
     # Un anuncio por posible inmueble: el mismo departamento aparece en Adondevivir y en Urbania.
     limpio["_grupo"] = grupos_inmueble(limpio)
     unicos = limpio.drop_duplicates("_grupo").reset_index(drop=True)

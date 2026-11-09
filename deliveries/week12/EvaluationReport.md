@@ -228,22 +228,28 @@ se compara con los órdenes que ya ofrece el buscador y con un orden al azar.
 
 | Orden de los 12 primeros | precision@12 (cumple todo) | Requisitos cumplidos | nDCG@12 | Perfiles con al menos 1 que cumple todo | Distritos distintos |
 |---|---:|---:|---:|---:|---:|
-| **Recomendador** | **81.8%** | **94.3%** | **0.975** | **98.3%** | 5.1 |
-| Al azar (promedio de 30) | 25.0% | 63.3% | 0.650 | 83.2% | 5.9 |
-| Buscador: más barato que el estimado | 23.9% | 60.2% | 0.624 | 78.3% | 4.1 |
-| Buscador: mayor área | 21.9% | 60.1% | 0.624 | 68.3% | 5.1 |
-| Buscador: menor precio | 18.1% | 51.6% | 0.528 | 55.0% | 4.4 |
+| **Recomendador** | **81.7%** | **94.2%** | **0.974** | **98.3%** | 5.1 |
+| Al azar (promedio de 30) | 25.0% | 63.3% | 0.650 | 83.3% | 5.9 |
+| Buscador: más barato que el estimado | 24.2% | 60.4% | 0.625 | 78.3% | 4.2 |
+| Buscador: mayor área | 22.1% | 60.1% | 0.624 | 68.3% | 5.0 |
+| Buscador: menor precio | 17.2% | 51.3% | 0.525 | 55.0% | 4.5 |
 
 Por tipo de hogar (precision@12): estudiante 91%, persona mayor 90%, con mascota 88%, familia 74%, pareja 66%;
-los órdenes del buscador quedan entre 0% y 49%. Ordenar por menor precio es el peor para una familia (0%): los
+los órdenes del buscador quedan entre 0% y 50%. Ordenar por menor precio es el peor para una familia (0%): los
 más baratos son los más chicos. La precisión baja cuando hay pocos candidatos que cumplan todo, por ejemplo una
 pareja con S/ 1,800 en Barranco, Miraflores o San Isidro (19 candidatos): ahí el sistema muestra lo más cercano
 y lo que falta aparece en "Ten en cuenta".
 
-**Explicaciones verdaderas.** Se comprobaron contra los datos del anuncio los **3,193 motivos** "Tiene:" de las 60
+**Explicaciones verdaderas.** Se comprobaron contra los datos del anuncio los **3,187 motivos** "Tiene:" de las 60
 listas (dormitorios, m², paradero, amenidades, distancia al trabajo, porcentaje frente al estimado): **100% correctos**.
+Esto comprueba que la app no inventa motivos, no que el dato sea correcto: si la regla que lee el texto del anuncio
+se equivoca, el motivo también. Al revisar a mano un anuncio de Barranco marcado "admite mascotas", su texto decía
+"no Mascotasdistribución" (el portal pega las palabras) y la regla de la Semana 7 no lo leía como negación. Con una
+regla más estricta, solo para capturas nuevas (`NEGACIONES_ESTRICTAS` en `preprocesar.py`), se corrigieron **29 de
+los 496** anuncios marcados así (5.8%); la reproducción de septiembre no cambia. Las cifras de esta sección ya usan
+el mercado corregido.
 
-**Cobertura y diversidad.** Entre los 60 perfiles se recomendaron 248 anuncios distintos (8.1% del mercado); cada
+**Cobertura y diversidad.** Entre los 60 perfiles se recomendaron 249 anuncios distintos (8.1% del mercado); cada
 lista trae 5 distritos en promedio, igual que el orden por área y más que el orden por precio.
 
 **Límites de esta evaluación.** Los requisitos son distintos de los pesos, pero miran los mismos atributos: la

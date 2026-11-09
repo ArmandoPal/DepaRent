@@ -47,6 +47,33 @@ class PreprocesarTest(unittest.TestCase):
         # Sin alias (como en el entrenamiento), Magdalena Vieja no es un distrito del modelo: va a "Otros".
         self.assertEqual(procesar(fila, distritos_conocidos=self.artefacto["distritos"]).loc[0, "distrito_norm"], "Otros")
 
+    def test_negaciones_de_mascotas_en_capturas_nuevas(self):
+        fila = self.crudo.iloc[[0]].copy()
+        fila[["precio_soles", "area_total", "latitud", "longitud"]] = [2000, 60, -12.1, -77.0]
+        fila[["titulo", "caracteristicas"]] = ["Depa", ""]
+        for col in ("pet_friendly", "texto_amenidades_crudo"):
+            fila = fila.drop(columns=col, errors="ignore")
+        fila["pet_friendly"] = float("nan")
+        casos = {
+            # Textos reales de la captura del 9-nov: el portal pega las palabras.
+            "bicicletas- no Mascotasdistribución: - cocina": 0,
+            "1 mes de adelantono mascotas.": 0,
+            "no aceptan mascotaseste departamento es ideal": 0,
+            "no se permiten fumadores, ni mascotas.": 0,
+            "- no apto para mascotas. - áreas comunes": 0,
+            "no está permitido las mascotas.": 0,
+            "juego de niñosno pet friendlyno estacionamiento": 0,
+            # Los que sí admiten, aunque tengan un "no" cerca.
+            "se permite mascotas (no gatos) con depósito": 1,
+            "se permiten mascotas tranquilas no cachorros": 1,
+            "no cuenta con cochera, tus mascotas son bienvenidas": 1,
+            "edificio pet friendly con piscina": 1,
+        }
+        for texto, esperado in casos.items():
+            fila["descripcion"] = texto
+            nuevo = procesar(fila, distritos_conocidos=self.artefacto["distritos"], negaciones_estrictas=True)
+            self.assertEqual(nuevo.loc[0, "pet_friendly"], esperado, texto)
+
     def test_un_distrito_desconocido_va_a_otros(self):
         fila = self.crudo.iloc[[0]].copy()
         fila["distrito"] = "Pachacámac"

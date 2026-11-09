@@ -8,34 +8,34 @@
       "precision": 0.25,
       "cumplimiento": 0.633,
       "ndcg": 0.65,
-      "acierto": 0.832,
-      "distritos": 5.87
+      "acierto": 0.833,
+      "distritos": 5.853
     },
     "buscador_area": {
-      "precision": 0.219,
+      "precision": 0.221,
       "cumplimiento": 0.601,
       "ndcg": 0.624,
       "acierto": 0.683,
-      "distritos": 5.1
+      "distritos": 5.033
     },
     "buscador_oportunidad": {
-      "precision": 0.239,
-      "cumplimiento": 0.602,
-      "ndcg": 0.624,
+      "precision": 0.242,
+      "cumplimiento": 0.604,
+      "ndcg": 0.625,
       "acierto": 0.783,
-      "distritos": 4.067
+      "distritos": 4.2
     },
     "buscador_precio": {
-      "precision": 0.181,
-      "cumplimiento": 0.516,
-      "ndcg": 0.528,
+      "precision": 0.172,
+      "cumplimiento": 0.513,
+      "ndcg": 0.525,
       "acierto": 0.55,
-      "distritos": 4.4
+      "distritos": 4.5
     },
     "recomendador": {
-      "precision": 0.818,
-      "cumplimiento": 0.943,
-      "ndcg": 0.975,
+      "precision": 0.817,
+      "cumplimiento": 0.942,
+      "ndcg": 0.974,
       "acierto": 0.983,
       "distritos": 5.117
     }
@@ -57,10 +57,10 @@
     },
     "mascota": {
       "azar": 0.352,
-      "buscador_area": 0.451,
-      "buscador_oportunidad": 0.486,
-      "buscador_precio": 0.333,
-      "recomendador": 0.882
+      "buscador_area": 0.458,
+      "buscador_oportunidad": 0.5,
+      "buscador_precio": 0.292,
+      "recomendador": 0.875
     },
     "mayor": {
       "azar": 0.169,
@@ -79,27 +79,27 @@
   },
   "precision_por_variante": {
     "completo": {
-      "azar": 0.194,
-      "buscador_area": 0.172,
-      "buscador_oportunidad": 0.178,
-      "buscador_precio": 0.122,
-      "recomendador": 0.786
+      "azar": 0.193,
+      "buscador_area": 0.175,
+      "buscador_oportunidad": 0.181,
+      "buscador_precio": 0.114,
+      "recomendador": 0.783
     },
     "simple": {
-      "azar": 0.306,
+      "azar": 0.308,
       "buscador_area": 0.267,
-      "buscador_oportunidad": 0.3,
-      "buscador_precio": 0.239,
+      "buscador_oportunidad": 0.303,
+      "buscador_precio": 0.231,
       "recomendador": 0.85
     }
   },
   "cobertura_recomendador": {
-    "anuncios_distintos": 248,
+    "anuncios_distintos": 249,
     "mercado": 3074,
     "porcentaje": 8.1
   },
   "explicaciones": {
-    "verdaderos": 3193,
+    "verdaderos": 3187,
     "falsos": 0,
     "sin_regla": 0,
     "ejemplos_falsos": [],
