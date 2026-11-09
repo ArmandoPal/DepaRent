@@ -14,7 +14,7 @@ UMBRAL_VALORACION = 0.10
 VALORACIONES = {"por_debajo": "Por debajo del estimado", "en_linea": "En línea con el estimado",
                 "por_encima": "Por encima del estimado"}
 AVISO = ("Anuncios del {captura} sin dirección ni contacto en DepaRent: es una foto del mercado ese día, no una lista de ofertas vigentes. "
-         "La comparación es orientativa: el modelo se entrenó con anuncios de septiembre y se validó con los de octubre.")
+         "La comparación es orientativa: el modelo se entrenó con anuncios de septiembre y se validó con los de {mes_validacion}.")
 
 
 def valoracion(relacion):
@@ -63,7 +63,7 @@ def filtrar(tabla, filtros):
     return tabla[mascara]
 
 
-def buscar(mercado, propios, filtros, limite=24, captura=""):
+def buscar(mercado, propios, filtros, limite=24, captura="", mes_validacion="octubre"):
     """mercado: construir_mercado(); propios: DataFrame con las mismas columnas para los publicados en DepaRent."""
     orden = filtros.get("orden") or "precio"
     if orden not in ORDENES:
@@ -90,7 +90,7 @@ def buscar(mercado, propios, filtros, limite=24, captura=""):
                    "precio_p75_soles": float(np.percentile(precios, 75)),
                    "por_debajo_del_estimado": int((encontrados["relacion_estimado"] < 1 - UMBRAL_VALORACION).sum())}
     resultados = [formatear(fila) for fila in encontrados.head(limite).to_dict("records")]
-    return {"total": int(len(encontrados)), "conteos": conteos, "resumen": resumen, "resultados": resultados, "aviso": AVISO.format(captura=captura)}
+    return {"total": int(len(encontrados)), "conteos": conteos, "resumen": resumen, "resultados": resultados, "aviso": AVISO.format(captura=captura, mes_validacion=mes_validacion)}
 
 
 CAMPOS_VIVIENDA = ["distrito_norm", "area_total", "dormitorios", "banos", "estacionamientos", "antiguedad", "mantenimiento", *BINARY]

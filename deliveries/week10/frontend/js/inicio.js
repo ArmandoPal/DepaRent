@@ -18,11 +18,12 @@ const LETRAS = ["D", "e", "p", "a", "R", "e", "n", "t"];
 
 export async function vistaInicio(main) {
   const opciones = await obtenerOpciones().catch(() => null);
-  // Mercado: la captura que muestra la app. Modelo: entrenado con septiembre y validado con octubre.
+  // Mercado: la captura que muestra la app. Modelo: entrenado con septiembre y validado con la captura más reciente.
   const anuncios = opciones ? num(opciones.mercado.anuncios) : "miles de";
   const captura = opciones?.mercado.captura_texto || "la última captura";
   const val = opciones?.validacion;
-  const errorTexto = val ? `Error medio en ${num(val.evaluados)} anuncios nuevos de octubre: <b>${soles(val.mae_soles)} al mes</b>.`
+  const mesVal = val?.mes || "octubre";
+  const errorTexto = val ? `Error medio en ${num(val.evaluados)} anuncios nuevos de ${mesVal}: <b>${soles(val.mae_soles)} al mes</b>.`
     : "Error medio medido en 629 anuncios de prueba: <b>S/ 553 al mes</b>.";
   const conCuenta = Boolean(sesion());
   main.innerHTML = `
@@ -51,7 +52,7 @@ export async function vistaInicio(main) {
           <output class="cartel-price" aria-live="polite"><span data-precio><span class="moneda">S/</span>…</span><small>al mes</small></output>
           <p class="cartel-range" data-rango>Calculando con el modelo…</p>
           <a class="cartel-link" href="#/probar">Ver el análisis completo</a>
-          <p class="cartel-foot">Informes: modelo DepaRent, entrenado con anuncios de septiembre y validado con los de octubre</p>
+          <p class="cartel-foot">Informes: modelo DepaRent, entrenado con anuncios de septiembre y validado con los de ${mesVal}</p>
         </form>
         </div>
       </section>
@@ -94,8 +95,8 @@ export async function vistaInicio(main) {
           <h2 id="titulo-medimos">Lo que medimos</h2>
           <img class="proof-foto" src="assets/buildings-in-miraflores-district-lima-peru.jpg" width="1920" height="1440" loading="lazy" decoding="async"
             alt="Edificios de departamentos sobre el acantilado de Miraflores, bajo el cielo gris de Lima">
-          <p>Modelo entrenado con 3,128 anuncios de septiembre&nbsp;·&nbsp;${val ? `probado con ${num(val.evaluados)} anuncios nuevos de octubre&nbsp;·&nbsp;` : ""}3,233 paraderos de la ATU&nbsp;·&nbsp;13 series del BCRP</p>
-          <p>Error medio de S/ 553 en septiembre${val ? ` y de ${soles(val.mae_soles)} en octubre` : ""}&nbsp;·&nbsp;el rango cubrió ${val ? Math.round(val.cobertura * 100) : 92} de cada 100 precios${val ? " de octubre" : " de prueba"}&nbsp;·&nbsp;8 comparables por departamento</p>
+          <p>Modelo entrenado con 3,128 anuncios de septiembre&nbsp;·&nbsp;${val ? `probado con ${num(val.evaluados)} anuncios nuevos de ${mesVal}&nbsp;·&nbsp;` : ""}3,233 paraderos de la ATU&nbsp;·&nbsp;13 series del BCRP</p>
+          <p>Error medio de S/ 553 en septiembre${val ? ` y de ${soles(val.mae_soles)} en ${mesVal}` : ""}&nbsp;·&nbsp;el rango cubrió ${val ? Math.round(val.cobertura * 100) : 92} de cada 100 precios${val ? ` de ${mesVal}` : " de prueba"}&nbsp;·&nbsp;8 comparables por departamento</p>
           <h3>Y lo que no</h3>
           <p>Son precios pedidos, no contratos&nbsp;·&nbsp;la búsqueda es una foto del mercado del ${captura}&nbsp;·&nbsp;paraderos del inventario de 2021&nbsp;·&nbsp;no es una tasación</p>
         </div>

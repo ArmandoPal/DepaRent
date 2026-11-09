@@ -41,9 +41,12 @@ DEMOS = json.loads((ROOT / "data/demo_casos.json").read_text(encoding="utf-8"))
 MERCADO = construir_mercado(MODELO_PRECIO, MODELO_PERFIL)
 # De qué captura diaria viene el mercado de la app (preparar_mercado.py).
 MERCADO_INFO = json.loads((ROOT / "data/mercado.json").read_text(encoding="utf-8"))
-# Validación del modelo congelado con anuncios posteriores (validar_octubre.py), si ya se corrió.
-_VALIDACION = ROOT / "resultados/validacion_octubre/metricas.json"
-VALIDACION = json.loads(_VALIDACION.read_text(encoding="utf-8")) if _VALIDACION.exists() else None
+# Validación del modelo congelado con anuncios posteriores (validar_octubre.py): la de la captura más reciente
+# entre resultados/validacion_*/metricas.json, si ya se corrió alguna.
+MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+_VALIDACIONES = [json.loads(p.read_text(encoding="utf-8")) for p in (ROOT / "resultados").glob("validacion_*/metricas.json")]
+VALIDACION = max(_VALIDACIONES, key=lambda v: v["captura"]) if _VALIDACIONES else None
+MES_VALIDACION = MESES[int(VALIDACION["captura"][5:7]) - 1] if VALIDACION else "octubre"
 # Enlace al anuncio original, solo para la ficha de los anuncios de mercado (decisión del equipo).
 PORTALES = {"www.adondevivir.com": "Adondevivir", "adondevivir.com": "Adondevivir", "urbania.pe": "Urbania", "www.urbania.pe": "Urbania"}
 FRONTEND = ROOT / "frontend"
@@ -256,7 +259,7 @@ def opciones():
         "mercado": {"anuncios": int(len(MERCADO)), "distritos": int(MERCADO["distrito_norm"].nunique()),
                     "captura": MERCADO_INFO["captura"], "captura_texto": MERCADO_INFO["captura_texto"]},
         "validacion": None if VALIDACION is None else {
-            "captura": VALIDACION["captura"], "evaluados": VALIDACION["flujo"]["evaluados"],
+            "captura": VALIDACION["captura"], "mes": MES_VALIDACION, "evaluados": VALIDACION["flujo"]["evaluados"],
             "mae_soles": VALIDACION["metricas_octubre"]["HistGradientBoosting"]["MAE_soles"],
             "cobertura": VALIDACION["intervalo"]["cobertura_octubre"]},
     })
@@ -375,7 +378,7 @@ def retirar_publicacion(departamento_id: int, usuario=Depends(usuario_actual), c
 @app.post("/api/buscar")
 def buscar_departamentos(filtros: Filtros, conexion=Depends(base_datos)):
     datos = filtros.model_dump()
-    return limpiar(buscar(MERCADO, tabla_publicados(conexion), datos, limite=datos.pop("limite"), captura=MERCADO_INFO["captura_texto"]))
+    return limpiar(buscar(MERCADO, tabla_publicados(conexion), datos, limite=datos.pop("limite"), captura=MERCADO_INFO["captura_texto"], mes_validacion=MES_VALIDACION))
 
 
 # ---------- Ficha de un anuncio para inquilinos ----------
@@ -410,7 +413,7 @@ def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
                    "nivel": nivel_accesibilidad(distancia, fila["paraderos_500m"], red["ref_500m_mediana"]),
                    "porcentaje_anuncios_mas_lejos": round(float(mas_lejos), 1)},
         "tendencia": {k: tendencia[k] for k in ("distrito", "serie_propia", "tendencia", "cambio_porcentaje")},
-        "aviso": AVISO_MERCADO.format(captura=MERCADO_INFO["captura_texto"]),
+        "aviso": AVISO_MERCADO.format(captura=MERCADO_INFO["captura_texto"], mes_validacion=MES_VALIDACION),
     })
 
 
