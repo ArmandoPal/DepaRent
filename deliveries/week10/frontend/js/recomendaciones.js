@@ -1,9 +1,10 @@
 import { llamar, obtenerOpciones } from "./api.js";
-import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD } from "./util.js";
+import { cerrarSesion } from "./vistas.js";
+import { $, $$, esc, num, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD } from "./util.js";
 
-/* ---------- Recomendados para ti: el sistema elige según el perfil del inquilino (modelo 7) ---------- */
+/* ---------- Inquilino (modelo 7): cuestionario → mi perfil → recomendaciones → guardados ----------
+   El perfil y los guardados viven en la cuenta (API), así se ven desde cualquier dispositivo. */
 
-const CLAVE = "deparent.perfil-inquilino";
 const DESCRIPCION_HOGAR = {
   familia: "Pesan 3 dormitorios, área, juegos infantiles, áreas verdes, seguridad y cochera.",
   pareja: "Pesan 1 o 2 dormitorios, balcón o terraza, gimnasio y parrilla.",
@@ -12,30 +13,22 @@ const DESCRIPCION_HOGAR = {
   mayor: "Pesan el ascensor, el paradero cercano y la seguridad.",
 };
 
-function leerPerfil() {
-  try { return JSON.parse(localStorage.getItem(CLAVE)) || null; } catch { return null; }
-}
-function guardarPerfil(perfil) {
-  try { localStorage.setItem(CLAVE, JSON.stringify(perfil)); } catch { /* sin almacenamiento: el perfil dura esta visita */ }
-}
-
+const irA = (ruta) => { location.hash = ruta; };
 const filaTitulo = (h1, sub, acciones = "") =>
   `<div class="title-row"><div><h1>${h1}</h1>${sub ? `<p class="sub">${sub}</p>` : ""}</div>${acciones ? `<div class="title-actions">${acciones}</div>` : ""}</div>`;
 
-export async function vistaRecomendaciones(lienzo, params) {
-  const op = await obtenerOpciones();
-  let perfil = leerPerfil();
-  if (params.get("ver") === "guardados") return mostrarRecomendaciones(lienzo, op, perfil || {}, "guardados");
-  if (!perfil || params.get("editar") === "1") return formularioPerfil(lienzo, op, perfil);
-  return mostrarRecomendaciones(lienzo, op, perfil);
-}
+// El perfil que se envía al recomendador: sin los campos que solo sirven para mostrarlo.
+const paraRecomendar = ({ actualizado, lugar_nombre, ...perfil }) => perfil;
 
-function formularioPerfil(lienzo, op, previo) {
-  const p = previo || { hogar: "", prioridades: [], distritos: [] };
+/* ---------- 1. Cuestionario ---------- */
+
+export async function vistaEditarPerfil(lienzo) {
+  const [op, { perfil }] = await Promise.all([obtenerOpciones(), llamar("/api/perfil")]);
+  const p = perfil || { hogar: "", prioridades: [], distritos: [] };
   const hogares = op.recomendador.hogares, prioridades = op.recomendador.prioridades;
   const distritos = op.distritos.filter((d) => d !== "otros");
   lienzo.innerHTML = `
-    ${filaTitulo("Recomendados para ti", "Cuéntanos quién eres y qué necesitas. El sistema elige los departamentos del mercado que mejor te calzan y te dice qué tiene cada uno.")}
+    ${filaTitulo(perfil ? "Editar mi perfil" : "Cuéntanos qué buscas", "Con estas respuestas el sistema elige los departamentos del mercado que mejor te calzan.")}
     <form class="panel perfil-form" novalidate>
       <fieldset class="perfil-grupo"><legend>¿Para quién es el departamento?</legend>
         <div class="hogares">${Object.entries(hogares).map(([k, nombre]) => `
@@ -64,10 +57,9 @@ function formularioPerfil(lienzo, op, previo) {
         <ul class="dir-results" hidden></ul>
         <p class="hint" data-lugar-msg>${p.lugar ? `Marcado: ${esc(p.lugar_nombre || "ubicación elegida")}.` : "Escribe la dirección y elige el resultado."}</p>
       </fieldset>
-      <div class="form-actions"><button class="btn primary" type="submit">Ver mis recomendaciones</button>
-        ${previo ? '<a class="btn ghost" href="#/para-ti">Cancelar</a>' : ""}</div>
+      <div class="form-actions">${perfil ? '<a class="btn ghost" href="#/mi-perfil">Cancelar</a>' : ""}
+        <button class="btn primary" type="submit">Guardar mi perfil</button></div>
       <div class="form-msg" role="alert"></div>
-      <p class="panel-note">Tu perfil se guarda solo en este navegador. No necesitas cuenta.</p>
     </form>`;
   const form = $(".perfil-form", lienzo);
   let lugar = p.lugar || null, lugarNombre = p.lugar_nombre || "";
@@ -101,12 +93,13 @@ function formularioPerfil(lienzo, op, previo) {
     lugar = null; lugarNombre = ""; entrada.value = ""; avisoLugar.textContent = "Sin lugar de trabajo o estudio."; e.currentTarget.remove();
   });
   $$('input[name="prioridades"]', form).forEach((c) => c.addEventListener("change", () => {
-    const marcadas = $$('input[name="prioridades"]:checked', form);
-    if (marcadas.length > 3) { c.checked = false; mensaje($(".form-msg", form), "Elige como máximo 3 prioridades."); }
-    else mensaje($(".form-msg", form), "");
+    if ($$('input[name="prioridades"]:checked', form).length > 3) {
+      c.checked = false;
+      mensaje($(".form-msg", form), "Elige como máximo 3 prioridades.");
+    } else mensaje($(".form-msg", form), "");
   }));
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const hogar = $('input[name="hogar"]:checked', form)?.value;
     if (!hogar) return mensaje($(".form-msg", form), "Elige para quién es el departamento.");
@@ -115,104 +108,120 @@ function formularioPerfil(lienzo, op, previo) {
       hogar, presupuesto_max: max === "" ? null : Number(max), dormitorios_min: dorm === "" ? null : Number(dorm),
       prioridades: $$('input[name="prioridades"]:checked', form).map((c) => c.value),
       distritos: $$('input[name="distritos"]:checked', form).map((c) => c.value),
-      lugar, lugar_nombre: lugarNombre,
+      lugar, lugar_nombre: lugarNombre || null,
     };
     if (nuevo.presupuesto_max != null && (nuevo.presupuesto_max < 300 || nuevo.presupuesto_max > 50000)) {
       return mensaje($(".form-msg", form), "El presupuesto debe estar entre S/ 300 y S/ 50,000.");
     }
-    guardarPerfil(nuevo);
-    if (location.hash === "#/para-ti") mostrarRecomendaciones(lienzo, op, nuevo);
-    else location.hash = "#/para-ti";
+    try {
+      await conBoton($('button[type="submit"]', form), "Guardando…", () => llamar("/api/perfil", { metodo: "PUT", cuerpo: nuevo }));
+      irA("#/mi-perfil");
+    } catch (err) {
+      mensaje($(".form-msg", form), err.message);
+    }
   });
 }
 
-async function mostrarRecomendaciones(lienzo, op, perfil, pestana = "recomendados") {
-  const hogar = op.recomendador.hogares[perfil.hogar] || "";
-  const guardados = leerGuardados();
+/* ---------- 2. Mi perfil: datos de la cuenta y lo que el sistema entendió del cuestionario ---------- */
+
+export async function vistaMiPerfil(lienzo) {
+  const [op, { usuario, perfil }] = await Promise.all([obtenerOpciones(), llamar("/api/perfil")]);
   lienzo.innerHTML = `
-    ${filaTitulo("Recomendados para ti", "Elegidos por el sistema según tu perfil. Guarda los que te gusten para compararlos después.",
-      '<a class="btn" href="#/para-ti?editar=1">Editar mi perfil</a>')}
-    ${perfil.hogar ? tarjetaPerfil(op, perfil, hogar) : ""}
-    <nav class="tabs reco-tabs" aria-label="Recomendados o guardados">
-      <a href="#/para-ti" ${pestana === "recomendados" ? 'aria-current="page"' : ""}>Recomendados</a>
-      <a href="#/para-ti?ver=guardados" ${pestana === "guardados" ? 'aria-current="page"' : ""}>Guardados <span data-n-guardados>(${guardados.length})</span></a>
-    </nav>
-    <div data-recos aria-busy="true"><section class="panel"><p class="skeleton">Buscando los departamentos que mejor te calzan…</p></section></div>`;
-  const destino = $("[data-recos]", lienzo);
-  if (pestana === "guardados") {
-    pintarGuardados(destino, lienzo);
-    destino.removeAttribute("aria-busy");
-    return;
-  }
-  const { lugar_nombre, ...cuerpo } = perfil;
-  try {
-    const r = await llamar("/api/recomendar", { cuerpo: { ...cuerpo, limite: 12 } });
-    destino.innerHTML = r.recomendaciones.length ? `
-      <p class="sub reco-count">${num(r.candidatos)} departamentos cumplen tu presupuesto y tus filtros. Estos ${r.recomendaciones.length} son los que mejor te calzan, del más al menos recomendado.</p>
-      <ol class="reco-list">${r.recomendaciones.map((x, i) => tarjeta(x, i)).join("")}</ol>
-      <p class="panel-note">${esc(r.aviso)} El orden combina lo que suele necesitar tu tipo de hogar, tus prioridades,
-        la cercanía a tu trabajo o estudio y el precio frente al estimado del modelo.</p>`
-      : `<section class="panel"><div class="empty"><p>Ningún departamento cumple tu presupuesto y tus filtros. Prueba subir el presupuesto, quitar distritos o bajar el mínimo de dormitorios.</p>
-          <a class="btn primary" href="#/para-ti?editar=1">Editar mi perfil</a></div></section>`;
-    activarGuardar(destino, lienzo, r.recomendaciones);
-  } catch (err) {
-    destino.innerHTML = `<section class="panel"><div class="empty"><p>No pudimos calcular tus recomendaciones. ${esc(err.message)}</p>
-      <a class="btn" href="#/para-ti?editar=1">Revisar mi perfil</a></div></section>`;
-  } finally {
-    destino.removeAttribute("aria-busy");
-  }
+    ${filaTitulo("Mi perfil", "Tus datos y lo que el sistema usa para recomendarte departamentos.")}
+    <section class="panel perfil-card" aria-label="Cuenta">
+      <h2>Cuenta</h2>
+      <dl><div><dt>Nombre</dt><dd>${esc(usuario.nombre)}</dd></div><div><dt>Correo</dt><dd>${esc(usuario.email)}</dd></div></dl>
+    </section>
+    ${perfil ? `
+    <section class="panel perfil-card" aria-label="Perfil de búsqueda">
+      <div class="perfil-head"><h2>Lo que buscas</h2><a class="btn" href="#/mi-perfil/editar">Editar</a></div>
+      <dl>${filasPerfil(op, perfil).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+    </section>
+    <div class="perfil-actions"><a class="btn primary" href="#/para-ti">Ver mis recomendaciones</a>
+      <a class="btn" href="#/para-ti?ver=guardados">Mis guardados</a></div>`
+    : `<section class="panel"><div class="empty"><p>Todavía no nos cuentas qué buscas. Responde unas preguntas y te recomendamos departamentos.</p>
+        <a class="btn primary" href="#/mi-perfil/editar">Empezar</a></div></section>`}
+    <p class="perfil-foot">¿También alquilas un departamento? <a href="#/mis-departamentos">Mis departamentos</a> ·
+      <button class="link-btn" type="button" data-salir>Cerrar sesión</button></p>`;
+  $("[data-salir]", lienzo).addEventListener("click", cerrarSesion);
 }
 
-/* Paso "perfil": lo que el sistema entendió del cuestionario y qué va a priorizar. */
-function tarjetaPerfil(op, perfil, hogar) {
-  const filas = [
-    ["Hogar", `${hogar}. ${DESCRIPCION_HOGAR[perfil.hogar] || ""}`],
+function filasPerfil(op, perfil) {
+  return [
+    ["Hogar", `${op.recomendador.hogares[perfil.hogar] || ""}. ${DESCRIPCION_HOGAR[perfil.hogar] || ""}`],
     ["Presupuesto", perfil.presupuesto_max ? `hasta ${soles(perfil.presupuesto_max)} al mes` : "sin tope"],
     ["Dormitorios", perfil.dormitorios_min ? `${perfil.dormitorios_min} o más` : "según tu hogar"],
     ["Te importa", perfil.prioridades?.length ? perfil.prioridades.map((k) => op.recomendador.prioridades[k]).join(", ") : "sin prioridades marcadas"],
     ["Distritos", perfil.distritos?.length ? perfil.distritos.map(titulo).join(", ") : "todos"],
     ["Trabajo o estudio", perfil.lugar ? (perfil.lugar_nombre || "ubicación marcada") : "no indicado"],
   ];
-  return `<section class="panel perfil-card" aria-label="Tu perfil">
-    <h2>Tu perfil</h2>
-    <dl>${filas.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
-  </section>`;
 }
 
-/* ---------- Guardados: se quedan en este navegador ---------- */
-const CLAVE_GUARDADOS = "deparent.guardados";
-function leerGuardados() {
-  try { return JSON.parse(localStorage.getItem(CLAVE_GUARDADOS)) || []; } catch { return []; }
-}
-function escribirGuardados(lista) {
-  try { localStorage.setItem(CLAVE_GUARDADOS, JSON.stringify(lista)); } catch { /* sin almacenamiento */ }
+/* ---------- 3. Recomendaciones y 4. Guardados ---------- */
+
+export async function vistaRecomendaciones(lienzo, params) {
+  const [{ perfil }, guardados] = await Promise.all([llamar("/api/perfil"), llamar("/api/guardados")]);
+  if (!perfil) return irA("#/mi-perfil/editar");
+  const pestana = params.get("ver") === "guardados" ? "guardados" : "recomendados";
+  lienzo.innerHTML = `
+    ${filaTitulo("Recomendados para ti", "Elegidos según tu perfil. Guarda los que te gusten para compararlos después.",
+      '<a class="btn" href="#/mi-perfil">Mi perfil</a>')}
+    <nav class="tabs reco-tabs" aria-label="Recomendados o guardados">
+      <a href="#/para-ti" ${pestana === "recomendados" ? 'aria-current="page"' : ""}>Recomendados</a>
+      <a href="#/para-ti?ver=guardados" ${pestana === "guardados" ? 'aria-current="page"' : ""}>Guardados <span data-n-guardados>(${guardados.length})</span></a>
+    </nav>
+    <div data-recos aria-busy="true"><section class="panel"><p class="skeleton">Buscando los departamentos que mejor te calzan…</p></section></div>`;
+  const destino = $("[data-recos]", lienzo);
+  const estado = { ids: new Set(guardados.map((g) => g.id)) };
+  try {
+    if (pestana === "guardados") {
+      pintarGuardados(destino, lienzo, guardados, estado);
+    } else {
+      const r = await llamar("/api/recomendar", { cuerpo: { ...paraRecomendar(perfil), limite: 12 } });
+      destino.innerHTML = r.recomendaciones.length ? `
+        <ol class="reco-list">${r.recomendaciones.map((x, i) => tarjeta(x, i, estado)).join("")}</ol>
+        <p class="panel-note">${esc(r.aviso)} El orden combina lo que suele necesitar tu tipo de hogar, tus prioridades,
+          la cercanía a tu trabajo o estudio y el precio frente al estimado del modelo. El esquema de cada tarjeta es referencial:
+          se dibuja con los dormitorios, baños y metros del anuncio, no es su plano real.</p>`
+        : `<section class="panel"><div class="empty"><p>Ningún departamento cumple tu presupuesto y tus filtros. Prueba subir el presupuesto, quitar distritos o bajar el mínimo de dormitorios.</p>
+            <a class="btn primary" href="#/mi-perfil/editar">Editar mi perfil</a></div></section>`;
+      activarGuardar(destino, lienzo, estado);
+    }
+  } catch (err) {
+    destino.innerHTML = `<section class="panel"><div class="empty"><p>No pudimos cargar esta sección. ${esc(err.message)}</p>
+      <a class="btn" href="#/mi-perfil">Revisar mi perfil</a></div></section>`;
+  } finally {
+    destino.removeAttribute("aria-busy");
+  }
 }
 
-function activarGuardar(destino, lienzo, datos) {
-  $$("[data-guardar]", destino).forEach((boton) => boton.addEventListener("click", () => {
-    const id = boton.dataset.guardar;
-    let lista = leerGuardados();
-    const ya = lista.some((g) => g.id === id);
-    if (ya) lista = lista.filter((g) => g.id !== id);
-    else lista = [{ ...datos.find((d) => d.id === id), guardado: Date.now() }, ...lista];
-    escribirGuardados(lista);
-    const n = $("[data-n-guardados]", lienzo);
-    if (n) n.textContent = `(${lista.length})`;
-    if (destino.dataset.vista === "guardados") return pintarGuardados(destino, lienzo);
-    boton.setAttribute("aria-pressed", String(!ya));
-    boton.textContent = ya ? "Guardar" : "Guardado";
-  }));
-}
-
-function pintarGuardados(destino, lienzo) {
-  const lista = leerGuardados();
+function pintarGuardados(destino, lienzo, lista, estado) {
   destino.dataset.vista = "guardados";
-  destino.innerHTML = lista.length ? `
-    <p class="sub reco-count">${lista.length === 1 ? "1 departamento guardado" : `${lista.length} departamentos guardados`}. Los datos son de la captura del mercado en que los guardaste.</p>
-    <ol class="reco-list">${lista.map((x, i) => tarjeta(x, i, false)).join("")}</ol>`
+  destino.innerHTML = lista.length
+    ? `<ol class="reco-list">${lista.map((x, i) => tarjeta(x, i, estado)).join("")}</ol>
+       <p class="panel-note">Cada tarjeta muestra cómo estaba el anuncio cuando lo guardaste.</p>`
     : `<section class="panel"><div class="empty"><p>Todavía no guardas ningún departamento. En Recomendados, usa "Guardar" en los que te gusten.</p>
         <a class="btn primary" href="#/para-ti">Ver recomendados</a></div></section>`;
-  activarGuardar(destino, lienzo, lista);
+  activarGuardar(destino, lienzo, estado);
+}
+
+function activarGuardar(destino, lienzo, estado) {
+  $$("[data-guardar]", destino).forEach((boton) => boton.addEventListener("click", async () => {
+    const id = boton.dataset.guardar, ya = estado.ids.has(id);
+    try {
+      const lista = await conBoton(boton, ya ? "Quitando…" : "Guardando…",
+        () => llamar(`/api/guardados/${encodeURIComponent(id)}`, { metodo: ya ? "DELETE" : "POST" }));
+      estado.ids = new Set(lista.map((g) => g.id));
+      const n = $("[data-n-guardados]", lienzo);
+      if (n) n.textContent = `(${lista.length})`;
+      if (destino.dataset.vista === "guardados") return pintarGuardados(destino, lienzo, lista, estado);
+      boton.setAttribute("aria-pressed", String(!ya));
+      boton.textContent = ya ? "Guardar" : "Guardado";
+    } catch (err) {
+      boton.textContent = "No se pudo";
+      boton.title = err.message;
+    }
+  }));
 }
 
 function yaDicha(amenidad, dichos) {
@@ -220,26 +229,57 @@ function yaDicha(amenidad, dichos) {
   return dichos.includes(a) || ((a === "balcón" || a === "terraza") && dichos.includes("balcón o terraza"));
 }
 
-function tarjeta(x, i, numerar = true) {
-  const guardado = leerGuardados().some((g) => g.id === x.id);
+function tarjeta(x, i, estado) {
   const dorm = `${num(x.dormitorios)} ${x.dormitorios === 1 ? "dormitorio" : "dormitorios"}`;
   const banos = `${num(x.banos)} ${x.banos === 1 ? "baño" : "baños"}`;
+  const guardado = estado.ids.has(x.id);
   // Todas las amenidades del anuncio, sin repetir las que ya están en "Tiene".
-  const dichos = x.motivos.join(" ").toLowerCase();
-  const amenidades = [...x.amenidades.map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()), ...x.amenidades_extra]
+  const dichos = (x.motivos || []).join(" ").toLowerCase();
+  const amenidades = [...(x.amenidades || []).map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()), ...(x.amenidades_extra || [])]
     .filter((a) => !yaDicha(a, dichos));
-  const pill = x.valoracion.startsWith("Por debajo") ? "pos" : x.valoracion.startsWith("Por encima") ? "warn" : "";
   return `<li class="reco-card">
-    <a class="reco-link" href="#/anuncio/${x.id}" aria-label="Ver ficha: ${esc(dorm)} en ${esc(titulo(x.distrito))}">
-      ${numerar ? `<span class="reco-rank" aria-label="Recomendación ${i + 1}">${i + 1}</span>` : '<span class="reco-rank" aria-hidden="true">♥</span>'}
+    <a class="reco-link" href="#/anuncio/${esc(x.id)}" aria-label="Ver ficha: ${esc(dorm)} en ${esc(titulo(x.distrito))}">
+      <span class="reco-rank" aria-label="Recomendación ${i + 1}">${i + 1}</span>
+      <figure class="reco-plano">${plano(x.dormitorios, x.banos, x.area_total)}
+        <figcaption>${num(x.area_total)} m² · referencial</figcaption></figure>
       <div class="reco-body">
         <p class="reco-title"><b>${esc(titulo(x.distrito))}</b> · ${esc(dorm)} · ${esc(banos)} · ${num(x.area_total)} m²</p>
-        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · estimado ${soles(x.precio_estimado_soles)}
-          <span class="pill ${pill}">${pct(x.diferencia_estimado_porcentaje)}</span></p>
-        ${x.motivos.length ? `<p class="reco-why"><span>Tiene:</span> ${x.motivos.map(esc).join(" · ")}</p>` : ""}
+        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · estimado ${soles(x.precio_estimado_soles)}</p>
+        ${x.motivos?.length ? `<p class="reco-why"><span>Tiene:</span> ${x.motivos.map(esc).join(" · ")}</p>` : ""}
         ${amenidades.length ? `<p class="reco-extra"><span>Amenidades:</span> ${amenidades.map(esc).join(" · ")}</p>` : ""}
-        ${x.faltas.length ? `<p class="reco-miss"><span>Ten en cuenta:</span> ${x.faltas.map(esc).join(" · ")}</p>` : ""}
+        ${x.faltas?.length ? `<p class="reco-miss"><span>Ten en cuenta:</span> ${x.faltas.map(esc).join(" · ")}</p>` : ""}
       </div>
     </a>
     <button class="btn reco-save" type="button" data-guardar="${esc(x.id)}" aria-pressed="${guardado}">${guardado ? "Guardado" : "Guardar"}</button></li>`;
+}
+
+/* Esquema de distribución dibujado con los datos del anuncio (no es el plano real).
+   El tamaño del contorno crece con los m², para comparar de un vistazo; dormitorios a la derecha,
+   baños abajo a la izquierda y el resto como sala-cocina. */
+function plano(dormitorios, banos, area) {
+  const W = 120, H = 90;
+  const d = Math.max(0, Math.round(dormitorios || 0)), b = Math.max(0, Math.round(banos || 0));
+  const escala = 0.62 + 0.38 * Math.min(Math.max(((area || 40) - 30) / 150, 0), 1);
+  const w = W * escala, h = H * escala, x0 = (W - w) / 2, y0 = (H - h) / 2;
+  const dDib = Math.min(d, 4), bDib = Math.min(b, 3);
+  const anchoDorm = dDib ? w * 0.42 : 0, anchoResto = w - anchoDorm;
+  const altoBano = bDib ? h * 0.34 : 0;
+  const letra = Math.max(6, Math.min(8.5, 7 * escala + 1));
+  const piezas = [];
+  const cuarto = (x, y, ancho, alto, texto, clase) => {
+    piezas.push(`<rect class="${clase}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${ancho.toFixed(1)}" height="${alto.toFixed(1)}"/>`);
+    if (texto && ancho > 14 && alto > 10) {
+      piezas.push(`<text x="${(x + ancho / 2).toFixed(1)}" y="${(y + alto / 2 + letra / 3).toFixed(1)}" font-size="${letra.toFixed(1)}">${texto}</text>`);
+    }
+  };
+  cuarto(x0, y0, anchoResto, h - altoBano, d ? "Sala · cocina" : "Ambiente", "p-sala");
+  for (let i = 0; i < bDib; i += 1) {
+    cuarto(x0 + (anchoResto / bDib) * i, y0 + h - altoBano, anchoResto / bDib, altoBano, i === bDib - 1 && b > bDib ? `${b - bDib + 1} baños` : "Baño", "p-bano");
+  }
+  for (let i = 0; i < dDib; i += 1) {
+    cuarto(x0 + anchoResto, y0 + (h / dDib) * i, anchoDorm, h / dDib, i === dDib - 1 && d > dDib ? `${d - dDib + 1} dorm.` : "Dorm.", "p-dorm");
+  }
+  piezas.push(`<rect class="p-muro" x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"/>`);
+  const etiqueta = `Esquema referencial: ${d} ${d === 1 ? "dormitorio" : "dormitorios"}, ${b} ${b === 1 ? "baño" : "baños"}, ${num(area)} metros cuadrados`;
+  return `<svg class="plano" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(etiqueta)}">${piezas.join("")}</svg>`;
 }

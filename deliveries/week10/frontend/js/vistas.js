@@ -12,12 +12,12 @@ const filaTitulo = (h1, sub, acciones = "") =>
 /* ---------- Ingreso y registro ---------- */
 
 export function vistaIngresar(lienzo, params) {
-  if (sesion()) return irA("#/mis-departamentos");
+  if (sesion()) return irA(params.get("siguiente") || "#/mi-perfil");
   const registro = params.get("modo") === "registro";
   const siguiente = params.get("siguiente");
   const enlace = (modo) => `#/ingresar${modo ? "?modo=registro" : ""}${siguiente ? `${modo ? "&" : "?"}siguiente=${encodeURIComponent(siguiente)}` : ""}`;
   lienzo.innerHTML = `
-    ${filaTitulo(registro ? "Crear cuenta" : "Ingresar", "Guarda tus departamentos, revisa su análisis y publícalos con el precio que elijas.")}
+    ${filaTitulo(registro ? "Crear cuenta" : "Ingresar", "Una sola cuenta para buscar y para alquilar: recibe recomendaciones según tu perfil, guarda las que te gusten o publica tu departamento.")}
     <section class="panel auth-panel">
       <nav class="tabs" aria-label="Ingreso o registro">
         <a href="${enlace(false)}" ${registro ? "" : 'aria-current="page"'}>Ingresar</a>
@@ -40,7 +40,8 @@ export function vistaIngresar(lienzo, params) {
       const r = await conBoton($("button", form), "Un momento…", () =>
         llamar(registro ? "/api/cuentas/registro" : "/api/cuentas/ingreso", { cuerpo: Object.fromEntries(new FormData(form)) }));
       guardarSesion({ token: r.token, usuario: r.usuario });
-      irA(siguiente || "#/mis-departamentos");
+      // Al crear la cuenta, el inquilino empieza por el cuestionario; al ingresar, va a su perfil.
+      irA(siguiente || (registro ? "#/mi-perfil/editar" : "#/mi-perfil"));
     } catch (err) {
       mensaje($(".form-msg", form), err.message);
     }

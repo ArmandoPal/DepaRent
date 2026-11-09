@@ -33,7 +33,7 @@ from laboratorio_area import AVISO as AVISO_AREA, explorar_area
 from modelo import BINARY, LIMITS, ROOT, predecir, preparar
 from perfil_competitivo import ARCHIVO as ARCHIVO_PERFIL, asignar_perfil, comparables
 from tendencia import cargar_tendencias, tendencia_distrital
-from recomendador import AVISO as AVISO_RECOMENDADOR, HOGARES, NOMBRES_PRIORIDAD, recomendar
+from recomendador import AVISO as AVISO_RECOMENDADOR, HOGARES, NOMBRES_PRIORIDAD, explicar, recomendar, validar_perfil
 
 verificar_modelo_congelado()
 MODELO_PRECIO = joblib.load(ROOT / "models/modelo_docente.joblib")
@@ -99,13 +99,17 @@ class Ubicacion(BaseModel):
     longitud: float
 
 
-class PerfilInquilino(BaseModel):
+class PerfilBusqueda(BaseModel):
     hogar: str
     presupuesto_max: Optional[float] = None
     distritos: List[str] = []
     dormitorios_min: Optional[int] = None
     prioridades: List[str] = []
     lugar: Optional[Ubicacion] = None
+    lugar_nombre: Optional[str] = Field(None, max_length=200)
+
+
+class PerfilInquilino(PerfilBusqueda):
     limite: int = Field(12, ge=1, le=30)
 
 
@@ -313,7 +317,7 @@ def explorar(vivienda: Vivienda):
     return limpiar({**explorar_area(_vivienda(vivienda), MODELO_PRECIO), "aviso": AVISO_AREA})
 
 
-# ---------- Cuentas de propietarios ----------
+# ---------- Cuentas (una sola para inquilinos y propietarios) ----------
 
 @app.post("/api/cuentas/registro")
 def registro(datos: Registro, conexion=Depends(base_datos)):
@@ -336,6 +340,44 @@ def salida(authorization: Optional[str] = Header(None), conexion=Depends(base_da
 @app.get("/api/cuentas/yo")
 def yo(usuario=Depends(usuario_actual)):
     return usuario
+
+
+# ---------- Inquilino: perfil de búsqueda y guardados ----------
+
+@app.get("/api/perfil")
+def mi_perfil(usuario=Depends(usuario_actual), conexion=Depends(base_datos)):
+    return {"usuario": usuario, "perfil": limpiar(cuentas.obtener_perfil(conexion, usuario["id"]))}
+
+
+@app.put("/api/perfil")
+def guardar_mi_perfil(perfil: PerfilBusqueda, usuario=Depends(usuario_actual), conexion=Depends(base_datos)):
+    datos = {**_perfil_valido(perfil), "lugar_nombre": (perfil.lugar_nombre or "").strip() or None}
+    return {"usuario": usuario, "perfil": limpiar(cuentas.guardar_perfil(conexion, usuario["id"], datos))}
+
+
+@app.get("/api/guardados")
+def mis_guardados(usuario=Depends(usuario_actual), conexion=Depends(base_datos)):
+    return limpiar(cuentas.listar_guardados(conexion, usuario["id"]))
+
+
+@app.post("/api/guardados/{anuncio_id}")
+def guardar(anuncio_id: str, usuario=Depends(usuario_actual), conexion=Depends(base_datos)):
+    """Guarda el anuncio con la misma explicación que le dio el recomendador al perfil del usuario."""
+    fila = ubicar(MERCADO, tabla_publicados(conexion), anuncio_id)
+    if fila is None:
+        raise HTTPException(404, "Ese anuncio ya no está en el mercado actual.")
+    perfil = cuentas.obtener_perfil(conexion, usuario["id"])
+    if perfil:
+        perfil = {k: v for k, v in perfil.items() if k not in ("actualizado", "lugar_nombre")}
+        datos = explicar(fila, perfil, cargar_red()["centros"], formatear=formatear)
+    else:
+        datos = {**formatear(fila), "motivos": [], "faltas": [], "amenidades_extra": []}
+    return limpiar(cuentas.guardar_anuncio(conexion, usuario["id"], anuncio_id, limpiar(datos)))
+
+
+@app.delete("/api/guardados/{anuncio_id}")
+def quitar(anuncio_id: str, usuario=Depends(usuario_actual), conexion=Depends(base_datos)):
+    return limpiar(cuentas.quitar_guardado(conexion, usuario["id"], anuncio_id))
 
 
 # ---------- Departamentos del propietario ----------
@@ -387,14 +429,20 @@ def retirar_publicacion(departamento_id: int, usuario=Depends(usuario_actual), c
 
 # ---------- Búsqueda para inquilinos ----------
 
-@app.post("/api/recomendar")
-def recomendar_departamentos(perfil: PerfilInquilino, conexion=Depends(base_datos)):
-    """Modelo 7: departamentos recomendados según el perfil del inquilino, con sus motivos."""
-    datos = perfil.model_dump()
-    limite = datos.pop("limite")
+def _perfil_valido(perfil):
+    """Perfil del cuestionario con la ubicación validada; lugar_nombre solo se guarda para mostrarlo."""
+    datos = {k: v for k, v in perfil.model_dump().items() if k not in ("limite", "lugar_nombre")}
     if datos["lugar"]:
         lugar = datos["lugar"]
         datos["lugar"] = dict(zip(("latitud", "longitud"), validar_coordenadas(lugar["latitud"], lugar["longitud"])))
+    return validar_perfil(datos)
+
+
+@app.post("/api/recomendar")
+def recomendar_departamentos(perfil: PerfilInquilino, conexion=Depends(base_datos)):
+    """Modelo 7: departamentos recomendados según el perfil del inquilino, con sus motivos."""
+    limite = perfil.limite
+    datos = _perfil_valido(perfil)
     propios = tabla_publicados(conexion)
     tabla = pd.concat([propios, MERCADO], ignore_index=True) if len(propios) else MERCADO
     resultado = recomendar(tabla, datos, cargar_red()["centros"], limite=limite, formatear=formatear)

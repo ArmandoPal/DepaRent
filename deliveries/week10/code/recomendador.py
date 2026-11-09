@@ -267,6 +267,25 @@ def _diversificar(ordenados, limite, maximo):
     return sorted(elegidos, key=lambda i: -i["puntaje"])
 
 
+def _formato_minimo(fila):
+    return {"id": fila["id"], "distrito": fila["distrito_norm"], "precio_soles": fila["precio_soles"]}
+
+
+def _tarjeta(item, formatear=None):
+    """Lo que ve el inquilino de una recomendación. El puntaje solo ordena; la app no lo muestra."""
+    return {**(formatear or _formato_minimo)(item["fila"]), "compatibilidad": int(round(100 * item["puntaje"])),
+            "partes": {k: round(v, 3) for k, v in item["partes"].items()},
+            "motivos": item["motivos"][:6], "faltas": item["faltas"][:3],
+            "amenidades_extra": [NOMBRES_AMENIDAD[a] for a in EXTRAS if _si(item["fila"], a)]}
+
+
+def explicar(fila, perfil, centros, formatear=None):
+    """La misma tarjeta de una recomendación para un solo anuncio (por ejemplo, al guardarlo)."""
+    perfil = validar_perfil(perfil)
+    puntaje, partes, motivos, faltas = puntuar(fila, perfil, centros)
+    return _tarjeta({"fila": fila, "puntaje": puntaje, "partes": partes, "motivos": motivos, "faltas": faltas}, formatear)
+
+
 def recomendar(tabla, perfil, centros, limite=12, formatear=None):
     """tabla: la misma tabla de la búsqueda (mercado + publicados). Devuelve los mejores con su explicación."""
     perfil = validar_perfil(perfil)
@@ -280,12 +299,7 @@ def recomendar(tabla, perfil, centros, limite=12, formatear=None):
     varios = len(perfil.get("distritos") or []) != 1
     maximo = max(int(np.ceil(MAXIMO_POR_DISTRITO * limite)), 1) if varios else limite
     elegidos = _diversificar(items, limite, maximo)
-    formatear = formatear or (lambda f: {"id": f["id"], "distrito": f["distrito_norm"], "precio_soles": f["precio_soles"]})
-    recomendaciones = [{**formatear(i["fila"]), "compatibilidad": int(round(100 * i["puntaje"])),
-                        "partes": {k: round(v, 3) for k, v in i["partes"].items()},
-                        "motivos": i["motivos"][:6], "faltas": i["faltas"][:3],
-                        "amenidades_extra": [NOMBRES_AMENIDAD[a] for a in EXTRAS if _si(i["fila"], a)]}
-                       for i in elegidos]
+    recomendaciones = [_tarjeta(i, formatear) for i in elegidos]
     return {
         "perfil": {"hogar": HOGARES[perfil["hogar"]]["nombre"], "prioridades": [NOMBRES_PRIORIDAD[p] for p in perfil["prioridades"]],
                    "presupuesto_max": perfil.get("presupuesto_max"), "distritos": perfil.get("distritos") or [],

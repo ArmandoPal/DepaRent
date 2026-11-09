@@ -2,7 +2,7 @@ import { obtenerOpciones, sesion } from "./api.js";
 import { vistaAnuncio } from "./anuncio.js";
 import { vistaInicio } from "./inicio.js";
 import { activarMovimiento } from "./movimiento.js";
-import { vistaRecomendaciones } from "./recomendaciones.js";
+import { vistaEditarPerfil, vistaMiPerfil, vistaRecomendaciones } from "./recomendaciones.js";
 import { $, esc } from "./util.js";
 import {
   cerrarSesion, vistaBuscar, vistaDetalleDepartamento, vistaError, vistaIngresar, vistaMisDepartamentos,
@@ -12,7 +12,9 @@ import {
 // [patrón, vista, requiere sesión, sección, título en la barra del teléfono]
 const RUTAS = [
   [/^\/$/, vistaInicio, false, "inicio", ""],
-  [/^\/para-ti$/, vistaRecomendaciones, false, "para-ti", "Recomendados para ti"],
+  [/^\/para-ti$/, vistaRecomendaciones, true, "para-ti", "Recomendados para ti"],
+  [/^\/mi-perfil$/, vistaMiPerfil, true, "mi-perfil", "Mi perfil"],
+  [/^\/mi-perfil\/editar$/, vistaEditarPerfil, true, "mi-perfil", "Mi perfil"],
   [/^\/buscar$/, vistaBuscar, false, "buscar", "Buscar departamentos"],
   [/^\/anuncio\/([md]\d+)$/, vistaAnuncio, false, "buscar", "Anuncio"],
   [/^\/probar$/, vistaProbar, false, "probar", "Probar el análisis"],
@@ -33,7 +35,7 @@ function menuInicio() {
       ${actual ? '<a href="#/mis-departamentos">Mis departamentos</a>' : '<a href="#/ingresar">Ingresar</a>'}
     </div>
     ${actual ? '<a class="menu-action" href="#/mis-departamentos/nuevo">Agregar departamento</a>'
-      : '<a class="menu-action" href="#/ingresar?modo=registro">Publicar mi depa</a>'}`;
+      : `<a class="menu-action" href="#/ingresar?modo=registro&siguiente=${encodeURIComponent("#/mis-departamentos/nuevo")}">Publicar mi depa</a>`}`;
 }
 
 // Marco de las pantallas de la app: barra lateral con etiquetas y lienzo.
@@ -51,13 +53,14 @@ function marco(main, seccion, titulo) {
         ${item("#/buscar", "buscar", "Buscar departamentos")}
         ${item("#/probar", "probar", "Probar el análisis")}
         ${item("#/", "inicio", "Inicio")}
-        <p class="group-label">Propietario</p>
-        ${actual ? item("#/mis-departamentos", "propietario", "Mis departamentos") + item("#/mis-departamentos/nuevo", "nuevo", "Agregar departamento")
+        <p class="group-label">Mi cuenta</p>
+        ${actual ? item("#/mi-perfil", "mi-perfil", "Mi perfil") + item("#/mis-departamentos", "propietario", "Mis departamentos")
+            + item("#/mis-departamentos/nuevo", "nuevo", "Agregar departamento")
           : item("#/ingresar", "ingresar", "Ingresar o crear cuenta")}
         <div class="bottom">
           ${actual ? `<div class="user-row"><b>${esc(actual.usuario.nombre)}</b><span>${esc(actual.usuario.email)}</span></div>
             <button class="btn" type="button" id="salir">Salir</button>`
-            : '<p class="hint">Sin cuenta puedes buscar y probar el análisis.</p>'}
+            : '<p class="hint">Sin cuenta puedes buscar y probar el análisis. Con cuenta, recibes recomendaciones y publicas tu departamento.</p>'}
         </div>
       </aside>
       <div class="canvas">
