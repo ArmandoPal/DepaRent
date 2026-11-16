@@ -59,7 +59,7 @@ Los modelos 2 (accesibilidad) y 5 (escenarios de publicación) no se entrenan: s
 | `deliveries/week12/code/evaluar_producto.py` | Error por rango de precio y coherencia de punta a punta | `week12/resultados/` |
 | `deliveries/week12/code/casos_estudio.py` | Casos de estudio con la API | `week12/resultados/casos_estudio.json` |
 | `deliveries/week10/code/EJERCICIO_FINAL.py` | Ejercicio del profesor: MAE de un distrito | consola |
-| `deliveries/week10/code/test_*.py` | 47 pruebas automáticas | `python -m unittest discover -p "test_*.py"` |
+| `deliveries/week10/code/test_*.py` | 76 pruebas automáticas | `python -m unittest discover -p "test_*.py"` |
 
 ## Ejecutar todo (Windows, desde la raíz)
 ```powershell

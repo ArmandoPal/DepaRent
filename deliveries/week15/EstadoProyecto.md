@@ -43,14 +43,15 @@ Todo está desplegado y funcionando en https://deparent.onrender.com:
 - **Propietario:** registro, agregar departamentos, análisis completo con los 6 componentes, publicación y lista de interesados.
 - **Inquilino:** búsqueda con filtros sobre 3,074 anuncios reales (captura del 9-nov), ficha de cada anuncio, recomendaciones según su perfil y favoritos.
 - **Prueba rápida** del análisis sin cuenta.
-- **Panel de KPIs** para analistas.
-- **70 pruebas automáticas** pasan (`deliveries/week10/code/test_*.py`).
+- **Panel de KPIs** para analistas: series diarias, embudo, Pareto por distrito, error y cobertura del modelo, asistente de supervisión; se actualiza cada 10 s.
+- **Ayuda integrada**, **comparador de hasta 3 anuncios** en la búsqueda y **recomendaciones sin cuenta** (`#/para-ti-demo`).
+- **76 pruebas automáticas** pasan (`deliveries/week10/code/test_*.py`).
 
 ## 3. Qué modelo usamos y qué resultados obtuvimos
 
 | # | Componente | Modelo | Resultado principal |
 |:-:|---|---|---|
-| 3 | **Precio esperado** (modelo central) | HistGradientBoosting con 13 variables + rango calibrado al 90% | **MAE S/ 553, MAPE 18.9%, R² 0.76** (629 anuncios de prueba) vs. S/ 993 de la mediana distrital. Cobertura del rango 92.2% |
+| 3 | **Precio esperado** (modelo central) | HistGradientBoosting con 13 variables + rango proporcional calibrado al 90% | **MAE S/ 553, MAPE 18.9%, R² 0.76** (629 anuncios de prueba) vs. S/ 993 de la mediana distrital. Cobertura del rango 92.7% (79.4% desde S/ 7,000) |
 | 3 | Validación temporal | Mismo modelo, sin reentrenar | Octubre: MAE S/ 512, R² 0.79 · Noviembre: MAE S/ 541, R² 0.78 → **no se degradó** |
 | 1 | Perfil competitivo | K-Means k=4 sin precio + vecinos cercanos | Silhouette 0.21, estable entre semillas (ARI 1.0); 4 perfiles interpretables |
 | 2 | Accesibilidad | Paraderos ATU con cKDTree | Cálculo directo, reproduce el notebook de la Semana 7 |
@@ -96,7 +97,7 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 
 - **Bloqueo de los portales:** desde el 25-oct Urbania responde error 403 a GitHub Actions, por lo que la
   actualización diaria automática falla; usamos la descarga local como respaldo.
-- **Rango de precio fijo (±S/ 1,357):** cubre bien la mayoría, pero en departamentos de S/ 7,000 o más solo cubre el 34%.
+- **Rango de precio en alquileres altos:** el rango ahora es proporcional al precio estimado (antes fijo, ±S/ 1,357). En noviembre la cobertura desde S/ 7,000 subió de 34.2% a 65.8%, aún lejos del 90% nominal; en alquileres menores a S/ 1,500 bajó de 99.2% a 91.3%.
 - **Precios pedidos, no de contrato**, y distritos con pocos anuncios con error inestable.
 - **Render gratuito** se duerme tras 15 minutos; la primera visita tarda 30–60 s.
 - **Perfiles competitivos débiles** (silhouette 0.21): orientan, no segmentan con fuerza.
@@ -104,7 +105,8 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 ## 7. Qué nos falta completar
 
 - [ ] Registrar los resultados de las pruebas con usuarios (`week12/plantilla_observaciones.csv`) y agregarlos al informe de evaluación.
-- [ ] Rango de precio proporcional al precio (mejora del modelo 3).
+- [x] Rango de precio proporcional al precio (mejora del modelo 3, revisión del profesor del 14-nov).
+- [ ] Cambiar la contraseña de la cuenta analista en producción (la anterior estuvo publicada).
 - [ ] Informe final (`FinalReport.md` → PDF).
 - [ ] Presentación final (`.pptx` + PDF) y video demo de 5–7 min.
 - [ ] Data Product Canvas final y requisitos finales (`Requirements.md`).
