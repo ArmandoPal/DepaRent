@@ -34,19 +34,26 @@ def main():
     assert not set(groups[fit]) & set(groups[calibration])
     assert not set(groups[test]) & set(groups[calibration])
     model = construir_pipeline().fit(X.iloc[fit], y.iloc[fit])
-    cal_errors = np.sort(np.abs(y.iloc[calibration].to_numpy() - model.predict(X.iloc[calibration])))
+    pred_calibracion = model.predict(X.iloc[calibration])
+    cal_errors = np.sort(np.abs(y.iloc[calibration].to_numpy() - pred_calibracion))
     level = 0.90
     rank = min(len(cal_errors), math.ceil((len(cal_errors) + 1) * level))
     radius = float(cal_errors[rank - 1])
     training = X.iloc[fit].assign(target=y.iloc[fit].to_numpy())
     medians = training.groupby("distrito_norm")["target"].median().to_dict()
     global_median = float(y.iloc[fit].median())
+    # La escala depende solo del entrenamiento. Así no ajustamos el piso mirando la prueba.
+    scale_floor = max(1000.0, round(global_median, -3))
+    scores = np.sort(np.abs(y.iloc[calibration].to_numpy() - pred_calibracion) /
+                     np.maximum(scale_floor, pred_calibracion))
+    factor = float(scores[rank - 1])
     district_baseline = X.iloc[test]["distrito_norm"].map(medians).fillna(global_median).to_numpy()
     prediction = model.predict(X.iloc[test])
-    lower, upper = np.maximum(0, prediction - radius), prediction + radius
+    radius_test = factor * np.maximum(scale_floor, prediction)
+    lower, upper = np.maximum(0, prediction - radius_test), prediction + radius_test
     result = {
-        "fecha": "2026-10-18", "version": "docente-1",
-        "commit_fuente": "fb81bb32c20c14185feaf4caa486fa99ef3570e9",
+        "fecha": "2026-11-13", "version": "rango-proporcional-2",
+        "commit_fuente": "654fb79585c758ebdc470a292bc4d9a51193e819",
         "sha256_datos_fuente": hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
         "filas_originales": len(original), "filas_utilizadas": len(frame),
         "grupos_posibles_inmuebles": int(len(np.unique(groups))),
@@ -57,17 +64,20 @@ def main():
         "metricas_prueba": {"mediana_global": metrics(y.iloc[test], np.full(len(test), global_median)),
                             "mediana_distrital": metrics(y.iloc[test], district_baseline),
                             "HistGradientBoosting": metrics(y.iloc[test], prediction)},
-        "intervalo": {"metodo": "Residuos absolutos en calibración separada; radio global constante",
-                      "nivel_nominal": level, "radio_soles": radius,
+        "intervalo": {"metodo": "Residuos absolutos normalizados por max(mediana redondeada de entrenamiento, precio estimado)",
+                      "nivel_nominal": level, "factor": factor, "piso_escala_soles": scale_floor,
+                      "radio_global_v1_soles": radius,
+                      "cobertura_global_v1_prueba": float(np.mean(np.abs(y.iloc[test].to_numpy() - prediction) <= radius)),
                       "cobertura_observada_prueba": float(np.mean((y.iloc[test] >= lower) & (y.iloc[test] <= upper))),
                       "ancho_medio_soles": float(np.mean(upper - lower))},
         "entorno": {"python": platform.python_version(), "numpy": np.__version__, "pandas": pd.__version__, "sklearn": sklearn.__version__, "joblib": joblib.__version__},
         "limites": ["Holdout agrupado de captura única; no valida períodos futuros.",
                     "Grupos heurísticos pueden omitir duplicados o unir viviendas diferentes.",
-                    "Intervalo global; cobertura por subgrupo o futura no garantizada.",
+                    "Rango calibrado en septiembre; cobertura por subgrupo o futura no garantizada.",
                     "Precio de anuncio y atributos extraídos por alumnos; no precio de contrato.",
                     "Evaluación distinta del notebook original; las métricas no son una comparación directa."]}
     artifact = {"pipeline": model, "radio_calibrado_soles": radius,
+                "rango_proporcional": {"factor": factor, "piso_escala_soles": scale_floor},
                 "medianas_distrito": medians, "mediana_global": global_median,
                 "distritos": sorted(medians), "conteos_distrito": training.groupby("distrito_norm").size().to_dict(),
                 "rangos_entrenamiento": {c: [float(X.iloc[fit][c].min()), float(X.iloc[fit][c].max())] for c in NUMERIC},

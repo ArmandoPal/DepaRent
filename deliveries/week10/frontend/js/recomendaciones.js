@@ -1,4 +1,4 @@
-import { llamar, obtenerOpciones } from "./api.js";
+import { llamar, obtenerOpciones, sesion } from "./api.js";
 import { cerrarSesion } from "./vistas.js";
 import { $, $$, esc, num, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD } from "./util.js";
 
@@ -182,6 +182,58 @@ function filasPerfil(op, perfil) {
 
 /* ---------- 3. Recomendaciones y 4. Guardados ---------- */
 
+// Vista previa sin cuenta: usa el mismo recomendador, pero no guarda el perfil ni los resultados.
+export async function vistaRecomendacionesDemo(lienzo) {
+  const op = await obtenerOpciones();
+  const distritos = op.distritos.filter((d) => d !== "otros");
+  lienzo.innerHTML = `
+    ${filaTitulo("Encuentra opciones para ti", "Prueba con tu tipo de hogar, presupuesto y distrito. No necesitas cuenta y esta prueba no guarda tus respuestas.")}
+    <figure class="public-scene public-scene-wide">
+      <img src="assets/san-isidro-residencial.jpg" width="1280" height="1372" loading="lazy" decoding="async" alt="Edificios residenciales en San Isidro, Lima">
+      <figcaption><strong>Elige cómo quieres vivir.</strong><span>Vista de San Isidro; los resultados muestran anuncios separados de esta foto. Foto: <a href="https://commons.wikimedia.org/wiki/File:San_Isidro,_Lima,_Peru_-_residential_buildings_skyline.jpg">Juaniotolp</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>.</span></figcaption>
+    </figure>
+    <form class="panel perfil-form" data-demo-reco novalidate>
+      <div class="fields">
+        <div class="field"><label for="demo-hogar">¿Para quién buscas?</label><select class="input" id="demo-hogar" required>
+          <option value="">Elige una opción</option>${Object.entries(op.recomendador.hogares).map(([k, nombre]) => `<option value="${esc(k)}">${esc(nombre)}</option>`).join("")}</select></div>
+        <div class="field"><label for="demo-presupuesto">Presupuesto máximo mensual (S/)</label>
+          <input class="input num" id="demo-presupuesto" type="number" min="300" max="50000" step="100" placeholder="Opcional"></div>
+        <div class="field"><label for="demo-distrito">Distrito</label><select class="input" id="demo-distrito">
+          <option value="">Cualquier distrito</option>${distritos.map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>
+      </div>
+      <div class="form-actions"><button class="btn primary" type="submit">Ver recomendaciones</button></div>
+      <div class="form-msg" role="alert"></div>
+    </form>
+    <div data-demo-resultados aria-live="polite"></div>`;
+  const form = $("[data-demo-reco]", lienzo), destino = $("[data-demo-resultados]", lienzo);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const hogar = $("#demo-hogar", form).value;
+    const presupuestoTexto = $("#demo-presupuesto", form).value.trim();
+    const presupuesto = presupuestoTexto === "" ? null : Number(presupuestoTexto);
+    if (!hogar) return mensaje($( ".form-msg", form), "Elige para quién buscas.");
+    if (presupuesto !== null && (!Number.isFinite(presupuesto) || presupuesto < 300 || presupuesto > 50000)) {
+      return mensaje($( ".form-msg", form), "El presupuesto debe estar entre S/ 300 y S/ 50,000.");
+    }
+    mensaje($(".form-msg", form), "");
+    const distrito = $("#demo-distrito", form).value;
+    try {
+      const r = await conBoton($("button[type=submit]", form), "Buscando…", () => llamar("/api/recomendar", {
+        cuerpo: { hogar, presupuesto_max: presupuesto, distritos: distrito ? [distrito] : [], prioridades: [], limite: 6 },
+      }));
+      destino.innerHTML = r.recomendaciones.length ? `
+        <section class="reco-demo-head"><h2>Opciones para revisar</h2><p>El modelo explica por qué muestra cada una. Abre la ficha para ver el anuncio.</p></section>
+        <ol class="reco-list">${r.recomendaciones.map((x, i) => tarjeta(x, i, { ids: new Set() }, false)).join("")}</ol>
+        <p class="panel-note">${esc(r.aviso)} Son precios pedidos en anuncios, no alquileres cerrados ni una garantía de disponibilidad.</p>
+        ${sesion() ? '<a class="btn" href="#/mi-perfil/editar">Configurar mi perfil</a>' : '<a class="btn" href="#/ingresar?modo=registro">Crear cuenta y configurar mi perfil</a>'}`
+        : '<section class="panel"><div class="empty"><p>No encontramos opciones con esos filtros. Prueba otro distrito o un presupuesto mayor.</p></div></section>';
+      destino.scrollIntoView({ block: "start", behavior: "smooth" });
+    } catch (err) {
+      mensaje($(".form-msg", form), err.message);
+    }
+  });
+}
+
 export async function vistaRecomendaciones(lienzo, params) {
   const [{ perfil }, guardados] = await Promise.all([llamar("/api/perfil"), llamar("/api/guardados")]);
   if (!perfil) return irA("#/mi-perfil/editar");
@@ -189,6 +241,10 @@ export async function vistaRecomendaciones(lienzo, params) {
   lienzo.innerHTML = `
     ${filaTitulo("Recomendados para ti", "Elegidos según tu perfil. Guarda los que te gusten para compararlos después.",
       '<a class="btn" href="#/mi-perfil">Mi perfil</a>')}
+    <figure class="public-scene public-scene-compact">
+      <img src="assets/san-miguel-edificios.jpg" width="1280" height="1280" loading="lazy" decoding="async" alt="Edificios residenciales en San Miguel, Lima">
+      <figcaption><strong>Opciones según tu perfil.</strong><span>Foto de contexto, no de los anuncios: <a href="https://commons.wikimedia.org/wiki/File:Apartment_complex_in_San_Miguel,_Lima,_Peru_-_2.jpg">Cifras Confiables</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>.</span></figcaption>
+    </figure>
     <nav class="tabs reco-tabs" aria-label="Recomendados o guardados">
       <a href="#/para-ti" ${pestana === "recomendados" ? 'aria-current="page"' : ""}>Recomendados</a>
       <a href="#/para-ti?ver=guardados" ${pestana === "guardados" ? 'aria-current="page"' : ""}>Guardados <span data-n-guardados>(${guardados.length})</span></a>
@@ -264,7 +320,7 @@ function yaDicha(amenidad, dichos) {
   return dichos.includes(a) || ((a === "balcón" || a === "terraza") && dichos.includes("balcón o terraza"));
 }
 
-function tarjeta(x, i, estado) {
+function tarjeta(x, i, estado, puedeGuardar = true) {
   const dorm = `${num(x.dormitorios)} ${x.dormitorios === 1 ? "dormitorio" : "dormitorios"}`;
   const banos = `${num(x.banos)} ${x.banos === 1 ? "baño" : "baños"}`;
   const guardado = estado.ids.has(x.id);
@@ -272,20 +328,20 @@ function tarjeta(x, i, estado) {
   const dichos = (x.motivos || []).join(" ").toLowerCase();
   const amenidades = [...(x.amenidades || []).map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()), ...(x.amenidades_extra || [])]
     .filter((a) => !yaDicha(a, dichos));
-  return `<li class="reco-card">
+  return `<li class="reco-card ${puedeGuardar ? "" : "sin-guardar"}">
     <a class="reco-link" href="#/anuncio/${esc(x.id)}" aria-label="Ver ficha: ${esc(dorm)} en ${esc(titulo(x.distrito))}">
       <span class="reco-rank" aria-label="Recomendación ${i + 1}">${i + 1}</span>
       <figure class="reco-plano">${plano(x.dormitorios, x.banos, x.area_total)}
         <figcaption>${num(x.area_total)} m² · referencial</figcaption></figure>
       <div class="reco-body">
         <p class="reco-title"><b>${esc(titulo(x.distrito))}</b> · ${esc(dorm)} · ${esc(banos)} · ${num(x.area_total)} m²</p>
-        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · debería costar ${soles(x.precio_estimado_soles)}${x.dist_paradero_min_m != null ? ` · paradero a ${num(x.dist_paradero_min_m)} m` : ""}</p>
+        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · estimación del modelo ${soles(x.precio_estimado_soles)}${x.dist_paradero_min_m != null ? ` · paradero a ${num(x.dist_paradero_min_m)} m` : ""}</p>
         ${x.motivos?.length ? `<p class="reco-why"><span>Tiene:</span> ${x.motivos.map(esc).join(" · ")}</p>` : ""}
         ${amenidades.length ? `<p class="reco-extra"><span>Amenidades:</span> ${amenidades.map(esc).join(" · ")}</p>` : ""}
         ${x.faltas?.length ? `<p class="reco-miss"><span>Ten en cuenta:</span> ${x.faltas.map(esc).join(" · ")}</p>` : ""}
       </div>
     </a>
-    <button class="btn reco-save" type="button" data-guardar="${esc(x.id)}" aria-pressed="${guardado}">${guardado ? "Guardado" : "Guardar"}</button></li>`;
+    ${puedeGuardar ? `<button class="btn reco-save" type="button" data-guardar="${esc(x.id)}" aria-pressed="${guardado}">${guardado ? "Guardado" : "Guardar"}</button>` : ""}</li>`;
 }
 
 /* Esquema de distribución dibujado con los datos del anuncio (no es el plano real).

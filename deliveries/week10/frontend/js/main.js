@@ -1,10 +1,11 @@
 import { guardarSesion, llamar, obtenerOpciones, sesion } from "./api.js";
 import { vistaAnalista } from "./analista.js";
 import { mostrarBienvenida } from "./bienvenida.js";
+import { iniciarAyuda } from "./ayuda.js";
 import { vistaAnuncio } from "./anuncio.js";
 import { vistaInicio } from "./inicio.js";
 import { activarMovimiento } from "./movimiento.js";
-import { vistaEditarPerfil, vistaMiPerfil, vistaRecomendaciones } from "./recomendaciones.js";
+import { vistaEditarPerfil, vistaMiPerfil, vistaRecomendaciones, vistaRecomendacionesDemo } from "./recomendaciones.js";
 import { $, esc } from "./util.js";
 import {
   cerrarSesion, vistaBuscar, vistaDetalleDepartamento, vistaError, vistaIngresar, vistaMisDepartamentos,
@@ -14,6 +15,7 @@ import {
 // [patrón, vista, requiere sesión, sección, título en la barra del teléfono]
 const RUTAS = [
   [/^\/$/, vistaInicio, false, "inicio", ""],
+  [/^\/para-ti-demo$/, vistaRecomendacionesDemo, false, "para-ti", "Opciones para ti"],
   [/^\/para-ti$/, vistaRecomendaciones, true, "para-ti", "Recomendados para ti"],
   [/^\/mi-perfil$/, vistaMiPerfil, true, "mi-perfil", "Mi perfil"],
   [/^\/mi-perfil\/editar$/, vistaEditarPerfil, true, "mi-perfil", "Mi perfil"],
@@ -30,9 +32,10 @@ const RUTAS = [
 // Menú de la página de inicio: marca, tres enlaces y una acción.
 function menuInicio() {
   const actual = sesion();
+  const rutaParaTi = actual ? "#/para-ti" : "#/para-ti-demo";
   $("#menu").innerHTML = `
     <div class="menu-links">
-      <a href="#/para-ti">Para ti</a>
+      <a href="${rutaParaTi}">Para ti</a>
       <a href="#/buscar">Buscar</a>
       <a href="#/probar">Probar</a>
       ${actual ? '<a href="#/mis-departamentos">Mis departamentos</a>' : '<a href="#/ingresar">Ingresar</a>'}
@@ -45,12 +48,13 @@ function menuInicio() {
 // Marco de las pantallas de la app: barra lateral con etiquetas y lienzo.
 function marco(main, seccion, titulo) {
   const actual = sesion();
+  const rutaParaTi = actual ? "#/para-ti" : "#/para-ti-demo";
   const item = (href, s, texto) => `<a class="nav-item" href="${href}" ${s === seccion ? 'aria-current="page"' : ""}>${texto}</a>`;
   const analista = actual?.usuario?.rol === "analista";
   // Las opciones de siempre; para un analista quedan dentro de "Probar como usuario de DepaRent".
   const menuUsuario = `
         <p class="group-label">Explorar</p>
-        ${item("#/para-ti", "para-ti", "Recomendados para ti")}
+        ${item(rutaParaTi, "para-ti", actual ? "Recomendados para ti" : "Probar recomendaciones")}
         ${item("#/buscar", "buscar", "Buscar departamentos")}
         ${item("#/probar", "probar", "Probar el análisis")}
         ${item("#/", "inicio", "Inicio")}
@@ -73,7 +77,7 @@ function marco(main, seccion, titulo) {
         <div class="bottom">
           ${actual ? `<div class="user-row"><b>${esc(actual.usuario.nombre)}</b><span>${esc(actual.usuario.email)}</span></div>
             <button class="btn" type="button" id="salir">Salir</button>`
-            : '<p class="hint">Sin cuenta puedes buscar y probar el análisis. Con cuenta, recibes recomendaciones y publicas tu departamento.</p>'}
+            : '<p class="hint">Sin cuenta puedes buscar, estimar y probar recomendaciones. Con cuenta puedes guardar opciones y publicar tu departamento.</p>'}
         </div>
       </aside>
       <div class="canvas">
@@ -84,6 +88,12 @@ function marco(main, seccion, titulo) {
   const lateral = $("#sidebar", main), abrir = $("[data-abrir-menu]", main);
   abrir.addEventListener("click", () => { lateral.classList.add("open"); abrir.setAttribute("aria-expanded", "true"); });
   $("[data-cerrar-menu]", main).addEventListener("click", () => { lateral.classList.remove("open"); abrir.setAttribute("aria-expanded", "false"); });
+  lateral.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !lateral.classList.contains("open")) return;
+    lateral.classList.remove("open");
+    abrir.setAttribute("aria-expanded", "false");
+    abrir.focus();
+  });
   $("#salir", main)?.addEventListener("click", cerrarSesion);
   obtenerOpciones().then((op) => { $("[data-captura]", main).textContent = `Lima · anuncios del ${op.mercado.captura_texto}`; }).catch(() => null);
   return $("#lienzo", main);
@@ -111,6 +121,11 @@ async function navegar() {
   try {
     await vista(destino, params, ...(ruta.match(patron).slice(1)));
     activarMovimiento(main);
+    const encabezado = main.querySelector("h1");
+    if (encabezado) {
+      encabezado.tabIndex = -1;
+      encabezado.focus({ preventScroll: true });
+    }
     mostrarBienvenida();
   } catch (error) {
     if (error.estado === 401) {
@@ -125,6 +140,12 @@ $("#menu-toggle").addEventListener("click", (e) => {
   const abierto = $("#menu").classList.toggle("open");
   e.currentTarget.setAttribute("aria-expanded", String(abierto));
 });
+$("#menu").addEventListener("keydown", (e) => {
+  if (e.key !== "Escape" || !$("#menu").classList.contains("open")) return;
+  $("#menu").classList.remove("open");
+  $("#menu-toggle").setAttribute("aria-expanded", "false");
+  $("#menu-toggle").focus();
+});
 window.addEventListener("hashchange", navegar);
 
 // Las sesiones guardadas antes de que existieran los roles no traen "rol": se completa una vez al abrir la app.
@@ -137,6 +158,7 @@ async function iniciar() {
       /* sin conexión o sesión vencida: la app sigue y pedirá ingresar si hace falta */
     }
   }
+  iniciarAyuda();
   navegar();
 }
 iniciar();

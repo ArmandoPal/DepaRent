@@ -1,8 +1,8 @@
 {
-  "fecha": "2026-10-18",
-  "version": "docente-1",
-  "commit_fuente": "fb81bb32c20c14185feaf4caa486fa99ef3570e9",
-  "sha256_datos_fuente": "dc44d92a0b72fcc7f5692b80c07bbf9da10cebfa0fb5ab067942074894ac400b",
+  "fecha": "2026-11-13",
+  "version": "rango-proporcional-2",
+  "commit_fuente": "654fb79585c758ebdc470a292bc4d9a51193e819",
+  "sha256_datos_fuente": "642ef210bc245bbc644b3d8e0f9505cead8cc9db2ad72aff23c641f73dfe0aef",
   "filas_originales": 3128,
   "filas_utilizadas": 3128,
   "grupos_posibles_inmuebles": 3013,
@@ -54,14 +54,17 @@
     }
   },
   "intervalo": {
-    "metodo": "Residuos absolutos en calibración separada; radio global constante",
+    "metodo": "Residuos absolutos normalizados por max(mediana redondeada de entrenamiento, precio estimado)",
     "nivel_nominal": 0.9,
-    "radio_soles": 1356.9473108166749,
-    "cobertura_observada_prueba": 0.9220985691573926,
-    "ancho_medio_soles": 2713.4171517838404
+    "factor": 0.3370370296758287,
+    "piso_escala_soles": 3000.0,
+    "radio_global_v1_soles": 1356.9473108166749,
+    "cobertura_global_v1_prueba": 0.9220985691573926,
+    "cobertura_observada_prueba": 0.9268680445151033,
+    "ancho_medio_soles": 2465.784332113894
   },
   "entorno": {
-    "python": "3.12.14",
+    "python": "3.14.7",
     "numpy": "2.3.5",
     "pandas": "2.3.3",
     "sklearn": "1.7.2",
@@ -70,7 +73,7 @@
   "limites": [
     "Holdout agrupado de captura única; no valida períodos futuros.",
     "Grupos heurísticos pueden omitir duplicados o unir viviendas diferentes.",
-    "Intervalo global; cobertura por subgrupo o futura no garantizada.",
+    "Rango calibrado en septiembre; cobertura por subgrupo o futura no garantizada.",
     "Precio de anuncio y atributos extraídos por alumnos; no precio de contrato.",
     "Evaluación distinta del notebook original; las métricas no son una comparación directa."
   ]

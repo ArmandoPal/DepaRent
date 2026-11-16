@@ -98,10 +98,19 @@ def validar_entrada(values, artifact):
             raise ValueError(f"{col} debe ser 0, 1 o desconocido.")
     return preparar(pd.DataFrame([values]))
 
+
+def radio_prediccion(precio_estimado, artifact):
+    """Radio calibrado. Los artefactos antiguos conservan su rango fijo."""
+    nuevo = artifact.get("rango_proporcional")
+    if nuevo:
+        return float(nuevo["factor"]) * max(float(nuevo["piso_escala_soles"]), float(precio_estimado))
+    return float(artifact["radio_calibrado_soles"])
+
+
 def predecir(values, artifact):
     data = validar_entrada(values, artifact)
     value = float(artifact["pipeline"].predict(data)[0])
-    q = artifact["radio_calibrado_soles"]
+    q = radio_prediccion(value, artifact)
     district = data.iloc[0]["distrito_norm"]
     warnings = []
     for col in NUMERIC:

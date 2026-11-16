@@ -16,9 +16,9 @@ export function mostrarAnalisis(contenedor, a, opciones, acciones = {}) {
   const pestanas = [...PESTANAS, ...extras.map((e) => e.slice(0, 2))];
   contenedor.innerHTML = `
     <nav class="tabs" role="tablist" aria-label="Secciones del análisis">
-      ${pestanas.map(([id, texto], i) => `<button type="button" role="tab" id="tab-${id}" aria-controls="panel-${id}" aria-selected="${i === 0}" data-tab="${id}">${texto}</button>`).join("")}
+      ${pestanas.map(([id, texto], i) => `<button type="button" role="tab" id="tab-${id}" aria-controls="panel-${id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-tab="${id}">${texto}</button>`).join("")}
     </nav>
-    <div role="tabpanel" id="panel-resumen" aria-labelledby="tab-resumen" data-panel="resumen">${panelResumen(a, acciones)}</div>
+    <div role="tabpanel" id="panel-resumen" aria-labelledby="tab-resumen" data-panel="resumen">${panelResumen(a, opciones, acciones)}</div>
     <div role="tabpanel" id="panel-comparables" aria-labelledby="tab-comparables" data-panel="comparables" hidden>${panelComparables(a.perfil)}</div>
     <div role="tabpanel" id="panel-acceso" aria-labelledby="tab-acceso" data-panel="acceso" hidden>${panelAcceso(a.accesibilidad)}</div>
     <div role="tabpanel" id="panel-tendencia" aria-labelledby="tab-tendencia" data-panel="tendencia" hidden>${panelTendencia(a.tendencia, true)}</div>
@@ -43,13 +43,29 @@ export function mostrarAnalisis(contenedor, a, opciones, acciones = {}) {
   };
   enlazarCandado($('[data-panel="acceso"]', contenedor));
   const abrir = (id) => {
-    $$(".tabs [role=tab]", contenedor).forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === id)));
+    $$(".tabs [role=tab]", contenedor).forEach((b) => {
+      const activo = b.dataset.tab === id;
+      b.setAttribute("aria-selected", String(activo));
+      b.tabIndex = activo ? 0 : -1;
+    });
     $$("[data-panel]", contenedor).forEach((p) => { p.hidden = p.dataset.panel !== id; });
     // El mapa se crea una sola vez: volver a la pestaña no cambia el encuadre que dejó el usuario.
     if (id === "acceso" && !mapa) mapa = dibujarMapa($(".map", contenedor), a.accesibilidad, null, alClicMapa);
     else if (id === "acceso") setTimeout(() => mapa.invalidateSize(), 0);
   };
-  $$(".tabs [role=tab]", contenedor).forEach((b) => b.addEventListener("click", () => abrir(b.dataset.tab)));
+  const botones = $$(".tabs [role=tab]", contenedor);
+  botones.forEach((b, i) => {
+    b.addEventListener("click", () => abrir(b.dataset.tab));
+    b.addEventListener("keydown", (e) => {
+      const siguiente = e.key === "ArrowRight" ? (i + 1) % botones.length
+        : e.key === "ArrowLeft" ? (i - 1 + botones.length) % botones.length
+        : e.key === "Home" ? 0 : e.key === "End" ? botones.length - 1 : null;
+      if (siguiente === null) return;
+      e.preventDefault();
+      abrir(botones[siguiente].dataset.tab);
+      botones[siguiente].focus();
+    });
+  });
   $$("[data-ir]", contenedor).forEach((b) => b.addEventListener("click", () => abrir(b.dataset.ir)));
 
   async function moverUbicacion(lat, lon) {
@@ -106,8 +122,9 @@ function activarPrecioPropio(contenedor, a, acciones) {
 
 /* ---------- Resumen ---------- */
 
-function panelResumen(a, acciones) {
+function panelResumen(a, opciones, acciones) {
   const p = a.precio, ev = a.evidencia_distrital;
+  const validacion = opciones?.validacion;
   const avisos = a.avisos.map(avisoSencillo);
   if (ev?.muestra_pequena) avisos.unshift(`En ${titulo(ev.distrito)} tenemos pocos datos (menos de 20 departamentos): toma el margen de error con cautela.`);
   return `
@@ -116,15 +133,15 @@ function panelResumen(a, acciones) {
       <div class="kpis span-6">
         <div class="kpi"><p class="kpi-label">Precio esperado</p><p class="kpi-value is-main num">${soles(p.precio_estimado_soles)}<small>al mes</small></p>
           <p class="delta">Precio típico en el distrito: ${soles(p.baseline_distrital_soles)}</p></div>
-        <div class="kpi"><p class="kpi-label">Rango probable</p><p class="kpi-value num">${soles(p.limite_inferior_soles)} <small>a</small> ${soles(p.limite_superior_soles)}</p>
-          <p class="delta">El precio real cayó en este rango 92 de cada 100 veces</p></div>
+        <div class="kpi"><p class="kpi-label">Rango estimado</p><p class="kpi-value num">${soles(p.limite_inferior_soles)} <small>a</small> ${soles(p.limite_superior_soles)}</p>
+          <p class="delta">${validacion ? `En ${esc(validacion.mes)} cubrió ${Math.round(validacion.cobertura * 100)} de cada 100 anuncios evaluados; no garantiza este caso.` : "Cobertura reciente no disponible; no garantiza este caso."}</p></div>
         <div class="kpi"><p class="kpi-label">Margen de error en el distrito</p>
           <p class="kpi-value num">${ev ? soles(ev.error_absoluto_medio_soles) : '<span class="dash">—</span>'}</p>
           <p class="delta">${ev ? `En promedio, comprobado con ${ev.anuncios_prueba} departamentos de ${esc(titulo(ev.distrito))}` : "Aún no tenemos datos suficientes de este distrito"}</p></div>
       </div>
 
       <section class="panel span-4 ruler" aria-labelledby="t-regla">
-        <header><h2 id="t-regla">¿A cuánto publicar?</h2><span class="meta">Departamentos parecidos, rango probable y los tres precios</span></header>
+        <header><h2 id="t-regla">¿A cuánto publicar?</h2><span class="meta">Departamentos parecidos, rango estimado y los tres precios</span></header>
         ${reglaPrecios(a)}
         <p class="panel-note">La línea naranja es el precio esperado. Cada punto es uno de los 8 departamentos más parecidos; la barra gris, el rango en el que suele caer el precio.</p>
       </section>
@@ -212,9 +229,9 @@ function reglaPrecios(a) {
     // Equilibrado suele caer sobre la línea del esperado: su etiqueta va a la derecha de esa línea.
     return `<text x="${Math.max(xs, x(p.precio_estimado_soles)) + 8}" y="${fila.publicacion - 14}" text-anchor="start" ${negrita}>${esc(s.escenario)}</text>`;
   };
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Precio esperado ${soles(p.precio_estimado_soles)} frente a departamentos parecidos, rango probable y precios de publicación">
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Precio esperado ${soles(p.precio_estimado_soles)} frente a departamentos parecidos, rango estimado y precios de publicación">
     ${ticks(min, max, compacto ? 3 : 4).map((v) => `<line x1="${x(v)}" x2="${x(v)}" y1="40" y2="${ejeY - 18}" stroke="#e7e6e2" stroke-dasharray="2 3"/><text x="${x(v)}" y="${ejeY}" text-anchor="middle">${soles(v)}</text>`).join("")}
-    ${etiquetaFila("8 parecidos", fila.comparables)}${etiquetaFila("Rango probable", fila.rango)}${etiquetaFila("Publicación", fila.publicacion)}
+    ${etiquetaFila("8 parecidos", fila.comparables)}${etiquetaFila("Rango estimado", fila.rango)}${etiquetaFila("Publicación", fila.publicacion)}
     ${comps.map((v) => `<circle cx="${x(v)}" cy="${fila.comparables}" r="5" fill="#111" fill-opacity="0.28"><title>${soles(v)}</title></circle>`).join("")}
     <rect x="${x(p.limite_inferior_soles)}" y="${fila.rango - 4}" width="${x(p.limite_superior_soles) - x(p.limite_inferior_soles)}" height="8" rx="4" fill="#d9d7d2"/>
     ${escenarios.map((s) => `<line x1="${x(s.precio_soles)}" x2="${x(s.precio_soles)}" y1="${fila.publicacion - 9}" y2="${fila.publicacion + 9}" stroke="#111" stroke-width="${s.sugerido ? 3 : 1.5}"/>${etiqueta(s)}`).join("")}

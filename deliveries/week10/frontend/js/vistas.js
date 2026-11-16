@@ -223,12 +223,28 @@ export async function vistaDetalleDepartamento(lienzo, params, id) {
 
 /* ---------- Probar sin cuenta ---------- */
 
-export async function vistaProbar(lienzo) {
+export async function vistaProbar(lienzo, params = new URLSearchParams()) {
   const op = await obtenerOpciones();
   lienzo.innerHTML = filaTitulo("Probar el análisis", "Sin cuenta: elige un ejemplo o describe un departamento. Los resultados no se guardan.",
     sesion() ? "" : '<a class="btn" href="#/ingresar?modo=registro">Crear cuenta para guardar</a>')
-    + '<section class="panel" data-form></section><div data-resultado style="margin-top:24px"></div>';
+    + `<figure class="public-scene">
+        <img src="assets/lima-apartamento.jpg" width="1024" height="696" loading="lazy" decoding="async" alt="Entrada y jardín de un edificio residencial en Lima">
+        <figcaption><strong>Prueba con los datos de tu departamento.</strong><span>Imagen de contexto: no representa un inmueble del análisis. Foto: <a href="https://commons.wikimedia.org/wiki/File:Lima_Peru_city_-_Modern_Apartment_-_outside.jpg">Protontorniyo</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>.</span></figcaption>
+      </figure><section class="panel" data-form></section><div data-resultado style="margin-top:24px"></div>`;
   const f = formularioVivienda($("[data-form]", lienzo), op, { conDemos: true, conMapa: true, textoBoton: "Analizar" });
+  const distrito = params.get("distrito");
+  const camposPortada = { area_total: params.get("area"), dormitorios: params.get("dormitorios"), banos: params.get("banos") };
+  const valido = distrito && op.distritos.includes(distrito) && Object.entries(camposPortada).every(([campo, texto]) => {
+    const valor = Number(texto), [min, max] = op.limites[campo];
+    return texto !== null && texto !== "" && Number.isFinite(valor) && valor >= min && valor <= max;
+  });
+  if (valido) {
+    const vivienda = { distrito_norm: distrito };
+    for (const campo of Object.keys(op.limites)) vivienda[campo] = null;
+    for (const campo of op.binarias) vivienda[campo] = null;
+    for (const [campo, texto] of Object.entries(camposPortada)) vivienda[campo] = Number(texto);
+    f.cargarDesdePortada(vivienda);
+  }
   const destino = $("[data-resultado]", lienzo);
   f.form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -251,6 +267,11 @@ export async function vistaBuscar(lienzo) {
   const opcionesMin = Array.from({ length: 4 }, (_, i) => `<option value="${i + 1}">${i + 1} o más</option>`).join("");
   lienzo.innerHTML = `
     ${filaTitulo("Buscar departamentos", `<span data-hallazgo>Anuncios del ${esc(op.mercado.captura_texto)} y departamentos publicados en DepaRent.</span>`)}
+    <figure class="public-scene public-scene-wide">
+      <img src="assets/barranco-calle.jpg" width="1280" height="960" loading="lazy" decoding="async" alt="Calle residencial con árboles y fachadas en Barranco, Lima">
+      <figcaption><strong>Busca por distrito, precio y características.</strong><span>Vista de Barranco; la foto no corresponde a los anuncios. Foto: <a href="https://commons.wikimedia.org/wiki/File:Lima,_Peru_-_Streets_of_Barranco.jpg">Donairesunovi</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>.</span></figcaption>
+    </figure>
+    <p class="notice">Compara el precio pedido con una estimación del modelo. Los anuncios de mercado son una captura histórica; confirma disponibilidad antes de decidir.</p>
     <form class="filters" novalidate>
       <div class="field"><label for="b-distrito">Distrito</label><select class="input" id="b-distrito" name="distrito"><option value="">Todos</option>
         ${op.distritos.filter((d) => d !== "otros").map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>
@@ -278,7 +299,8 @@ export async function vistaBuscar(lienzo) {
     </section>
     <div data-resultados></div>`;
   const form = $(".filters", lienzo), extra = $("#mas-filtros", lienzo), destino = $("[data-resultados]", lienzo);
-  let limite = 24, valoracion = null;
+  let limite = 24, valoracion = null, solicitud = 0;
+  const comparados = new Map();
   $("[data-mas-filtros]", lienzo).addEventListener("click", (e) => {
     extra.hidden = !extra.hidden;
     form.classList.toggle("expand", !extra.hidden);
@@ -297,24 +319,61 @@ export async function vistaBuscar(lienzo) {
   }
 
   async function ejecutar() {
+    const turno = ++solicitud;
+    const parametros = filtros();
     destino.setAttribute("aria-busy", "true");
     try {
-      const r = await llamar("/api/buscar", { cuerpo: filtros() });
-      destino.innerHTML = resultadosBusqueda(r, valoracion);
-      const total = Object.values(r.conteos).reduce((a, b) => a + b, 0);
-      $("[data-hallazgo]", lienzo).textContent = total
-        ? `${num(total)} departamentos con estos filtros · ${num(r.conteos.por_debajo)} están más baratos de lo que deberían costar.`
-        : "Ningún departamento con estos filtros.";
+      const r = await llamar("/api/buscar", { cuerpo: parametros });
+      if (turno !== solicitud) return;
+      destino.innerHTML = resultadosBusqueda(r, parametros.valoracion, comparados);
+      $("[data-hallazgo]", lienzo).textContent = r.total
+        ? parametros.valoracion
+          ? `${num(r.total)} departamentos en esta categoría con los filtros elegidos.`
+          : `${num(r.total)} departamentos con estos filtros · ${num(r.conteos.por_debajo)} tienen un precio pedido por debajo de la estimación.`
+        : "Ningún departamento con esta selección de filtros.";
       $$("[data-valoracion]", destino).forEach((b) => b.addEventListener("click", () => {
         valoracion = b.dataset.valoracion || null; limite = 24; ejecutar();
       }));
+      function actualizarComparacion(idParaEnfocar = null) {
+        const panel = $("[data-comparacion]", destino);
+        panel.innerHTML = panelComparacion(comparados);
+        $$("[data-quitar-comparacion]", destino).forEach((b) => b.addEventListener("click", () => {
+          const id = b.dataset.quitarComparacion;
+          comparados.delete(id);
+          actualizarComparacion(id);
+        }));
+        $$("[data-comparar]", destino).forEach((b) => {
+          const seleccionado = comparados.has(b.dataset.comparar);
+          b.setAttribute("aria-pressed", String(seleccionado));
+          b.textContent = seleccionado ? "Quitar" : "Comparar";
+          b.disabled = !seleccionado && comparados.size >= 3;
+        });
+        if (idParaEnfocar) {
+          const boton = $$("[data-comparar]", destino).find((b) => b.dataset.comparar === idParaEnfocar);
+          const foco = boton || $("h2", panel);
+          if (!boton) foco.tabIndex = -1;
+          foco.focus();
+        }
+      }
+      $$("[data-comparar]", destino).forEach((b) => b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = b.dataset.comparar;
+        if (comparados.has(id)) comparados.delete(id);
+        else if (comparados.size < 3) {
+          const encontrado = r.resultados.find((x) => x.id === id);
+          if (encontrado) comparados.set(id, encontrado);
+        }
+        actualizarComparacion();
+      }));
+      actualizarComparacion();
       $("[data-mas]", destino)?.addEventListener("click", () => { limite = Math.min(60, limite + 24); ejecutar(); });
-      $$("tr[data-href]", destino).forEach((tr) => tr.addEventListener("click", (e) => { if (!e.target.closest("a")) irA(tr.dataset.href); }));
+      $$("tr[data-href]", destino).forEach((tr) => tr.addEventListener("click", (e) => { if (!e.target.closest("a, button")) irA(tr.dataset.href); }));
     } catch (err) {
+      if (turno !== solicitud) return;
       destino.innerHTML = `<section class="panel"><div class="empty"><p>No pudimos cargar la búsqueda. ${esc(err.message)}</p><button class="btn" type="button" data-reintentar>Reintentar</button></div></section>`;
       $("[data-reintentar]", destino).addEventListener("click", ejecutar);
     } finally {
-      destino.removeAttribute("aria-busy");
+      if (turno === solicitud) destino.removeAttribute("aria-busy");
     }
   }
   form.addEventListener("submit", (e) => { e.preventDefault(); limite = 24; ejecutar(); });
@@ -322,33 +381,55 @@ export async function vistaBuscar(lienzo) {
   ejecutar();
 }
 
-function resultadosBusqueda(r, valoracion) {
+function resultadosBusqueda(r, valoracion, comparados) {
   const total = Object.values(r.conteos).reduce((a, b) => a + b, 0);
-  const tarjetas = [["", "Todos", total], ["por_debajo", "Más baratos de lo esperado", r.conteos.por_debajo],
-    ["en_linea", "A precio justo", r.conteos.en_linea], ["por_encima", "Más caros de lo esperado", r.conteos.por_encima]];
+  const tarjetas = [["", "Todos", total], ["por_debajo", "Por debajo de la estimación", r.conteos.por_debajo],
+    ["en_linea", "Cerca de la estimación", r.conteos.en_linea], ["por_encima", "Por encima de la estimación", r.conteos.por_encima]];
   const pill = (x) => (x.valoracion.startsWith("Por debajo") ? "pos" : x.valoracion.startsWith("Por encima") ? "warn" : "");
   return `
-    <div class="counts" role="group" aria-label="Filtrar por si el precio es caro, justo o barato">
+    <div class="counts" role="group" aria-label="Filtrar por relación entre precio pedido y estimación">
       ${tarjetas.map(([k, t, n]) => `<button class="count" type="button" data-valoracion="${k}" aria-pressed="${(valoracion || "") === k}"><span>${t}</span><b>${num(n)}</b></button>`).join("")}
     </div>
+    <div data-comparacion aria-live="polite">${panelComparacion(comparados)}</div>
     <section class="panel" aria-label="Resultados">
+      <p class="panel-note" style="margin:0 0 14px">Comparación orientativa: un porcentaje negativo indica un precio pedido menor que la estimación; uno positivo, mayor. Esto no confirma un ahorro.</p>
       ${r.total ? `<div class="table-wrap"><table class="list-table">
-        <thead><tr><th>Departamento</th><th class="n">Área</th><th class="n">Paradero</th><th class="n">Debería costar</th><th class="n">¿Caro o barato?</th><th class="n">Precio</th></tr></thead>
+        <thead><tr><th>Departamento</th><th class="n">Área</th><th class="n">Paradero</th><th class="n">Estimación</th><th class="n">Diferencia</th><th class="n">Precio pedido</th><th>Comparar</th></tr></thead>
         <tbody>${r.resultados.map((x) => `<tr data-href="#/anuncio/${x.id}">
           <td><a class="id" href="#/anuncio/${x.id}">${x.nombre ? esc(x.nombre) : `${dorms(x.dormitorios)} · ${banos(x.banos)}`}</a>
             <span class="sub">${esc(titulo(x.distrito))} · ${esc(x.perfil)}${x.origen === "Publicado en DepaRent" ? " · publicado en DepaRent" : ""}${x.amenidades.length ? " · " + x.amenidades.map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()).join(", ") : ""}</span></td>
           <td class="n more" data-label="Área">${num(x.area_total)} m²</td>
           <td class="n more" data-label="Paradero a">${num(x.dist_paradero_min_m)} m</td>
-          <td class="n more" data-label="Debería costar">${soles(x.precio_estimado_soles)}</td>
-          <td class="n more" data-label="¿Caro o barato?"><span class="pill ${pill(x)}" title="${esc(valoracionSencilla(x.valoracion))}">${pct(x.diferencia_estimado_porcentaje)}</span></td>
-          <td class="n key"><b>${soles(x.precio_soles)}</b></td></tr>`).join("")}</tbody>
+          <td class="n more" data-label="Estimación">${soles(x.precio_estimado_soles)}</td>
+          <td class="n more" data-label="Diferencia"><span class="pill ${pill(x)}" title="${esc(valoracionSencilla(x.valoracion))}">${pct(x.diferencia_estimado_porcentaje)}</span></td>
+          <td class="n key"><b>${soles(x.precio_soles)}</b></td>
+          <td class="compare-cell"><button class="btn compare-add" type="button" data-comparar="${esc(x.id)}" aria-pressed="${comparados.has(x.id)}">${comparados.has(x.id) ? "Quitar" : "Comparar"}</button></td></tr>`).join("")}</tbody>
       </table></div>
       <div class="list-foot"><span>1 a ${r.resultados.length} de ${num(r.total)}</span>
         ${r.resultados.length < Math.min(r.total, 60) ? `<button class="btn" type="button" data-mas>Mostrar ${Math.min(24, Math.min(r.total, 60) - r.resultados.length)} más</button>` : ""}</div>`
       : '<div class="empty"><p>Ningún departamento con estos filtros. Prueba ampliar el presupuesto, quitar amenidades o cambiar el distrito.</p></div>'}
-      <p class="panel-note">El porcentaje compara el precio pedido con lo que calculamos que debería costar un departamento así: negativo es más barato, positivo es más caro. Es una foto del mercado de ese día, no una lista de ofertas vigentes.</p>
+      <p class="panel-note">Es una foto del mercado de ese día, no una lista de ofertas vigentes.</p>
       ${notaTecnica(r.aviso)}
     </section>`;
+}
+
+function panelComparacion(comparados) {
+  const elegidos = [...comparados.values()];
+  return `<section class="panel compare-panel" aria-labelledby="titulo-comparar">
+    <header><h2 id="titulo-comparar">Compara hasta 3 departamentos</h2><span class="meta">${elegidos.length} de 3 elegidos</span></header>
+    <p class="panel-note">Las opciones elegidas permanecen aquí aunque cambies los filtros de búsqueda.</p>
+    ${elegidos.length ? `<div class="compare-grid">${elegidos.map((x) => `<article class="compare-card">
+      <div class="compare-card-head"><h3>${esc(titulo(x.distrito))} · ${num(x.dormitorios)} dorm.</h3>
+        <button class="btn ghost" type="button" data-quitar-comparacion="${esc(x.id)}" aria-label="Quitar departamento de ${esc(titulo(x.distrito))} de la comparación">Quitar</button></div>
+      <dl><div><dt>Precio pedido</dt><dd>${soles(x.precio_soles)}</dd></div>
+        <div><dt>Estimación del modelo</dt><dd>${soles(x.precio_estimado_soles)}</dd></div>
+        <div><dt>Diferencia</dt><dd>${pct(x.diferencia_estimado_porcentaje)}</dd></div>
+        <div><dt>Área</dt><dd>${num(x.area_total)} m²</dd></div>
+        <div><dt>Paradero</dt><dd>${num(x.dist_paradero_min_m)} m</dd></div></dl>
+      <a href="#/anuncio/${esc(x.id)}">Ver ficha</a></article>`).join("")}</div>
+      <p class="panel-note">Comparamos precios pedidos de anuncios; la estimación es orientativa y no confirma disponibilidad.</p>`
+    : '<p class="hint">Pulsa “Comparar” en dos o tres resultados para verlos lado a lado.</p>'}
+  </section>`;
 }
 
 /* ---------- Errores ---------- */

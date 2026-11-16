@@ -23,11 +23,19 @@ body[data-vista="inicio"] > .footer { display: none; }
 .lines .line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
 .lines [data-line] { display: block; }
 /* Anclados al pie del primer viewport, no del hero (el cartel sigue bajo el pliegue). */
-.home-lead, .home-fact {
+.home-intro, .home-fact {
   position: absolute; top: calc(100svh - var(--nav-h) - 32px); translate: 0 -100%; margin: 0; max-width: 280px;
   font-size: var(--step-body); line-height: 1.45;
 }
-.home-lead { left: var(--gutter); }
+.home-intro { left: var(--gutter); width: 240px; }
+.home-lead { margin: 0; }
+.home-choices { display: grid; gap: 8px; margin-top: 16px; }
+.home-choices a { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 10px 12px;
+  border: 2px solid var(--ink); font-weight: 900; text-decoration: none; line-height: 1.2; }
+.home-choices a:first-child { background: var(--ink); color: var(--bg); }
+.home-choices a:hover { translate: 3px 0; }
+.home-choices a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.home-choice-note { margin: 10px 0 0; font-size: var(--step-small); }
 .home-fact { right: var(--gutter); text-align: right; }
 
 /* El cartel sigue al centro, bajo el titular; la ventana de Lima asoma detrás, a su izquierda. */
@@ -55,11 +63,14 @@ body[data-vista="inicio"] > .footer { display: none; }
 .cartel-price .moneda { font-size: var(--step-lead); letter-spacing: 0; margin-right: 0.15em; vertical-align: 0.9em; }
 .cartel-price small { display: block; font-size: var(--step-small); font-weight: 500; letter-spacing: 0; margin-top: 6px; }
 .cartel-range { margin: 0; font-size: var(--step-small); }
+.cartel-limit { margin: 0; font-size: var(--step-small); line-height: 1.35; color: var(--muted-on-paper); }
+.cartel-limit a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 .cartel.is-error .cartel-range { color: var(--error); font-weight: 500; }
 .cartel-link {
   display: block; padding: 14px; background: var(--ink); color: var(--bg) !important;
   font-weight: 900; text-decoration: none; font-size: var(--step-body);
 }
+.cartel-link[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
 .cartel-foot { margin: 0; font-size: var(--step-small); color: var(--muted-on-paper); }
 
 /* ---------- Tres precios ---------- */
@@ -208,7 +219,7 @@ body[data-vista="inicio"] > .footer { display: none; }
 .home :is(.cartel-link, .reply-action, .footer-top):active { transform: scale(0.97); }
 @media (prefers-reduced-motion: no-preference) {
   .js .home-title [data-line] { transform: translateY(105%); animation: line-up 900ms var(--ease-expo) forwards; animation-delay: calc(var(--i) * 110ms + 150ms); }
-  .js .home :is(.home-lead, .home-fact) { opacity: 0; animation: fade-up 700ms var(--ease-out) 520ms forwards; }
+  .js .home :is(.home-intro, .home-fact) { opacity: 0; animation: fade-up 700ms var(--ease-out) 520ms forwards; }
   .js .hero-stage { opacity: 0; transform: translateY(48px); animation: rise 1000ms var(--ease-expo) 380ms forwards; }
   .js .home [data-reveal] {
     opacity: 0; transform: translateY(24px);
@@ -231,14 +242,19 @@ body[data-vista="inicio"] > .footer { display: none; }
 @keyframes drift { from { transform: translateY(40px); } to { transform: translateY(-40px); } }
 
 /* ---------- Teléfono y tableta ---------- */
-@media (max-width: 900px) {
+@media (max-width: 1250px) {
   .home-hero { padding-top: 6svh; min-height: 0; }
   .home-title { font-size: var(--step-display-phone); text-align: left; justify-self: stretch; }
   .hero-stage { width: min(100%, 420px); margin-top: 24px; }
   .hero-foto { position: relative; top: 0; left: 0; width: 100%; aspect-ratio: 16 / 9; rotate: 0deg; object-position: 50% 50%; display: block; }
   .cartel { margin-top: -24px; }
-  .home-lead, .home-fact { position: static; translate: none; max-width: 36ch; margin: 32px 0 0; justify-self: stretch; text-align: left; order: 2; }
-  .home-fact { margin: 12px 0 64px; }
+  .home-intro, .home-fact { position: static; translate: none; max-width: 44ch; width: 100%; justify-self: stretch; text-align: left; }
+  .home-intro { order: 1; margin: 12px 0 0; }
+  .home-choices { grid-template-columns: 1fr 1fr; }
+  .hero-stage { order: 2; }
+  .home-fact { order: 3; margin: 20px 0 64px; }
+}
+@media (max-width: 900px) {
   .home-prices { padding: 96px var(--gutter); }
   .stack { white-space: normal; }
   .stack-line { font-size: var(--step-head); }
@@ -279,4 +295,54 @@ body[data-vista="inicio"] > .footer { display: none; }
   .about-team { grid-template-columns: 1fr; }
   .miembro { min-height: 0; }
   .miembro:nth-child(n) { rotate: none; }
+}
+
+/* Fotografías de Lima: contexto visual, separado de las fichas de anuncios. */
+.home-lima { padding: clamp(64px, 10vw, 144px) var(--gutter); background: var(--ink); color: var(--paper); }
+.home-lima-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 34ch); align-items: end; column-gap: 32px; }
+.home-lima-kicker { grid-column: 1 / -1; margin: 0 0 16px; color: var(--surface-2); font-size: var(--step-small); font-weight: 700; text-transform: uppercase; letter-spacing: 0.11em; }
+.home-lima-head h2 { margin: 0; max-width: 16ch; font-size: clamp(2.4rem, 5.2vw, 5.8rem); line-height: 0.98; }
+.home-lima-head > p:last-child { margin: 0 0 0.25em; line-height: 1.5; font-size: var(--step-body); }
+.home-lima-grid { display: grid; grid-template-columns: 1.16fr 1fr 0.9fr; gap: clamp(12px, 1.6vw, 24px); align-items: end; margin-top: clamp(32px, 5vw, 72px); }
+.home-lima-photo { margin: 0; min-width: 0; }
+.home-lima-photo img { display: block; width: 100%; height: clamp(260px, 33vw, 470px); object-fit: cover; object-position: center; }
+.home-lima-photo:nth-child(2) img { height: clamp(220px, 27vw, 390px); }
+.home-lima-photo:nth-child(3) img { height: clamp(200px, 23vw, 330px); object-position: 50% 26%; }
+.home-lima-photo figcaption { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 2px 14px; padding-top: 12px; border-top: 3px solid var(--bg); margin-top: 8px; }
+.home-lima-photo strong { font-size: var(--step-body); font-weight: 800; }
+.home-lima-photo span { font-size: var(--step-small); color: #d5d5d5; }
+.home-lima-action { display: inline-flex; justify-content: space-between; align-items: center; gap: 28px; margin-top: 36px; padding: 14px 18px; min-height: 48px; background: var(--bg); color: var(--ink) !important; text-decoration: none; font-weight: 900; }
+.home-lima-action:hover { background: var(--paper); }
+.home-lima-action:focus-visible { outline: 3px solid var(--paper); outline-offset: 4px; }
+
+/* Encabezados fotográficos en búsqueda, análisis y recomendaciones. */
+.public-scene { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr); min-height: 236px; margin: 0 0 24px; overflow: hidden; background: var(--ink); color: var(--paper); }
+.public-scene img { display: block; width: 100%; height: 100%; max-height: 310px; min-height: 236px; object-fit: cover; }
+.public-scene figcaption { display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; padding: clamp(20px, 3vw, 40px); border-left: 9px solid var(--bg); }
+.public-scene strong { display: block; max-width: 22ch; font-size: clamp(1.5rem, 2.7vw, 2.7rem); font-weight: 900; line-height: 1.1; letter-spacing: -0.03em; }
+.public-scene span { display: block; max-width: 50ch; color: #e4e4e4; font-size: max(0.84rem, var(--step-small)); line-height: 1.55; }
+.public-scene a { color: var(--surface-2); text-underline-offset: 0.2em; }
+.public-scene a:focus-visible { outline: 2px solid var(--surface-2); outline-offset: 3px; }
+.public-scene-compact { min-height: 156px; grid-template-columns: minmax(0, 0.45fr) minmax(0, 1fr); }
+.public-scene-compact img { max-height: 174px; min-height: 156px; }
+.public-scene-compact strong { font-size: clamp(1.3rem, 2vw, 2rem); }
+.public-scene-compact figcaption { padding: 18px 24px; gap: 8px; }
+
+@media (max-width: 900px) {
+  .home-lima-head { grid-template-columns: 1fr; gap: 16px; }
+  .home-lima-head > p:last-child { max-width: 55ch; }
+  .home-lima-grid { grid-template-columns: repeat(2, 1fr); }
+  .home-lima-photo:nth-child(3) { grid-column: 1 / -1; }
+  .home-lima-photo:nth-child(n) img { height: 300px; }
+  .home-lima-photo:nth-child(3) img { height: 250px; object-position: 50% 40%; }
+}
+@media (max-width: 600px) {
+  .home-lima-grid { grid-template-columns: 1fr; }
+  .home-lima-photo:nth-child(3) { grid-column: auto; }
+  .home-lima-photo:nth-child(n) img { height: 260px; }
+  .home-lima-photo:nth-child(3) img { object-position: 50% 34%; }
+  .public-scene, .public-scene-compact { grid-template-columns: 1fr; }
+  .public-scene img, .public-scene-compact img { height: 180px; min-height: 0; max-height: none; }
+  .public-scene figcaption { border-left: 0; border-top: 8px solid var(--bg); padding: 18px; gap: 8px; }
+  .public-scene strong, .public-scene-compact strong { font-size: 1.45rem; }
 }

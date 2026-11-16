@@ -38,16 +38,16 @@ export async function vistaAnuncio(lienzo, params, id) {
       <div class="kpis span-6">
         <div class="kpi"><p class="kpi-label">Precio pedido</p><p class="kpi-value is-main num">${soles(x.precio_soles)}<small>al mes</small></p>
           <p class="delta">${f.publicacion ? `Escenario ${esc(f.publicacion.escenario.toLowerCase())}` : "Precio pedido en el portal, no de contrato"}</p></div>
-        <div class="kpi"><p class="kpi-label">Lo que debería costar</p><p class="kpi-value num">${soles(p.precio_estimado_soles)}</p>
+        <div class="kpi"><p class="kpi-label">Estimación del modelo</p><p class="kpi-value num">${soles(p.precio_estimado_soles)}</p>
           <p class="delta">Rango probable: ${soles(p.limite_inferior_soles)} a ${soles(p.limite_superior_soles)}</p></div>
-        <div class="kpi"><p class="kpi-label">¿Caro o barato?</p><p class="kpi-value num">${pct(x.diferencia_estimado_porcentaje)}</p>
+        <div class="kpi"><p class="kpi-label">Diferencia frente al estimado</p><p class="kpi-value num">${pct(x.diferencia_estimado_porcentaje)}</p>
           <p class="delta"><span class="pill ${clasePill}">${esc(valoracionSencilla(x.valoracion))}</span></p></div>
       </div>
 
     </div>
     <div class="grid stretch" style="margin-top:var(--gap)">
       <section class="panel span-4 ruler" aria-labelledby="t-justo">
-        <header><h2 id="t-justo">¿Es un buen precio?</h2><span class="meta">Frente a departamentos parecidos y al rango probable</span></header>
+        <header><h2 id="t-justo">¿Cómo se compara el precio?</h2><span class="meta">Frente a departamentos parecidos y al rango estimado</span></header>
         ${reglaAnuncio(f)}
         <p class="panel-note">${lecturaPrecio(f)}</p>
       </section>
@@ -151,7 +151,7 @@ function formularioInteres(propietario) {
 function lecturaPrecio(f) {
   const x = f.anuncio, c = f.perfil;
   const baratos = c.comparables.filter((k) => k["Precio pedido (S/)"] < x.precio_soles).length;
-  return `Pide ${soles(x.precio_soles)}: ${baratos} de sus ${c.comparables.length} departamentos más parecidos piden menos, y calculamos que debería costar ${soles(f.precio.precio_estimado_soles)}. `
+  return `Pide ${soles(x.precio_soles)}: ${baratos} de sus ${c.comparables.length} departamentos más parecidos piden menos, y el modelo estima ${soles(f.precio.precio_estimado_soles)}. `
     + "Tómalo como una referencia, no como una tasación.";
 }
 
@@ -174,7 +174,7 @@ function reglaAnuncio(f) {
     ${comps.map((v) => `<circle cx="${ex(v)}" cy="${fila.comparables}" r="5" fill="#111" fill-opacity="0.28"><title>${soles(v)}</title></circle>`).join("")}
     <rect x="${ex(p.limite_inferior_soles)}" y="${fila.rango - 4}" width="${ex(p.limite_superior_soles) - ex(p.limite_inferior_soles)}" height="8" rx="4" fill="#d9d7d2"/>
     <line x1="${xEstimado}" x2="${xEstimado}" y1="${fila.rango - 12}" y2="${fila.rango + 12}" stroke="#111" stroke-width="2"/>
-    <text x="${xEstimado}" y="${fila.rango + 28}" text-anchor="middle">Debería costar</text>
+    <text x="${xEstimado}" y="${fila.rango + 28}" text-anchor="middle">Estimación</text>
     <line x1="${xPedido}" x2="${xPedido}" y1="34" y2="${fila.rango + 12}" stroke="var(--accent)" stroke-width="2"/>
     <text class="main-lbl" x="${xPedido + dxPedido}" y="24" text-anchor="${anclaPedido}">Pide ${soles(x.precio_soles)}</text>
   </svg>`;

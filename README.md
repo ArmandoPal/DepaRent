@@ -32,7 +32,8 @@ El documento breve del estado del proyecto está en [`deliveries/week15/EstadoPr
 | **Propietario** | Crea cuenta, registra sus departamentos (con ubicación en el mapa) y recibe el análisis completo; publica al precio que elija y ve a los interesados |
 | **Inquilino** | Busca con filtros (distrito, presupuesto, dormitorios, amenidades, cercanía a paraderos) sobre ~3,000 anuncios reales; ve si cada precio está por debajo, en línea o por encima del estimado; o responde un cuestionario y recibe recomendaciones personalizadas |
 | **Prueba rápida** | El análisis completo sin crear cuenta (`#/probar`) |
-| **Analista** | Panel de KPIs (uso, modelo, datos y recomendador), solo para correos autorizados |
+| **Analista** | Panel de KPIs (uso, modelo, datos y recomendador), con gráficos y asistente de lectura; solo para correos autorizados |
+| **Ayuda en la web** | Guía de preguntas frecuentes sobre estimación, búsqueda, recomendaciones, publicación y acceso al panel. No es un chat generativo ni envía mensajes a una persona. |
 
 ### Componentes analíticos
 
@@ -94,15 +95,16 @@ DepaRent/
 ## 4. Instalación y ejecución
 
 ### Requisitos
-- **Python 3.12 o 3.13** y conexión a internet (instalar dependencias y cargar el mapa de OpenStreetMap).
-- Git.
+- **Python 3.14** para reproducir la prueba local de esta copia y conexión a internet para instalar dependencias y cargar el mapa de OpenStreetMap. El despliegue de Render declara Python 3.12.8 y debe verificarse antes de publicar esta versión.
+- Para ejecutar el ZIP no necesitas Git.
 
-### App web (API + interfaz) — Windows PowerShell, desde la raíz del repo
+### App web (API + interfaz) — Windows PowerShell, desde el ZIP de esta revisión
+
+Descomprime el ZIP y abre PowerShell en la carpeta que contiene `DepaRent`. Entra en esa carpeta y ejecuta:
 
 ```powershell
-git clone https://github.com/Luciana-y/DepaRent.git
 cd DepaRent
-py -3.13 -m venv .venv
+py -3.14 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r deliveries/week10/code/requirements.txt
 cd deliveries/week10/code
 ..\..\..\.venv\Scripts\python.exe -m uvicorn api:app --host 127.0.0.1 --port 8000
@@ -115,8 +117,12 @@ En Linux/macOS: `python3 -m venv .venv`, `.venv/bin/python -m pip install ...` y
 ### Pruebas automáticas (desde `deliveries/week10/code`)
 
 ```powershell
-..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"   # 70 pruebas, todas pasan (13-nov-2026)
+..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py" -q   # 76 pruebas, verificadas el 14-nov-2026
 ```
+
+### Probar el tablero con 300 cuentas ficticias
+
+La práctica usa otra base SQLite y no modifica las cuentas de la aplicación ni las publicaciones que aparecen en la búsqueda. La guía y el CSV de comprobación están en [`deliveries/week10/resultados/simulacion_300_usuarios/LEEME.md`](deliveries/week10/resultados/simulacion_300_usuarios/LEEME.md). El generador `crear_demo_300.py` crea 300 cuentas marcadas como simuladas; la base se crea en el equipo y no se entrega dentro del ZIP. Tras registrar una cuenta de prueba en esa base, el panel pasa de 300 a 301 y distingue ambas procedencias. Consulta los cambios cada 10 segundos mientras está abierto. No registra compras, ingresos ni visitas anónimas.
 
 ### Reproducir la evaluación
 

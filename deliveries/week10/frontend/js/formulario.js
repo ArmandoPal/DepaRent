@@ -96,11 +96,23 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
 
   buscadorDireccion(form, campo, fijarUbicacion);
 
+  let entradaPortada = null;
+  function cargarDesdePortada(vivienda) {
+    if (!conDemos) return;
+    entradaPortada = vivienda;
+    const selector = campo("demo");
+    if (!selector.querySelector('option[value="portada"]')) selector.add(new Option("Lo que ingresaste en inicio", "portada"), 0);
+    selector.value = "portada";
+    cargar(vivienda);
+  }
   if (conDemos) {
-    campo("demo").addEventListener("change", () => cargar(opciones.demos[Number(campo("demo").value)].entrada));
+    campo("demo").addEventListener("change", () => {
+      const valor = campo("demo").value;
+      cargar(valor === "portada" ? entradaPortada : opciones.demos[Number(valor)].entrada);
+    });
     cargar(opciones.demos[0].entrada);
   }
-  return { form, leer, cargar, fijarUbicacion, mensaje: $(".form-msg", form), boton: $("button[type=submit]", form) };
+  return { form, leer, cargar, cargarDesdePortada, fijarUbicacion, mensaje: $(".form-msg", form), boton: $("button[type=submit]", form) };
 }
 
 const LIMA = [-12.0464, -77.0428];
