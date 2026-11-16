@@ -24,7 +24,7 @@ Estado: ✅ listo · 🟡 en progreso · ⬜ pendiente. Responsables según `wee
 | 9 | Data Product Canvas final | `DataProductCanvas.pdf` | ⬜ | Armando |
 | 10 | Especificación final de requisitos | `Requirements.md` | ⬜ esqueleto listo | Armando |
 | 11 | Diagramas finales de arquitectura y flujo | `architecture/` | ✅ (actualizar si cambia algo) | Adrian |
-| 12 | Resultados de evaluación, baselines y casos de estudio | `evaluation/README.md` → `week12/EvaluationReport.md` | 🟡 faltan pruebas con usuarios | Luciana / Breysi |
+| 12 | Resultados de evaluación, baselines y casos de estudio | `evaluation/README.md` → `week12/EvaluationReport.md` | 🟡 2 de 5 pruebas con usuarios (§6c) | Luciana / Breysi |
 | 13 | Página del proyecto (descripción, equipo, imagen, video, instrucciones, enlaces) | `project_page/` | ⬜ | Armando |
 | 14 | `README.md` raíz completo (instalación, ejecución, dependencias, datos, modelo, despliegue, limitaciones, solución de problemas) | `/README.md` | ⬜ | Adrian |
 | 15 | Contribución de cada integrante | `ContributionStatement.md` | ⬜ esqueleto listo | todos |

@@ -104,7 +104,7 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 
 ## 7. Qué nos falta completar
 
-- [ ] Registrar los resultados de las pruebas con usuarios (`week12/plantilla_observaciones.csv`) y agregarlos al informe de evaluación.
+- [ ] Pruebas con usuarios: 2 sesiones con inquilinos registradas (P2 y P3, `week12/pruebas_usuarios/`, `EvaluationReport.md` §6c); faltan al menos 3, incluidos propietarios.
 - [x] Rango de precio proporcional al precio (mejora del modelo 3, revisión del profesor del 14-nov).
 - [ ] Cambiar la contraseña de la cuenta analista en producción (la anterior estuvo publicada).
 - [ ] Informe final (`FinalReport.md` → PDF).

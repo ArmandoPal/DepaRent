@@ -16,7 +16,7 @@ proporcional ya está incorporado (ver `REVISION_DepaRent_13-11-2026.md` en la r
 | Recomendador según el perfil del inquilino (modelo 7) | `deliveries/week12/EvaluationReport.md` §6b · `deliveries/week12/resultados/recomendador_*.{json,csv}` |
 | Casos de estudio | `deliveries/week12/EvaluationReport.md` §7 · `deliveries/week12/resultados/casos_estudio.json` |
 | Pruebas automáticas (76) | `deliveries/week10/code/test_*.py` |
-| Pruebas con usuarios | `deliveries/week12/plantilla_observaciones.csv` (pendiente) |
+| Pruebas con usuarios | `deliveries/week12/pruebas_usuarios/` · `EvaluationReport.md` §6c (2 sesiones de 5, inquilinos; faltan propietarios) |
 
 ## Cifras para el informe y la presentación
 | | Valor |

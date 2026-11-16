@@ -258,6 +258,29 @@ personas reales les gusten sus recomendaciones. Eso se mide en las pruebas con u
 `GuionPruebasUsuarios.md`). Las amenidades salen del texto de los anuncios con reglas y pueden faltar, y la
 cercanía se mide al centro del distrito porque el mercado no guarda direcciones.
 
+## 6c. Observaciones de uso (pruebas con usuarios)
+
+Detalle, archivos y correcciones en `pruebas_usuarios/README.md`. Hay **dos sesiones con personas reales**, ambas
+inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisión del profesor.
+
+| Indicador (P2 y P3) | Resultado |
+|---|---|
+| Tareas completadas sin ayuda | 8 de 8 (T1, T2, T5, T7 en cada sesión) |
+| Utilidad de los 5 primeros (1–5) | Recomendador 3.9 (4.0 y 3.8) · buscador por precio 2.8 (2.8 y 2.8) |
+| Cierre C1–C5 (promedio) | 5.0 · 4.0 · 4.5 · 3.5 · 4.0 |
+
+| Hallazgo | Quiénes | Severidad | Estado en la versión actual |
+|---|---|---|---|
+| El esquema de distribución se confunde con el plano real | P2 y P3 | Importante | **Pendiente**: el aviso «referencial» es pequeño y está en el texto de la lista |
+| El rango del precio necesita relectura o se confunde con el estimado | P2 y P3 | Importante / menor | Atendido en parte: el rango ahora es proporcional y se describe como estimado; volver a comprobar |
+| Sin resultados en el distrito elegido; sugerir distritos cercanos antes de subir el presupuesto | P3 | Importante | **Pendiente**: el mensaje actual sugiere subir el presupuesto o cambiar el distrito |
+| «Por debajo del estimado» se lee como «ganga» | P2 | Importante | Atendido en parte: se llama «por debajo de la estimación» y hay una nota antes de la tabla; volver a comprobar |
+| Dudas en la portada (¿también para inquilinos?, ¿se puede estimar sin cuenta?) | P2 y P3 | Menor | Atendido: la portada muestra «Quiero estimar» y «Quiero buscar» |
+| Explicar mejor por qué aparece cada recomendación | P2 | Menor | Pendiente: los motivos existen, falta hacerlos más visibles |
+
+**Límite:** dos personas orientan, pero no permiten generalizar. Faltan sesiones con propietarios (T3, T4, T6)
+y al menos tres sesiones más para llegar a la meta del guion.
+
 ## 7. Casos de estudio
 
 Ejecutados con la API de la app sobre el mercado del 9 de noviembre (`code/casos_estudio.py` →
