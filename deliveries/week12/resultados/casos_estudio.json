@@ -19,8 +19,8 @@
     "precio_que_pensaba_pedir": 2800,
     "precio": {
       "precio_estimado_soles": 2527.94,
-      "limite_inferior_soles": 1170.99,
-      "limite_superior_soles": 3884.89,
+      "limite_inferior_soles": 1516.83,
+      "limite_superior_soles": 3539.05,
       "baseline_distrital_soles": 2500.0,
       "anuncios_entrenamiento_distrito": 123,
       "advertencias": []
@@ -34,10 +34,10 @@
     "perfil": {
       "cluster": 1,
       "perfil": "Estándar tradicional",
-      "anuncios_en_perfil": 1497,
+      "anuncios_en_perfil": 1515,
       "precio_mediana_perfil_soles": 2500.0,
       "precio_p25_perfil_soles": 1850.0,
-      "precio_p75_perfil_soles": 3100.0
+      "precio_p75_perfil_soles": 3081.5
     },
     "comparables": [
       {
@@ -193,16 +193,16 @@
       },
       "base_resultado": {
         "precio_estimado_soles": 2527.94,
-        "limite_inferior_soles": 1170.99,
-        "limite_superior_soles": 3884.89,
+        "limite_inferior_soles": 1516.83,
+        "limite_superior_soles": 3539.05,
         "baseline_distrital_soles": 2500.0,
         "anuncios_entrenamiento_distrito": 123,
         "advertencias": []
       },
       "alternativa_resultado": {
         "precio_estimado_soles": 2552.21,
-        "limite_inferior_soles": 1195.27,
-        "limite_superior_soles": 3909.16,
+        "limite_inferior_soles": 1541.1,
+        "limite_superior_soles": 3563.32,
         "baseline_distrital_soles": 2500.0,
         "anuncios_entrenamiento_distrito": 123,
         "advertencias": []
@@ -215,7 +215,7 @@
       },
       "diferencia_soles": 24.27,
       "diferencia_porcentaje": 0.96,
-      "interpretacion_intervalos": "Rangos de precio separados con radio global calibrado; no constituyen un intervalo estadístico para la diferencia.",
+      "interpretacion_intervalos": "Rangos de precio individuales calibrados; no constituyen un intervalo estadístico para la diferencia.",
       "soporte": "El conteo distrital no prueba que la combinación concreta de atributos tenga soporte suficiente."
     },
     "laboratorio_area": {
@@ -256,8 +256,8 @@
           },
           "resultado": {
             "precio_estimado_soles": 2337.71,
-            "limite_inferior_soles": 980.76,
-            "limite_superior_soles": 3694.66,
+            "limite_inferior_soles": 1326.6,
+            "limite_superior_soles": 3348.82,
             "baseline_distrital_soles": 2500.0,
             "anuncios_entrenamiento_distrito": 123,
             "advertencias": []
@@ -282,8 +282,8 @@
           },
           "resultado": {
             "precio_estimado_soles": 2527.94,
-            "limite_inferior_soles": 1170.99,
-            "limite_superior_soles": 3884.89,
+            "limite_inferior_soles": 1516.83,
+            "limite_superior_soles": 3539.05,
             "baseline_distrital_soles": 2500.0,
             "anuncios_entrenamiento_distrito": 123,
             "advertencias": []
@@ -308,8 +308,8 @@
           },
           "resultado": {
             "precio_estimado_soles": 2727.56,
-            "limite_inferior_soles": 1370.62,
-            "limite_superior_soles": 4084.51,
+            "limite_inferior_soles": 1716.45,
+            "limite_superior_soles": 3738.68,
             "baseline_distrital_soles": 2500.0,
             "anuncios_entrenamiento_distrito": 123,
             "advertencias": []
@@ -388,7 +388,7 @@
         "dormitorios": 3.0,
         "banos": 2.0,
         "dist_paradero_min_m": 271.4,
-        "perfil": "Moderno que admite mascotas"
+        "perfil": "Estándar tradicional"
       },
       {
         "distrito": "jesus maria",

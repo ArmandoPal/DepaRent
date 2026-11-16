@@ -19,8 +19,8 @@
     },
     "resultado": {
       "precio_estimado_soles": 2092.59,
-      "limite_inferior_soles": 735.64,
-      "limite_superior_soles": 3449.54,
+      "limite_inferior_soles": 1081.48,
+      "limite_superior_soles": 3103.7,
       "baseline_distrital_soles": 2525.0,
       "anuncios_entrenamiento_distrito": 76,
       "advertencias": []
@@ -46,8 +46,8 @@
     },
     "resultado": {
       "precio_estimado_soles": 3656.22,
-      "limite_inferior_soles": 2299.28,
-      "limite_superior_soles": 5013.17,
+      "limite_inferior_soles": 2423.94,
+      "limite_superior_soles": 4888.5,
       "baseline_distrital_soles": 3500.0,
       "anuncios_entrenamiento_distrito": 457,
       "advertencias": []
@@ -73,8 +73,8 @@
     },
     "resultado": {
       "precio_estimado_soles": 7386.28,
-      "limite_inferior_soles": 6029.33,
-      "limite_superior_soles": 8743.23,
+      "limite_inferior_soles": 4896.83,
+      "limite_superior_soles": 9875.73,
       "baseline_distrital_soles": 3400.0,
       "anuncios_entrenamiento_distrito": 259,
       "advertencias": []

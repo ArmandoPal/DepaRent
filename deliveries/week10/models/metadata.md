@@ -2,7 +2,7 @@
 
 | Archivo | Modelo | Uso en el producto | Generado por |
 |---|---|---|---|
-| `modelo_docente.joblib` | HistGradientBoosting (Pipeline con imputación y one-hot de distrito) + radio de rango calibrado | Modelo 3: precio esperado y rango; también lo usan el simulador (modelo 6) y la exploración de área | `code/entrenar.py` (copia del profesor, revisión 20-oct-2026). **No reentrenar**: la app verifica su hash |
+| `modelo_docente.joblib` | HistGradientBoosting (Pipeline con imputación y one-hot de distrito) + rango proporcional calibrado | Modelo 3: precio esperado y rango; también lo usan el simulador (modelo 6) y la exploración de área | `code/entrenar.py` (revisión 13-nov-2026). La app verifica su hash; si se reentrena, hay que versionar los artefactos y actualizar esa verificación. |
 | `perfil_competitivo.joblib` | K-Means (k=4) con imputación + StandardScaler, aprendido con septiembre; tabla de referencia con el mercado actual (`data/mercado.csv`, 23-oct) asignado a esos perfiles | Modelo 1: perfil competitivo y anuncios comparables | `code/entrenar_perfil.py` |
 
 Otros artefactos analíticos:
@@ -13,8 +13,8 @@ Otros artefactos analíticos:
 - **Modelo 5 (publicación):** reglas en `code/escenarios_precio.py`, sin entrenamiento.
 
 ## Versiones necesarias para cargarlos
-Python 3.12 o 3.13 · scikit-learn 1.7.2 · numpy 2.3.5 · pandas 2.3.3 · joblib 1.5.2 (ver `code/requirements.txt`).
-Con otra versión de scikit-learn, joblib puede fallar al cargar o advertir incompatibilidad.
+La copia se probó con Python 3.14 · scikit-learn 1.7.2 · numpy 2.3.5 · pandas 2.3.3 · joblib 1.5.2 (ver `code/requirements.txt`).
+Render declara Python 3.12.8: probar la carga del nuevo artefacto en ese entorno antes de desplegar. Con otra versión de scikit-learn, joblib puede fallar al cargar o advertir incompatibilidad.
 
 ## Cómo cargarlos (desde `code/`)
 ```python
@@ -46,7 +46,7 @@ comparables(casa, perfil)   # perfil, 8 comparables, percentiles de precio
 | Mediana distrital | 993.23 | 26.64% | 0.1332 |
 | HistGradientBoosting | 553.18 | 18.85% | 0.7622 |
 
-Rango calibrado: radio S/ 1,356.95, nivel nominal 90%, cobertura observada en prueba 92.21%.
+Rango proporcional: radio = 0.3370 × máximo entre S/ 3,000 y precio estimado. Se calibró con 500 anuncios separados del entrenamiento y de la prueba. Nivel nominal 90%; cobertura observada en la prueba de 629 anuncios: 92.69%. El predictor de precio y su MAE no cambiaron. El rango fijo anterior (±S/ 1,356.95) cubría 92.21% en esa prueba.
 Estas métricas usan una partición distinta de la del notebook de la Semana 7 (MAPE 15.77%) y no son comparables directamente.
 
 **Modelo 1** (3,128 anuncios, `resultados/metricas_perfil.json`):
@@ -72,4 +72,6 @@ de la captura del 23-oct: silhouette de octubre asignado 0.2063 (frente a 0.2075
 el rasgo que le da nombre. Reentrenar con octubre dio silhouette 0.148 con k=4 y un grupo de "mascotas" que ya no existía.
 
 **Modelo 3 frente a octubre** (`resultados/validacion_octubre/`): 1,712 anuncios nuevos, MAE S/ 512.29 (IC 95% 476–551),
-MAPE 16.43%, R² 0.7852, cobertura del rango 93.5%. No se degradó: no se reentrena.
+MAPE 16.43%, R² 0.7852. El nuevo rango cubre 94.2% frente a 93.5% del fijo. El predictor de precio no se reentrenó; solo cambió la calibración del rango.
+
+**Modelo 3 frente a noviembre** (`resultados/validacion_noviembre/`): 2,026 anuncios, MAE S/ 541.4 y cobertura global del rango 93.5% (antes, 92.2%). Entre los 117 anuncios de S/ 7,000 o más la cobertura subió de 34.2% a 65.8%; todavía es insuficiente para presentar el rango como garantía en ese segmento. Ver la comparación completa en `week12/resultados/error_por_rango_precio.csv`.

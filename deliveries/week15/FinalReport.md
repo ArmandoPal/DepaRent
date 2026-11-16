@@ -47,7 +47,7 @@ Fuente: `week15/Requirements.md`. — Redacta: Armando.
 ## 6. Enfoque analítico
 _Los 6 componentes: qué hace cada uno, por qué ese método, baseline, entrada y salida._
 1. Perfil competitivo (K-Means k = 4 + vecinos) · 2. Accesibilidad (ATU) · 3. Precio esperado
-(HistGradientBoosting + rango calibrado) · 4. Tendencia (SARIMA) · 5. Escenarios de publicación (reglas) ·
+(HistGradientBoosting + rango proporcional calibrado) · 4. Tendencia (SARIMA) · 5. Escenarios de publicación (reglas) ·
 6. Simulador y laboratorio de área.
 Fuente: `week06/ModelSelection.md`, `week10/PrototypeReport.md` §2, `week10/models/metadata.md`. — Redacta: Breysi.
 
@@ -73,7 +73,7 @@ Fuente: `week12/EvaluationReport.md` §7. — Redacta: Luciana.
 Fuente: `week12/EvaluationReport.md` §8. — Redacta: Breysi.
 
 ## 12. Conclusiones y trabajo futuro
-_Qué se logró, qué aprendimos, qué haríamos con más tiempo (rango proporcional, precios de contrato, más
+_Qué se logró, qué aprendimos, qué haríamos con más tiempo (mejorar la cobertura en alquileres altos, precios de contrato, más
 distritos, reentrenamiento periódico)._ — Redacta: Adrian.
 
 ## 13. Contribución del equipo

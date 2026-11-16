@@ -32,7 +32,7 @@ warnings.filterwarnings("ignore")
 from fastapi.testclient import TestClient  # noqa: E402
 
 import api  # noqa: E402
-from modelo import predecir  # noqa: E402
+from modelo import predecir, radio_prediccion  # noqa: E402
 
 SALIDA = AQUI.parent / "resultados"
 SEMILLA = 42
@@ -49,12 +49,12 @@ VIVIENDA = ["distrito_norm", "area_total", "dormitorios", "banos", "estacionamie
 
 
 def error_por_rango():
-    radio = api.MODELO_PRECIO["metricas"]["intervalo"]["radio_soles"]
     filas = []
     for corte, archivo in CORTES.items():
         d = pd.read_csv(archivo)
         error = (d["real_soles"] - d["prediccion_soles"]).abs()
-        d = d.assign(error=error, ape=100 * error / d["real_soles"], cubierto=error <= radio,
+        radios = d["prediccion_soles"].map(lambda p: radio_prediccion(p, api.MODELO_PRECIO))
+        d = d.assign(error=error, ape=100 * error / d["real_soles"], cubierto=error <= radios,
                      error_base=(d["real_soles"] - d["baseline_distrital_soles"]).abs(),
                      residuo=d["real_soles"] - d["prediccion_soles"],
                      rango=pd.cut(d["real_soles"], RANGOS, labels=ETIQUETAS, right=False))

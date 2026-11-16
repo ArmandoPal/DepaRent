@@ -1,5 +1,5 @@
 {
-  "fecha": "2026-11-09",
+  "fecha": "2026-11-13",
   "mercado": "data/mercado.csv, captura del 2026-11-09",
   "muestra": 300,
   "semilla": 42,
@@ -54,16 +54,16 @@
   },
   "comparables": {
     "porcentaje_en_el_mismo_distrito_medio": 100.0,
-    "similitud_mediana": 0.419
+    "similitud_mediana": 0.421
   },
   "escenario_sugerido": {
     "Equilibrado": 133,
     "Renta superior": 164
   },
   "perfiles": {
-    "Estándar tradicional": 143,
+    "Estándar tradicional": 145,
     "Amplio de alta gama": 30,
-    "Moderno que admite mascotas": 47,
+    "Moderno que admite mascotas": 45,
     "Compacto moderno con amenidades": 77
   },
   "niveles_accesibilidad": {
@@ -72,9 +72,9 @@
     "Baja": 1
   },
   "tiempo_respuesta_ms": {
-    "mediana": 82.9,
-    "p95": 147.4,
-    "maximo": 474.7,
+    "mediana": 90.4,
+    "p95": 114.9,
+    "maximo": 188.1,
     "nota": "Medido en local con TestClient; no incluye red ni el arranque en frío de Render."
   }
 }

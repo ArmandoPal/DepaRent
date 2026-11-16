@@ -1,6 +1,6 @@
 {
   "captura": "2026-11-09",
-  "modelo": "modelo_docente.joblib, congelado (hashes verificados), entrenado con la captura del 14-sep-2026",
+  "modelo": "modelo_docente.joblib, versión rango-proporcional-2; predictor de precio congelado",
   "flujo": {
     "anuncios_en_captura": 6588,
     "validos_tras_preprocesar": 5684,
@@ -63,10 +63,12 @@
   },
   "cambio_MAE_porcentaje": -2.1216864416821357,
   "intervalo": {
-    "radio_soles": 1356.9473108166749,
     "nivel_nominal": 0.9,
-    "cobertura_octubre": 0.9220138203356367,
-    "cobertura_septiembre_prueba": 0.9220985691573926
+    "cobertura_octubre": 0.9353405725567621,
+    "cobertura_septiembre_prueba": 0.9268680445151033,
+    "metodo": "Residuos absolutos normalizados por max(mediana redondeada de entrenamiento, precio estimado)",
+    "cobertura_fija_v1": 0.9220138203356367,
+    "ancho_medio_soles": 2448.6571719220988
   },
   "sesgo": {
     "mediana_real_menos_estimado_soles": -43.71398009460836,
@@ -74,7 +76,7 @@
   },
   "limites": [
     "Precios pedidos, no de contrato.",
-    "Una captura de octubre (5-6 semanas después del entrenamiento): mide un desfase corto, no estacionalidad.",
+    "Una captura de noviembre: mide un desfase corto respecto del entrenamiento, no estacionalidad.",
     "La heurística de duplicados puede omitir republicaciones con otro texto o unir viviendas distintas.",
     "La captura puede tener páginas faltantes por bloqueos del portal (error 403)."
   ]

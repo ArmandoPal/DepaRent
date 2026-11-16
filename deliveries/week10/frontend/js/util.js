@@ -74,11 +74,11 @@ export async function copiarEnlace(boton) {
 export const notaTecnica = (texto) => texto
   ? `<details class="tech"><summary>Detalle técnico</summary><p>${esc(texto)}</p></details>` : "";
 
-// La API habla del "estimado"; en pantalla decimos si está caro, barato o a un precio justo.
+// La API clasifica cada precio pedido en relación con su estimación; la pantalla conserva ese matiz.
 export const valoracionSencilla = (v) => ({
-  "Por debajo del estimado": "Más barato de lo esperado",
-  "Por encima del estimado": "Más caro de lo esperado",
-  "En línea con el estimado": "Precio justo",
+  "Por debajo del estimado": "Por debajo de la estimación",
+  "Por encima del estimado": "Por encima de la estimación",
+  "En línea con el estimado": "Cerca de la estimación",
 }[v] || v);
 
 const CAMPOS_AVISO = {

@@ -3,11 +3,14 @@
 Este archivo responde punto por punto a lo que se pidió para la revisión. La descripción general del proyecto y
 las instrucciones completas están en el [`README.md`](README.md).
 
+La revisión local del 13 de noviembre, con cambios, métricas y pasos pendientes, está en
+[`REVISION_DepaRent_13-11-2026.md`](REVISION_DepaRent_13-11-2026.md). La web pública aún no usa necesariamente esta copia.
+
 | | |
 |---|---|
 | **App desplegada** | https://deparent.onrender.com (plan gratuito: la primera visita tarda 30–60 s en despertar) |
 | **Repositorio** | https://github.com/Luciana-y/DepaRent |
-| **Panel de KPIs** | Ingresar en la app con `analista@gmail.com` / contraseña `analista` (ver §2) |
+| **Panel de KPIs** | Ingresar con una cuenta de análisis habilitada por el equipo (ver §2) |
 | **Equipo** | Adrian Urbina Mendoza · Armando Martinez Palomino · Breysi Salazar Medina · Luciana Yangali Cáceres |
 
 ---
@@ -25,21 +28,37 @@ las instrucciones completas están en el [`README.md`](README.md).
 | **Instrucciones para instalar y ejecutar** | [`README.md`](README.md) §4 |
 | **Enlace de GitHub** | https://github.com/Luciana-y/DepaRent |
 | **Ejercicio del profesor (n y MAE de un distrito)** | [`deliveries/week10/code/EJERCICIO_FINAL.py`](deliveries/week10/code/EJERCICIO_FINAL.py) |
+| **Demostración del tablero con 300 cuentas ficticias** | Generador: [`deliveries/week10/code/crear_demo_300.py`](deliveries/week10/code/crear_demo_300.py) · CSV y pasos: [`deliveries/week10/resultados/simulacion_300_usuarios/LEEME.md`](deliveries/week10/resultados/simulacion_300_usuarios/LEEME.md). Usa otra base local; los registros nuevos se muestran aparte. |
+| **Ayuda y supervisión** | Botón «Ayuda» en las vistas públicas y «Asistente de supervisión» dentro del panel de análisis. Son guías basadas en funciones e indicadores existentes, no un chat con una persona ni un servicio generativo. |
 
 ## 2. Acceso al panel de KPIs
 
-En https://deparent.onrender.com, entrar a **Ingresar** con esta cuenta de analista:
-
-| Correo | Contraseña |
-|---|---|
-| `analista@gmail.com` | `analista` |
+En https://deparent.onrender.com, entrar a **Ingresar** con una cuenta de análisis ya habilitada. La contraseña
+se entrega a la persona responsable por un canal privado; no debe publicarse en el repositorio. La clave que
+aparecía en una versión anterior de esta guía debe cambiarse antes de usar el panel en producción.
 
 Al iniciar sesión se abre directamente el **Panel de análisis (KPIs)**: uso del producto (cuentas, perfiles,
 departamentos, publicaciones, guardados y mensajes), métricas del modelo, estado de los datos y evaluación del
 recomendador. El panel solo muestra conteos agregados, sin datos personales.
 
-En una instalación local, la cuenta no existe todavía: hay que crearla desde **Ingresar** y arrancar la API con
-`$env:DEPARENT_ANALISTAS = "analista@gmail.com"` antes del comando `uvicorn` de la §4.
+Para crear una cuenta de análisis en local, configure `DEPARENT_ANALISTAS` con el correo autorizado y ejecute,
+desde `deliveries/week10/code/`, el siguiente comando. El programa solicita la clave dos veces, sin mostrarla
+ni incluirla en la línea de comandos:
+
+```powershell
+$env:DEPARENT_ANALISTAS = "correo.autorizado@ejemplo.com"
+..\..\..\.venv\Scripts\python.exe gestionar_analista.py --email correo.autorizado@ejemplo.com --nombre "Nombre del analista"
+```
+
+Si la cuenta ya existe, cambie su clave con el mismo programa; esto cierra las sesiones anteriores:
+
+```powershell
+..\..\..\.venv\Scripts\python.exe gestionar_analista.py --email correo.autorizado@ejemplo.com --cambiar-clave
+```
+
+Para administrar la base de producción, ejecute el comando únicamente en un entorno privado que tenga
+la misma `DATABASE_URL` y `DEPARENT_ANALISTAS` que usa el servicio. El registro público de la web no permite
+crear cuentas de análisis. Después de habilitarla, el analista inicia sesión por **Ingresar**.
 
 ## 3. Documento breve
 
@@ -57,10 +76,10 @@ Está en [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyect
 | Qué desean demostrar en la presentación | §8 |
 | Qué parte está desarrollando cada integrante | §9 |
 
-## 4. Ejecución rápida (Windows, desde la raíz del repositorio)
+## 4. Ejecución rápida (Windows, desde la carpeta `DepaRent` extraída del ZIP)
 
 ```powershell
-py -3.13 -m venv .venv
+py -3.14 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r deliveries/week10/code/requirements.txt
 cd deliveries/week10/code
 ..\..\..\.venv\Scripts\python.exe -m uvicorn api:app --host 127.0.0.1 --port 8000

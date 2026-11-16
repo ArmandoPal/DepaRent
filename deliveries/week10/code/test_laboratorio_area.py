@@ -20,7 +20,7 @@ class LaboratorioAreaTest(unittest.TestCase):
         verificar_modelo_congelado()
         cls.model = joblib.load(ROOT / "models/modelo_docente.joblib")
         cls.profiles = json.loads((ROOT / "data/demo_casos.json").read_text(encoding="utf-8"))
-        cls.catalog = json.loads((ROOT / "resultados/simulacion_v2/consultas_54.json").read_text(encoding="utf-8"))["consultas"]
+        cls.catalog = json.loads((ROOT / "resultados/simulacion_rango_proporcional/consultas_54.json").read_text(encoding="utf-8"))["consultas"]
 
     def test_tres_areas_solo_cambia_area_y_no_muta_base(self):
         for profile in self.profiles:

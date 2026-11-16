@@ -1,6 +1,6 @@
 {
   "captura": "2026-10-23",
-  "modelo": "modelo_docente.joblib, congelado (hashes verificados), entrenado con la captura del 14-sep-2026",
+  "modelo": "modelo_docente.joblib, versión rango-proporcional-2; predictor de precio congelado",
   "flujo": {
     "anuncios_en_captura": 6166,
     "validos_tras_preprocesar": 5335,
@@ -63,10 +63,12 @@
   },
   "cambio_MAE_porcentaje": -7.391444480154785,
   "intervalo": {
-    "radio_soles": 1356.9473108166749,
     "nivel_nominal": 0.9,
-    "cobertura_octubre": 0.9351635514018691,
-    "cobertura_septiembre_prueba": 0.9220985691573926
+    "cobertura_octubre": 0.9421728971962616,
+    "cobertura_septiembre_prueba": 0.9268680445151033,
+    "metodo": "Residuos absolutos normalizados por max(mediana redondeada de entrenamiento, precio estimado)",
+    "cobertura_fija_v1": 0.9351635514018691,
+    "ancho_medio_soles": 2401.844682960265
   },
   "sesgo": {
     "mediana_real_menos_estimado_soles": -64.68070445256899,

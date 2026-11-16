@@ -15,6 +15,8 @@ import re
 import secrets
 import sqlite3
 import time
+from collections import Counter
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from modelo import ROOT
@@ -23,11 +25,14 @@ BASE = Path(os.environ.get("DEPARENT_DB", ROOT / "data/deparent.sqlite"))
 DATABASE_URL = os.environ.get("DATABASE_URL")
 ITERACIONES = 200_000
 DURACION_SESION_S = 7 * 24 * 3600
+HORA_LIMA = timezone(timedelta(hours=-5))
 PATRON_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 ESQUEMA = """
 CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER PRIMARY KEY, nombre TEXT NOT NULL, email TEXT NOT NULL UNIQUE,
     sal BLOB NOT NULL, hash BLOB NOT NULL, creado REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS usuarios_simulados (
+    usuario_id INTEGER NOT NULL UNIQUE REFERENCES usuarios(id) ON DELETE CASCADE);
 CREATE TABLE IF NOT EXISTS sesiones (
     token_hash TEXT PRIMARY KEY, usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
     expira REAL NOT NULL);
@@ -150,7 +155,7 @@ def _usuario(fila):
             "rol": "analista" if es_analista(fila["email"]) else "usuario"}
 
 
-def registrar(conexion, nombre, email, password):
+def _crear_cuenta(conexion, nombre, email, password):
     nombre, email = (nombre or "").strip(), (email or "").strip().lower()
     if not 2 <= len(nombre) <= 80:
         raise DatosInvalidos("Escribe tu nombre (entre 2 y 80 caracteres).")
@@ -166,6 +171,37 @@ def registrar(conexion, nombre, email, password):
     except ERRORES_INTEGRIDAD:
         raise DatosInvalidos("Ya existe una cuenta con ese correo.")
     return {"id": cursor.lastrowid, "nombre": nombre, "email": email, "rol": "analista" if es_analista(email) else "usuario"}
+
+
+def registrar(conexion, nombre, email, password):
+    """Alta pública: los correos reservados al panel se crean fuera de la web."""
+    if es_analista(email):
+        raise DatosInvalidos("Esta cuenta se habilita por el equipo de análisis, no desde el registro público.")
+    return _crear_cuenta(conexion, nombre, email, password)
+
+
+def registrar_analista(conexion, nombre, email, password):
+    """Alta interna, usada únicamente por el comando gestionar_analista.py."""
+    if not es_analista(email):
+        raise DatosInvalidos("El correo debe estar incluido en DEPARENT_ANALISTAS.")
+    return _crear_cuenta(conexion, nombre, email, password)
+
+
+def cambiar_clave_analista(conexion, email, password):
+    """Cambia la clave de un analista y cierra todas sus sesiones anteriores."""
+    email = (email or "").strip().lower()
+    if not es_analista(email):
+        raise DatosInvalidos("El correo debe estar incluido en DEPARENT_ANALISTAS.")
+    if len(password or "") < 8:
+        raise DatosInvalidos("La contraseña debe tener al menos 8 caracteres.")
+    usuario = conexion.execute("SELECT id FROM usuarios WHERE email = ?", (email,)).fetchone()
+    if usuario is None:
+        raise NoEncontrado("No existe una cuenta con ese correo.")
+    sal = secrets.token_bytes(16)
+    with conexion:
+        conexion.execute("UPDATE usuarios SET sal = ?, hash = ? WHERE id = ?",
+                         (sal, _hash_password(password, sal), usuario["id"]))
+        conexion.execute("DELETE FROM sesiones WHERE usuario_id = ?", (usuario["id"],))
 
 
 def ingresar(conexion, email, password):
@@ -276,14 +312,18 @@ def publicar(conexion, usuario_id, departamento_id, precio, escenario):
 
 def publicados(conexion):
     """Departamentos publicados por cualquier propietario, sin datos de contacto del dueño."""
-    filas = conexion.execute("SELECT * FROM departamentos WHERE precio_publicado IS NOT NULL ORDER BY publicado_en DESC")
+    filas = conexion.execute(
+        "SELECT d.* FROM departamentos d LEFT JOIN usuarios_simulados s ON s.usuario_id = d.usuario_id "
+        "WHERE d.precio_publicado IS NOT NULL AND s.usuario_id IS NULL ORDER BY d.publicado_en DESC")
     return [_departamento(f) for f in filas]
 
 
 def publicado(conexion, departamento_id):
     """Un departamento publicado tal como lo ve un inquilino: con el nombre de pila del propietario, sin su correo."""
     fila = conexion.execute("SELECT d.*, u.nombre AS propietario FROM departamentos d JOIN usuarios u ON u.id = d.usuario_id "
-                            "WHERE d.id = ? AND d.precio_publicado IS NOT NULL", (departamento_id,)).fetchone()
+                            "LEFT JOIN usuarios_simulados s ON s.usuario_id = u.id "
+                            "WHERE d.id = ? AND d.precio_publicado IS NOT NULL AND s.usuario_id IS NULL",
+                            (departamento_id,)).fetchone()
     if fila is None:
         raise NoEncontrado("Ese departamento no está publicado.")
     return {**_departamento(fila), "propietario": fila["propietario"].split()[0], "usuario_id": fila["usuario_id"]}
@@ -363,18 +403,86 @@ def quitar_guardado(conexion, usuario_id, anuncio_id):
 
 # ---------- KPIs del producto (solo analistas) ----------
 
+def _actividad_diaria(conexion, ahora):
+    """Treinta días en hora de Lima. Las publicaciones son las vigentes, agrupadas por su fecha actual."""
+    hoy = datetime.fromtimestamp(ahora, HORA_LIMA).date()
+    fechas = [hoy - timedelta(days=29 - i) for i in range(30)]
+    dias = {
+        fecha.isoformat(): {
+            "fecha": fecha.isoformat(), "cuentas_simuladas": 0, "cuentas_reales": 0,
+            "departamentos_registrados": 0, "publicaciones_vigentes": 0,
+            "mensajes": 0, "guardados": 0,
+        }
+        for fecha in fechas
+    }
+    desde = datetime(fechas[0].year, fechas[0].month, fechas[0].day, tzinfo=HORA_LIMA).timestamp()
+
+    def sumar(instante, campo):
+        fecha = datetime.fromtimestamp(instante, HORA_LIMA).date().isoformat()
+        if fecha in dias:
+            dias[fecha][campo] += 1
+
+    for fila in conexion.execute(
+        "SELECT u.creado, s.usuario_id AS simulado FROM usuarios u "
+        "LEFT JOIN usuarios_simulados s ON s.usuario_id = u.id WHERE u.creado >= ?", (desde,)
+    ):
+        sumar(fila["creado"], "cuentas_simuladas" if fila["simulado"] is not None else "cuentas_reales")
+    for tabla, columna, campo, condicion in (
+        ("departamentos", "creado", "departamentos_registrados", ""),
+        ("departamentos", "publicado_en", "publicaciones_vigentes", " AND precio_publicado IS NOT NULL"),
+        ("interesados", "creado", "mensajes", ""),
+        ("guardados", "creado", "guardados", ""),
+    ):
+        for fila in conexion.execute(
+            f"SELECT {columna} AS instante FROM {tabla} WHERE {columna} >= ?{condicion}", (desde,)
+        ):
+            sumar(fila["instante"], campo)
+    return list(dias.values())
+
+
+def _distritos_publicados(conexion):
+    """Distribución de publicaciones actuales, separando demostración y uso posterior."""
+    conteos = Counter()
+    for fila in conexion.execute(
+        "SELECT d.vivienda, s.usuario_id AS simulado FROM departamentos d "
+        "LEFT JOIN usuarios_simulados s ON s.usuario_id = d.usuario_id "
+        "WHERE d.precio_publicado IS NOT NULL"
+    ):
+        try:
+            vivienda = json.loads(fila["vivienda"])
+        except (TypeError, ValueError):
+            continue
+        distrito = vivienda.get("distrito_norm") if isinstance(vivienda, dict) else None
+        if distrito:
+            conteos[(distrito, "simulados" if fila["simulado"] is not None else "reales")] += 1
+    distritos = sorted({d for d, _ in conteos})
+    return [
+        {"distrito": distrito,
+         "departamentos": conteos[(distrito, "simulados")] + conteos[(distrito, "reales")],
+         "simulados": conteos[(distrito, "simulados")], "reales": conteos[(distrito, "reales")]}
+        for distrito in distritos
+    ]
+
+
 def kpis_producto(conexion, ahora=None):
     """Conteos de uso del producto, sin datos personales: cuántas cuentas, perfiles, departamentos, guardados y mensajes."""
     ahora = ahora or time.time()
     semana = ahora - 7 * 24 * 3600
     uno = lambda sql, *p: list(dict(conexion.execute(sql, p).fetchone()).values())[0] or 0
     usuarios = uno("SELECT COUNT(*) AS n FROM usuarios")
+    usuarios_simulados = uno("SELECT COUNT(*) AS n FROM usuarios_simulados")
     perfiles = uno("SELECT COUNT(*) AS n FROM perfiles_inquilino")
     con_guardados = uno("SELECT COUNT(DISTINCT usuario_id) AS n FROM guardados")
+    con_perfil_y_guardados = uno(
+        "SELECT COUNT(DISTINCT g.usuario_id) AS n FROM guardados g "
+        "JOIN perfiles_inquilino p ON p.usuario_id = g.usuario_id")
     propietarios = uno("SELECT COUNT(DISTINCT usuario_id) AS n FROM departamentos")
     departamentos = uno("SELECT COUNT(*) AS n FROM departamentos")
     publicados_n = uno("SELECT COUNT(*) AS n FROM departamentos WHERE precio_publicado IS NOT NULL")
-    con_interes = uno("SELECT COUNT(DISTINCT departamento_id) AS n FROM interesados")
+    con_interes = uno(
+        "SELECT COUNT(DISTINCT i.departamento_id) AS n FROM interesados i "
+        "JOIN departamentos d ON d.id = i.departamento_id "
+        "WHERE d.precio_publicado IS NOT NULL AND i.creado >= d.publicado_en")
     tasa = lambda a, b: round(100 * a / b, 1) if b else None
     filas_precio = conexion.execute("SELECT precio_publicado, resumen FROM departamentos WHERE precio_publicado IS NOT NULL")
     diferencias = []
@@ -385,12 +493,22 @@ def kpis_producto(conexion, ahora=None):
             diferencias.append(100 * (f["precio_publicado"] - esperado) / esperado)
     return {
         "usuarios": usuarios,
+        "simulacion": {
+            "activa": bool(usuarios_simulados),
+            "usuarios_simulados": usuarios_simulados,
+            "usuarios_reales": usuarios - usuarios_simulados,
+            "etiqueta": ("Base de demostración: las cuentas simuladas están marcadas y los registros nuevos se cuentan aparte."
+                         if usuarios_simulados else "Base de uso sin cuentas simuladas."),
+        },
+        "actividad_diaria": _actividad_diaria(conexion, ahora),
+        "distritos_publicados": _distritos_publicados(conexion),
         "usuarios_nuevos_7_dias": uno("SELECT COUNT(*) AS n FROM usuarios WHERE creado >= ?", semana),
         "perfiles_completados": perfiles,
         "tasa_perfil_porcentaje": tasa(perfiles, usuarios),
         "guardados": uno("SELECT COUNT(*) AS n FROM guardados"),
         "usuarios_con_guardados": con_guardados,
-        "tasa_perfil_a_guardado_porcentaje": tasa(con_guardados, perfiles),
+        "usuarios_con_perfil_y_guardados": con_perfil_y_guardados,
+        "tasa_perfil_a_guardado_porcentaje": tasa(con_perfil_y_guardados, perfiles),
         "propietarios": propietarios,
         "departamentos": departamentos,
         "departamentos_publicados": publicados_n,

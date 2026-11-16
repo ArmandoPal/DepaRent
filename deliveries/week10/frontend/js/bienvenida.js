@@ -43,7 +43,7 @@ export async function mostrarBienvenida() {
         texto: `Tienes ${num(deptos.length)} ${deptos.length === 1 ? "departamento" : "departamentos"}${publicados ? `, ${num(publicados)} publicado${publicados > 1 ? "s" : ""}` : ", ninguno publicado"}. Revisa su precio, edítalos o publícalos.`,
         boton: "Ir a mis departamentos", href: "#/mis-departamentos" }
     : { titulo: "Quiero alquilar mi departamento",
-        texto: "Te decimos cuánto debería costar según departamentos parecidos, y lo publicas al precio que elijas.",
+        texto: "Estimamos un rango de alquiler y lo comparamos con departamentos parecidos. Tú eliges el precio de publicación.",
         boton: "Agregar mi departamento", href: "#/mis-departamentos/nuevo" };
 
   const dialogo = document.createElement("dialog");
