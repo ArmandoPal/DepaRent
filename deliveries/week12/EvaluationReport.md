@@ -16,19 +16,19 @@ repositorio y se pueden regenerar (sección 9).
 |---|---|---|---|
 | Precio esperado (HistGradientBoosting) | MAE en prueba de septiembre | **S/ 553** (R² 0.76) | Mediana distrital: S/ 993 → **44% menos error** |
 | Mismo modelo, anuncios nuevos de noviembre | MAE | **S/ 541** (IC 95%: 503–580) | Mediana distrital: S/ 1,024 → **47% menos error** |
-| Rango de precio (90% nominal) | Cobertura | **92.2%** (sept.) · 93.5% (oct.) · 92.2% (nov.) | — |
+| Rango de precio proporcional (90% nominal) | Cobertura | **92.7%** (sept.) · 94.2% (oct.) · 93.5% (nov.) | Rango fijo anterior: 92.2% · 93.5% · 92.2% |
 | Perfil competitivo (K-Means, k = 4) | Silhouette / estabilidad | 0.21 / ARI = 1.00 | Semana 7: 0.18 |
 | Tendencia distrital (SARIMA) | MAE mediano en 4 trimestres reservados | 2.00 S/ por m² | Naive estacional: 2.54 · Naive: 2.40 |
 | Escenarios de publicación (reglas) | Reglas cumplidas en 297 análisis reales | **100%** | — |
 | Recomendador por perfil del inquilino (modelo 7) | precision@12 en 60 perfiles de prueba | **82%** | Mejor orden del buscador: 24% · al azar: 25% |
-| Producto | Pruebas automáticas | **47 de 47 pasan** | — |
+| Producto | Pruebas automáticas | **76 de 76 pasan** | — |
 
 **Lo que funciona:** el modelo de precio no se degradó en ocho semanas y reduce casi a la mitad el error de
 la mediana del distrito; la app es coherente en todos los casos probados.
-**Lo que hay que mejorar:** el rango de precio es demasiado ancho para departamentos baratos y demasiado
-angosto para los de lujo (cubre solo el 34% de los precios desde S/ 7,000); San Isidro y Magdalena
-empeoraron frente a septiembre; y **faltan las pruebas con usuarios reales** (guion listo en
-`GuionPruebasUsuarios.md`).
+**Lo que hay que mejorar:** el rango ahora crece con el precio estimado y en los departamentos desde S/ 7,000 subió
+de 34% a 66% de cobertura en noviembre, pero sigue lejos del 90%; en los de menos de S/ 1,500 bajó de 99% a 91%.
+San Isidro y Magdalena empeoraron frente a septiembre, y las pruebas con usuarios reales van en 2 de 5, sin
+propietarios (§6c).
 
 ---
 
@@ -70,9 +70,9 @@ El 44% queda a menos del 10% del precio y el 71% a menos del 20%.
 
 | Corte | Anuncios nuevos | MAE (IC 95%) | MAPE | R² | Cobertura del rango | MAE mediana distrital |
 |---|---:|---:|---:|---:|---:|---:|
-| Prueba de septiembre (14-sep) | 629 | S/ 553 | 18.8% | 0.762 | 92.2% | S/ 993 |
-| Octubre (23-oct) | 1,712 | S/ 512 (476–551) | 16.4% | 0.785 | 93.5% | S/ 948 |
-| Noviembre (9-nov) | 2,026 | S/ 541 (503–580) | 16.8% | 0.782 | 92.2% | S/ 1,024 |
+| Prueba de septiembre (14-sep) | 629 | S/ 553 | 18.8% | 0.762 | 92.7% | S/ 993 |
+| Octubre (23-oct) | 1,712 | S/ 512 (476–551) | 16.4% | 0.785 | 94.2% | S/ 948 |
+| Noviembre (9-nov) | 2,026 | S/ 541 (503–580) | 16.8% | 0.782 | 93.5% | S/ 1,024 |
 
 Ocho semanas después del entrenamiento el error sigue en el mismo nivel; los intervalos de octubre y noviembre
 se superponen. **No hace falta reentrenar por ahora.** El sesgo es pequeño: la mediana de (precio pedido −
@@ -81,25 +81,27 @@ estimado) es −S/ 44 en noviembre (−S/ 65 en octubre). Detalle en `week10/res
 
 ### 3.3 Análisis de errores por rango de precio
 
-`resultados/error_por_rango_precio.csv` (noviembre; los otros cortes muestran el mismo patrón):
+`resultados/error_por_rango_precio.csv` (noviembre; los otros cortes muestran el mismo patrón). La cobertura es la del
+rango proporcional actual; entre paréntesis, la del rango fijo anterior:
 
 | Precio pedido | Anuncios | MAE modelo | MAE mediana distrital | MAPE | Sesgo (real − estimado) | Cobertura del rango |
 |---|---:|---:|---:|---:|---:|---:|
-| < S/ 1,500 | 127 | S/ 555 | S/ 760 | 50.7% | −S/ 515 | 99.2% |
-| S/ 1,500 – 2,499 | 746 | S/ 279 | S/ 521 | 14.3% | −S/ 104 | 98.8% |
-| S/ 2,500 – 3,999 | 812 | S/ 366 | S/ 424 | 12.3% | +S/ 35 | 98.0% |
-| S/ 4,000 – 6,999 | 224 | S/ 1,013 | S/ 1,717 | 20.0% | +S/ 318 | 75.4% |
-| ≥ S/ 7,000 | 117 | S/ 2,517 | S/ 7,344 | 22.3% | +S/ 1,960 | **34.2%** |
+| < S/ 1,500 | 127 | S/ 555 | S/ 760 | 50.7% | −S/ 515 | 91.3% (99.2%) |
+| S/ 1,500 – 2,499 | 746 | S/ 279 | S/ 521 | 14.3% | −S/ 104 | 98.0% (98.8%) |
+| S/ 2,500 – 3,999 | 812 | S/ 366 | S/ 424 | 12.3% | +S/ 35 | 96.9% (98.0%) |
+| S/ 4,000 – 6,999 | 224 | S/ 1,013 | S/ 1,717 | 20.0% | +S/ 318 | 82.1% (75.4%) |
+| ≥ S/ 7,000 | 117 | S/ 2,517 | S/ 7,344 | 22.3% | +S/ 1,960 | **65.8%** (34.2%) |
 
 **Lectura.**
 - En el rango donde está el 77% del mercado (S/ 1,500 a 3,999) el modelo es preciso: 12–14% de error relativo.
 - **Departamentos baratos:** el modelo los sobreestima (pide unos S/ 500 más de lo que se publica). El error en
   soles es moderado, pero en porcentaje es alto (51%).
-- **Departamentos de lujo:** el modelo los subestima y el rango cubre solo a uno de cada tres. La causa es que el
-  radio del rango es **igual para todos** (±S/ 1,357): sobra para un departamento de S/ 1,500 y no alcanza para
-  uno de S/ 10,000. Aun así, el modelo supera al baseline en todos los rangos menos el más barato de septiembre.
-- **Mejora propuesta para la Semana 15:** un radio proporcional al precio estimado (por ejemplo, calibrar
-  el error relativo o usar cuantiles), validado con la misma partición de calibración.
+- **Departamentos de lujo:** el modelo los subestima. Con el rango fijo anterior (±S/ 1,357 para todos) solo uno de
+  cada tres quedaba dentro. Aun así, el modelo supera al baseline en todos los rangos menos el más barato de septiembre.
+- **Rango proporcional (revisión del profesor, 14-nov):** el radio ahora es 0.337 × máx(S/ 3,000; precio estimado),
+  calibrado al 90% con los 500 anuncios reservados para calibración; el precio estimado y su MAE no cambian. Desde
+  S/ 7,000 la cobertura sube a 79.4% (sept.), 60.5% (oct.) y 65.8% (nov.); bajo S/ 1,500 baja a 80.4%, 92.2% y 91.3%.
+  La mejora en lujo es clara, pero todavía no llega al 90% y el rango debe presentarse como orientación.
 
 ### 3.4 Errores por distrito
 
@@ -199,11 +201,11 @@ primera visita tras 15 minutos de inactividad tarda 30–60 s mientras el servic
 
 | Evidencia | Qué cubre | Resultado |
 |---|---|---|
-| 47 pruebas automáticas en 6 archivos (`week10/code/test_*.py`) | Preprocesamiento idéntico al de la Semana 7, los 5 modelos, API, cuentas con contraseña con sal, aislamiento entre propietarios, filtros de búsqueda, que no se expongan datos personales, errores 404/422 | 47/47 pasan (9-nov-2026) |
+| 76 pruebas automáticas en `week10/code/test_*.py` | Preprocesamiento idéntico al de la Semana 7, los 5 modelos, API, cuentas con contraseña con sal, aislamiento entre propietarios, filtros de búsqueda, que no se expongan datos personales, errores 404/422, rango proporcional, panel de KPIs y demo de 300 cuentas | 76/76 pasan (16-nov-2026) |
 | `week10/resultados/simulacion_v2/` | 54 consultas del simulador iguales a la inferencia del modelo, verificadas con SHA-256 | PASS |
 | `resultados/coherencia_producto.json` | Sección 6 | 100% de las reglas |
 | `week10/resultados/demos_ejecutadas.json` | Casos de demostración ejecutados de punta a punta | OK |
-| Pruebas con usuarios | Utilidad y claridad de la interfaz | **Pendiente** (guion listo) |
+| Pruebas con usuarios | Utilidad y claridad de la interfaz | 2 sesiones con inquilinos (§6c); faltan propietarios |
 
 ---
 
@@ -354,7 +356,8 @@ foto del mercado del 9 de noviembre, no una lista de ofertas vigentes.
 ## 8. Limitaciones
 
 - **Precios pedidos, no de contrato.** El modelo aprende lo que piden los propietarios.
-- **Rango de precio con radio fijo.** Bien calibrado en promedio, pero no por rango de precio (sección 3.3).
+- **Rango de precio en alquileres altos.** El rango proporcional cubre el 93.5% en noviembre, pero solo el 65.8% desde
+  S/ 7,000 y el 91.3% bajo S/ 1,500 (sección 3.3).
 - **Distritos con pocos datos** y la categoría "Otros" tienen errores inestables.
 - **Perfiles débiles** (silhouette 0.21): orientan, no segmentan.
 - **Tendencia** con poca evidencia de validación (4 trimestres) y derivada del precio de venta, no del alquiler.
@@ -372,7 +375,7 @@ Desde la raíz del repositorio, con el entorno de `week10/README.md`:
 
 ```powershell
 cd deliveries\week10\code
-..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 47 pruebas
+..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 76 pruebas
 ..\..\..\.venv\Scripts\python.exe validar_octubre.py --captura 2026-11-09  # validación temporal (requiere data_diaria/)
 cd ..\..\week12\code
 ..\..\..\.venv\Scripts\python.exe evaluar_producto.py   # error por rango + coherencia (secciones 3.3 y 6)
