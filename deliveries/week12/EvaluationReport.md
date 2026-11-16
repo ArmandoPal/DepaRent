@@ -395,7 +395,10 @@ cd ..\..\week12\code
 
 ## 10. Próximos pasos (hacia la Semana 15)
 
-1. Hacer las pruebas con 3 a 5 usuarios (`GuionPruebasUsuarios.md`) y agregar los resultados a este informe.
-2. Rango de precio proporcional al precio, para que cubra también los departamentos de lujo.
-3. Explicar en la app por qué el escenario competitivo solo se sugiere con tendencia a la baja.
-4. Mantener la captura diaria y repetir la validación temporal antes de la presentación final.
+1. 🟡 Pruebas con usuarios: 2 sesiones con inquilinos registradas (§6c); faltan al menos 3, incluidos propietarios.
+2. ✅ Rango de precio proporcional al precio (revisión del profesor, 14-nov): la cobertura desde S/ 7,000 subió de
+   34.2% a 65.8% en noviembre, aún lejos del 90%.
+3. ✅ La app explica junto a los tres precios por qué se sugiere uno: al alza → renta superior; estable → equilibrado;
+   a la baja → competitivo.
+4. 🟡 Captura diaria: los intentos del 12-nov y del 16-nov fueron bloqueados por los portales (403); la app y la
+   validación temporal siguen con la captura completa del 9-nov.

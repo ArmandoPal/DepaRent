@@ -11,14 +11,27 @@ duplica el código: agrega la evaluación, los casos de estudio, la documentaci�
 - Búsqueda de la dirección del departamento y marcado en el mapa.
 - Cuentas y departamentos persistentes en Postgres (Neon) en producción.
 
+## Actualización al 16 de noviembre
+- **Revisión del profesor (14-nov) integrada en `main`:** rango de precio proporcional al estimado, panel de análisis con
+  gráficos, ayuda integrada, comparador de hasta 3 anuncios, recomendaciones sin cuenta y demo local de 300 cuentas
+  (`/REVISION_DepaRent_13-11-2026.md`).
+- **Pruebas con usuarios:** 2 sesiones con inquilinos (P2 y P3) en `pruebas_usuarios/` y resumen en
+  `EvaluationReport.md` §6c.
+- **Ajustes de interfaz según esas pruebas:** etiqueta «No es el plano real» en el esquema, motivos de cada
+  recomendación como lista, distritos cercanos cuando no hay resultados, explicación del rango, nota «¿Qué es esto?» en
+  la tendencia y el motivo del precio sugerido junto a los tres escenarios.
+- **Datos:** la app sigue con la captura del 9-nov. Los intentos de descarga del 12-nov y del 16-nov fueron bloqueados
+  por los portales (error 403: 30 y 218 anuncios frente a ~6,500 de una captura completa), así que no se usaron.
+
 ## Contenido
 
 | Archivo | Qué es |
 |---|---|
 | `EvaluationReport.md` | Métricas, estrategia de validación, comparación con baselines, análisis de errores, coherencia del producto, casos de estudio y limitaciones |
-| `GuionPruebasUsuarios.md` | Guion para las pruebas con 3–5 usuarios (tareas, preguntas, cuestionario) |
+| `GuionPruebasUsuarios.md` | Guion para las pruebas con 5 usuarios (tareas, preguntas, cuestionario) |
 | `plantilla_observaciones.csv` | Plantilla anónima para anotar cada sesión |
 | `PlanFinal.md` | Tareas y responsables hasta la Semana 15 |
+| `pruebas_usuarios/` | Sesiones P2 y P3 (Word y Excel), `observaciones.csv` consolidado y resumen |
 | `architecture/system_architecture.png` (`.dot`) | Arquitectura actualizada: Render, FastAPI, 6 componentes, Neon, actualización diaria |
 | `architecture/product_workflow.png` (`.dot`) | Flujos del propietario y del inquilino |
 | `code/evaluar_producto.py` | Error por rango de precio y 13 reglas de coherencia sobre 300 departamentos reales |
@@ -35,7 +48,7 @@ Con el entorno de `week10/README.md` (`.venv` con `week10/code/requirements.txt`
 
 ```powershell
 cd deliveries\week10\code
-..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 47 pruebas
+..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 76 pruebas
 cd ..\..\week12\code
 ..\..\..\.venv\Scripts\python.exe evaluar_producto.py
 ..\..\..\.venv\Scripts\python.exe casos_estudio.py
