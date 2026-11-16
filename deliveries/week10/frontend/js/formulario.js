@@ -151,7 +151,7 @@ function buscadorDireccion(form, campo, fijarUbicacion) {
       aviso.textContent = "Ubicación marcada con las coordenadas.";
       return;
     }
-    if (texto.length < 3) { aviso.textContent = "Escribe la calle y el número, por ejemplo Malecón Grau 231, Magdalena."; return; }
+    if (texto.length < 3) { aviso.textContent = "Escribe la calle y el número, por ejemplo Av. Arequipa 1500, Lince."; return; }
     aviso.textContent = "Buscando…";
     try {
       const resultados = await conBoton(boton, "Buscando…", () => llamar("/api/ubicaciones?q=" + encodeURIComponent(texto)));
