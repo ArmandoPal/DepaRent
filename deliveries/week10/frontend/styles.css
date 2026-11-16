@@ -417,6 +417,8 @@ tr[data-href] { cursor: pointer; }
 .plano-aviso { justify-self: start; white-space: nowrap; padding: 1px 8px; border-radius: 999px; background: var(--text); color: var(--surface); font-size: 11px; font-weight: 600; line-height: 1.6; }
 .vecinos { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .rango-claro { color: var(--text); }
+.por-que-sugerido { margin: 10px 0 0; padding: 8px 12px; background: var(--raised); border-radius: var(--radius-control); font-size: var(--fs-small); line-height: 1.45; }
+.por-que-sugerido .hint { display: block; margin-top: 2px; }
 .guia-tendencia { margin: 12px 0 0; padding: 10px 14px; border-left: 3px solid var(--text); background: var(--raised); border-radius: var(--radius-control); line-height: 1.5; }
 .reco-miss { color: var(--muted); }
 .reco-extra { color: var(--muted); font-size: var(--fs-small); }

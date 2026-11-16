@@ -160,6 +160,8 @@ function panelResumen(a, opciones, acciones) {
                 ${acciones.alPublicar ? `<button class="card-link" type="button" data-publicar="${i}">Publicar</button>` : ""}</span>
             </div>`).join("")}
         </div>
+        <p class="por-que-sugerido"><b>¿Por qué «${esc(a.publicacion.sugerido)}»?</b> ${esc(a.publicacion.motivo)}
+          <span class="hint">La sugerencia sigue la tendencia del distrito: al alza → renta superior; estable → equilibrado; a la baja → competitivo.</span></p>
         ${acciones.alPublicar ? `<form class="precio-propio" novalidate>
           <label for="p-propio">${acciones.publicacion ? "Cambiar a otro precio" : "Otro precio"}</label>
           <div class="search-row"><span class="prefijo">S/</span><input class="input num" id="p-propio" type="number" inputmode="numeric" min="300" max="50000" step="10"
@@ -167,7 +169,6 @@ function panelResumen(a, opciones, acciones) {
             <button class="btn primary" type="submit">${acciones.publicacion ? "Cambiar precio" : "Publicar a este precio"}</button></div>
           <p class="hint" data-comparacion aria-live="polite"></p>
         </form>` : ""}
-        <p class="panel-note">${esc(a.publicacion.motivo)}</p>
         <div class="pub-msg"></div>
       </section>
 
