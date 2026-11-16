@@ -72,7 +72,7 @@ export async function vistaEditarPerfil(lienzo) {
           <label class="chip"><input type="radio" name="orden" value="${k}" ${(p.orden || "afinidad") === k ? "checked" : ""}><span>${esc(nombre)}</span></label>`).join("")}</div>
       </fieldset>
       <fieldset class="perfil-grupo"><legend>¿Dónde trabajas o estudias? <small>(opcional: acerca las recomendaciones)</small></legend>
-        <div class="search-row"><input class="input" id="r-lugar" placeholder="Por ejemplo: Av. Javier Prado Este 4600, Surco" value="${esc(p.lugar_nombre || "")}" autocomplete="off">
+        <div class="search-row"><input class="input" id="r-lugar" placeholder="Por ejemplo: Av. La Marina, San Miguel" value="${esc(p.lugar_nombre || "")}" autocomplete="off">
           <button class="btn" type="button" data-buscar-lugar>Buscar</button>
           ${p.lugar ? '<button class="btn ghost" type="button" data-quitar-lugar>Quitar</button>' : ""}</div>
         <ul class="dir-results" hidden></ul>

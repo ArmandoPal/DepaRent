@@ -37,7 +37,7 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
           : "Opcional. Busca la dirección o escribe las coordenadas; sin ellas usamos el centro del distrito.", `
           <div class="field wide">
             <label for="f-direccion">Buscar dirección</label>
-            <div class="search-row"><input class="input" id="f-direccion" type="search" autocomplete="off" placeholder="Malecón Grau 231, Magdalena · o -12.0905, -77.0716">
+            <div class="search-row"><input class="input" id="f-direccion" type="search" autocomplete="off" placeholder="Por ejemplo: Av. Arequipa, Lince · o -12.0464, -77.0428">
               <button type="button" class="btn" data-buscar>Buscar</button></div>
             <ul class="dir-results" hidden></ul>
             <p class="hint" data-dir-msg aria-live="polite"></p>
@@ -146,7 +146,7 @@ function buscadorDireccion(form, campo, fijarUbicacion) {
     const par = texto.match(/^(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)$/);
     if (par) {
       const lat = Number(par[1]), lon = Number(par[2]);
-      if (!dentroDeLima(lat, lon)) { aviso.textContent = "Esas coordenadas están fuera de Lima. Escríbelas como latitud, longitud (por ejemplo -12.0905, -77.0716)."; return; }
+      if (!dentroDeLima(lat, lon)) { aviso.textContent = "Esas coordenadas están fuera de Lima. Escríbelas como latitud, longitud (por ejemplo -12.0464, -77.0428)."; return; }
       fijarUbicacion(lat, lon);
       aviso.textContent = "Ubicación marcada con las coordenadas.";
       return;
