@@ -408,6 +408,16 @@ tr[data-href] { cursor: pointer; }
 .reco-price b { color: var(--text); font-size: var(--fs-section); font-variant-numeric: tabular-nums; }
 .reco-why span, .reco-miss span, .reco-extra span { font-weight: 600; }
 .reco-why span { color: var(--positive); }
+/* Pruebas con usuarios: los motivos se leen como lista de chequeo, no como una línea corrida. */
+.reco-why { margin: 6px 0; }
+.reco-why > span { display: block; font-size: var(--fs-small); margin-bottom: 4px; }
+.reco-why ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.reco-why li { padding: 2px 9px 2px 22px; border-radius: 999px; background: color-mix(in srgb, var(--positive) 12%, transparent); font-size: var(--fs-small); position: relative; }
+.reco-why li::before { content: "✓"; position: absolute; left: 8px; color: var(--positive); font-weight: 700; }
+.plano-aviso { justify-self: start; white-space: nowrap; padding: 1px 8px; border-radius: 999px; background: var(--text); color: var(--surface); font-size: 11px; font-weight: 600; line-height: 1.6; }
+.vecinos { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.rango-claro { color: var(--text); }
+.guia-tendencia { margin: 12px 0 0; padding: 10px 14px; border-left: 3px solid var(--text); background: var(--raised); border-radius: var(--radius-control); line-height: 1.5; }
 .reco-miss { color: var(--muted); }
 .reco-extra { color: var(--muted); font-size: var(--fs-small); }
 @media (hover: hover) and (pointer: fine) { .reco-link:hover { border-color: var(--control); } .hogar:hover { border-color: var(--control); } }

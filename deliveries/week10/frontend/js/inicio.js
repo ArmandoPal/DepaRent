@@ -54,7 +54,7 @@ export async function vistaInicio(main) {
           </div>
           <output class="cartel-price" aria-live="polite"><span data-precio><span class="moneda">S/</span>…</span><small>al mes</small></output>
           <p class="cartel-range" data-rango>Calculando con el modelo…</p>
-          <p class="cartel-limit">Rango orientativo: en alquileres altos, la cobertura observada fue menor que el promedio. Revisa los comparables antes de publicar.</p>
+          <p class="cartel-limit">El rango es una franja orientativa: la mayoría de departamentos parecidos se piden dentro de ella, pero no es un precio garantizado. En alquileres altos acierta menos; revisa los comparables antes de publicar.</p>
           <a class="cartel-link" data-analisis-completo href="#/probar">Ver el análisis de estos datos</a>
           <p class="cartel-foot">Modelo DepaRent, entrenado con anuncios de septiembre${mesVal ? ` y validado con los de ${esc(mesVal)}` : "; validación no disponible ahora"}</p>
         </form>

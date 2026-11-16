@@ -1,6 +1,6 @@
 import { llamar, obtenerOpciones, sesion } from "./api.js";
 import { cerrarSesion } from "./vistas.js";
-import { $, $$, esc, num, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD } from "./util.js";
+import { $, $$, esc, num, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD, vecinosConOpciones, botonesVecinos } from "./util.js";
 
 /* ---------- Inquilino (modelo 7): cuestionario → mi perfil → recomendaciones → guardados ----------
    El perfil y los guardados viven en la cuenta (API), así se ven desde cualquier dispositivo. */
@@ -226,8 +226,22 @@ export async function vistaRecomendacionesDemo(lienzo) {
         <ol class="reco-list">${r.recomendaciones.map((x, i) => tarjeta(x, i, { ids: new Set() }, false)).join("")}</ol>
         <p class="panel-note">${esc(r.aviso)} Son precios pedidos en anuncios, no alquileres cerrados ni una garantía de disponibilidad.</p>
         ${sesion() ? '<a class="btn" href="#/mi-perfil/editar">Configurar mi perfil</a>' : '<a class="btn" href="#/ingresar?modo=registro">Crear cuenta y configurar mi perfil</a>'}`
-        : '<section class="panel"><div class="empty"><p>No encontramos opciones con esos filtros. Prueba otro distrito o un presupuesto mayor.</p></div></section>';
+        : `<section class="panel"><div class="empty"><p>No encontramos opciones${distrito ? ` en ${esc(titulo(distrito))}` : ""} con esos filtros.</p>
+            <div data-vecinos><p>Prueba otro distrito o un presupuesto mayor.</p></div></div></section>`;
       destino.scrollIntoView({ block: "start", behavior: "smooth" });
+      if (!r.recomendaciones.length && distrito) {
+        const vecinos = await vecinosConOpciones(op.centros, distrito, (d) => llamar("/api/recomendar", {
+          cuerpo: { hogar, presupuesto_max: presupuesto, distritos: [d], prioridades: [], limite: 6 },
+        }).then((x) => x.recomendaciones.length));
+        const caja = $("[data-vecinos]", destino);
+        if (caja && vecinos.length) {
+          caja.innerHTML = botonesVecinos(vecinos, distrito, "data-ir-distrito") + '<p class="hint">O sube el presupuesto.</p>';
+          $$("[data-ir-distrito]", caja).forEach((b) => b.addEventListener("click", () => {
+            $("#demo-distrito", form).value = b.dataset.irDistrito;
+            form.requestSubmit();
+          }));
+        }
+      }
     } catch (err) {
       mensaje($(".form-msg", form), err.message);
     }
@@ -263,8 +277,8 @@ export async function vistaRecomendaciones(lienzo, params) {
         destino.innerHTML = r.recomendaciones.length ? `
           <ol class="reco-list">${ordenar(r.recomendaciones, orden).map((x, i) => tarjeta(x, i, estado)).join("")}</ol>
           <p class="panel-note">${esc(r.aviso)} Elegimos estos ${r.recomendaciones.length} según lo que suele necesitar tu tipo de hogar, tus prioridades,
-            la cercanía a tu trabajo o estudio y si el precio es bueno para lo que ofrece; luego los ordenamos como prefieras. El esquema de cada tarjeta es referencial:
-            se dibuja con los dormitorios, baños y metros del anuncio, no es su plano real.</p>`
+            la cercanía a tu trabajo o estudio y si el precio es bueno para lo que ofrece; luego los ordenamos como prefieras. El dibujo de cada tarjeta es un esquema
+            aproximado hecho con los dormitorios, baños y metros del anuncio: no es el plano real del departamento.</p>`
           : `<section class="panel"><div class="empty"><p>Ningún departamento cumple tu presupuesto y tus filtros. Prueba subir el presupuesto, quitar distritos o bajar el mínimo de dormitorios.</p>
               <a class="btn primary" href="#/mi-perfil/editar">Editar mi perfil</a></div></section>`;
         activarGuardar(destino, lienzo, estado);
@@ -331,12 +345,12 @@ function tarjeta(x, i, estado, puedeGuardar = true) {
   return `<li class="reco-card ${puedeGuardar ? "" : "sin-guardar"}">
     <a class="reco-link" href="#/anuncio/${esc(x.id)}" aria-label="Ver ficha: ${esc(dorm)} en ${esc(titulo(x.distrito))}">
       <span class="reco-rank" aria-label="Recomendación ${i + 1}">${i + 1}</span>
-      <figure class="reco-plano">${plano(x.dormitorios, x.banos, x.area_total)}
-        <figcaption>${num(x.area_total)} m² · referencial</figcaption></figure>
+      <figure class="reco-plano"><span class="plano-aviso">No es el plano real</span>${plano(x.dormitorios, x.banos, x.area_total)}
+        <figcaption>Esquema aproximado con los ${num(x.area_total)} m², dormitorios y baños del anuncio</figcaption></figure>
       <div class="reco-body">
         <p class="reco-title"><b>${esc(titulo(x.distrito))}</b> · ${esc(dorm)} · ${esc(banos)} · ${num(x.area_total)} m²</p>
         <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · estimación del modelo ${soles(x.precio_estimado_soles)}${x.dist_paradero_min_m != null ? ` · paradero a ${num(x.dist_paradero_min_m)} m` : ""}</p>
-        ${x.motivos?.length ? `<p class="reco-why"><span>Tiene:</span> ${x.motivos.map(esc).join(" · ")}</p>` : ""}
+        ${x.motivos?.length ? `<div class="reco-why"><span>Por qué te lo recomendamos</span><ul>${x.motivos.map((m) => `<li>${esc(m)}</li>`).join("")}</ul></div>` : ""}
         ${amenidades.length ? `<p class="reco-extra"><span>Amenidades:</span> ${amenidades.map(esc).join(" · ")}</p>` : ""}
         ${x.faltas?.length ? `<p class="reco-miss"><span>Ten en cuenta:</span> ${x.faltas.map(esc).join(" · ")}</p>` : ""}
       </div>

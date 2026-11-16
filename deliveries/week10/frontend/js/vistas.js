@@ -1,7 +1,7 @@
 import { llamar, obtenerOpciones, guardarSesion, sesion } from "./api.js";
 import { mostrarAnalisis } from "./analisis.js";
 import { formularioVivienda } from "./formulario.js";
-import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, notaTecnica, valoracionSencilla, ETIQUETAS_AMENIDAD } from "./util.js";
+import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, notaTecnica, valoracionSencilla, ETIQUETAS_AMENIDAD, vecinosConOpciones, botonesVecinos } from "./util.js";
 import { marcarBienvenida } from "./bienvenida.js";
 
 const irA = (ruta) => { location.hash = ruta; };
@@ -318,6 +318,21 @@ export async function vistaBuscar(lienzo) {
     };
   }
 
+  // Sin resultados en un distrito: antes de pedir más presupuesto, mostrar vecinos que sí tienen opciones.
+  async function sugerirVecinos(parametros, turno) {
+    const distrito = parametros.distritos[0];
+    const vecinos = await vecinosConOpciones(op.centros, distrito,
+      (d) => llamar("/api/buscar", { cuerpo: { ...parametros, distritos: [d], limite: 1 } }).then((x) => x.total));
+    const caja = $("[data-vecinos]", destino);
+    if (turno !== solicitud || !caja || !vecinos.length) return;
+    caja.innerHTML = botonesVecinos(vecinos, distrito, "data-ir-distrito")
+      + '<p class="hint">O amplía el presupuesto y quita amenidades.</p>';
+    $$("[data-ir-distrito]", caja).forEach((b) => b.addEventListener("click", () => {
+      $("#b-distrito", lienzo).value = b.dataset.irDistrito;
+      limite = 24; ejecutar();
+    }));
+  }
+
   async function ejecutar() {
     const turno = ++solicitud;
     const parametros = filtros();
@@ -331,6 +346,7 @@ export async function vistaBuscar(lienzo) {
           ? `${num(r.total)} departamentos en esta categoría con los filtros elegidos.`
           : `${num(r.total)} departamentos con estos filtros · ${num(r.conteos.por_debajo)} tienen un precio pedido por debajo de la estimación.`
         : "Ningún departamento con esta selección de filtros.";
+      if (!r.total && parametros.distritos.length === 1 && !parametros.valoracion) sugerirVecinos(parametros, turno);
       $$("[data-valoracion]", destino).forEach((b) => b.addEventListener("click", () => {
         valoracion = b.dataset.valoracion || null; limite = 24; ejecutar();
       }));
@@ -407,7 +423,7 @@ function resultadosBusqueda(r, valoracion, comparados) {
       </table></div>
       <div class="list-foot"><span>1 a ${r.resultados.length} de ${num(r.total)}</span>
         ${r.resultados.length < Math.min(r.total, 60) ? `<button class="btn" type="button" data-mas>Mostrar ${Math.min(24, Math.min(r.total, 60) - r.resultados.length)} más</button>` : ""}</div>`
-      : '<div class="empty"><p>Ningún departamento con estos filtros. Prueba ampliar el presupuesto, quitar amenidades o cambiar el distrito.</p></div>'}
+      : '<div class="empty"><p>Ningún departamento con estos filtros.</p><div data-vecinos><p>Prueba ampliar el presupuesto, quitar amenidades o cambiar el distrito.</p></div></div>'}
       <p class="panel-note">Es una foto del mercado de ese día, no una lista de ofertas vigentes.</p>
       ${notaTecnica(r.aviso)}
     </section>`;

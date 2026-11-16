@@ -81,6 +81,33 @@ export const valoracionSencilla = (v) => ({
   "En línea con el estimado": "Cerca de la estimación",
 }[v] || v);
 
+// Distritos más próximos a uno dado, por la distancia entre los centros que entrega /api/opciones.
+// Pruebas con usuarios (P3): sin resultados en un distrito, ofrecer vecinos antes de sugerir subir el presupuesto.
+export function distritosCercanos(centros, distrito, n = 6) {
+  const origen = centros?.[distrito];
+  if (!origen) return [];
+  const km = ([la1, lo1], [la2, lo2]) => Math.hypot((la2 - la1) * 111, (lo2 - lo1) * 111 * Math.cos((la1 * Math.PI) / 180));
+  return Object.entries(centros)
+    .filter(([d, c]) => d !== distrito && d !== "otros" && c)
+    .map(([d, c]) => [d, km(origen, c)])
+    .sort((a, b) => a[1] - b[1])
+    .slice(0, n)
+    .map(([d]) => d);
+}
+
+// Cuenta cuántas opciones hay en cada distrito vecino (consulta por distrito) y devuelve los que tienen alguna.
+export async function vecinosConOpciones(centros, distrito, contar, maximo = 3) {
+  const candidatos = distritosCercanos(centros, distrito);
+  const conteos = await Promise.all(candidatos.map((d) => contar(d).then((n) => [d, n]).catch(() => [d, 0])));
+  return conteos.filter(([, n]) => n > 0).slice(0, maximo);
+}
+
+export function botonesVecinos(vecinos, distrito, atributo) {
+  if (!vecinos.length) return "";
+  return `<p>Con los mismos filtros sí hay opciones en distritos cercanos a ${esc(titulo(distrito))}:</p>
+    <div class="vecinos">${vecinos.map(([d, n]) => `<button class="btn" type="button" ${atributo}="${esc(d)}">${esc(titulo(d))} · ${num(n)} ${n === 1 ? "opción" : "opciones"}</button>`).join("")}</div>`;
+}
+
 const CAMPOS_AVISO = {
   area_total: "el área", dormitorios: "los dormitorios", banos: "los baños", estacionamientos: "los estacionamientos",
   antiguedad: "la antigüedad", mantenimiento: "el mantenimiento",

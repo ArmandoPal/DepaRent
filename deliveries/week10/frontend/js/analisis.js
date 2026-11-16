@@ -134,6 +134,7 @@ function panelResumen(a, opciones, acciones) {
         <div class="kpi"><p class="kpi-label">Precio esperado</p><p class="kpi-value is-main num">${soles(p.precio_estimado_soles)}<small>al mes</small></p>
           <p class="delta">Precio típico en el distrito: ${soles(p.baseline_distrital_soles)}</p></div>
         <div class="kpi"><p class="kpi-label">Rango estimado</p><p class="kpi-value num">${soles(p.limite_inferior_soles)} <small>a</small> ${soles(p.limite_superior_soles)}</p>
+          <p class="delta rango-claro">Es una franja orientativa: la mayoría de departamentos parecidos se piden dentro de ella. El precio esperado es el punto más probable.</p>
           <p class="delta">${validacion ? `En ${esc(validacion.mes)} cubrió ${Math.round(validacion.cobertura * 100)} de cada 100 anuncios evaluados; no garantiza este caso.` : "Cobertura reciente no disponible; no garantiza este caso."}</p></div>
         <div class="kpi"><p class="kpi-label">Margen de error en el distrito</p>
           <p class="kpi-value num">${ev ? soles(ev.error_absoluto_medio_soles) : '<span class="dash">—</span>'}</p>
@@ -322,10 +323,10 @@ function panelTendencia(t, completo) {
   const cabecera = `<header><h2 ${completo ? "" : 'id="t-tend"'}>Tendencia del distrito</h2><span class="pill ${t.tendencia === "Al alza" ? "main" : ""}">${esc(t.tendencia)} · ${pct(t.cambio_porcentaje)}</span></header>
     <div class="chart-head"><p class="hint">Precio por m² en ${esc(nombre)}${t.serie_propia ? "" : " (este distrito no tiene datos propios)"}; cada punto es un trimestre. El porcentaje compara el próximo año con el último.</p>
       <div class="legend"><span><i style="color:#111"></i>Lo que pasó</span><span><i style="color:#8a8a8a"></i>Proyección</span><span><i style="color:#dedcd7;height:8px"></i>Rango probable</span></div></div>
-    <div class="chart">${graficoSerie(t.historia.slice(-20), t.pronostico)}</div>`;
+    <div class="chart">${graficoSerie(t.historia.slice(-20), t.pronostico)}</div>
+    ${guiaTendencia(t, nombre)}`;
   if (!completo) return cabecera;
   return `<section class="panel" aria-labelledby="t-tend-c">${cabecera.replace("<h2 >", '<h2 id="t-tend-c">')}
-    <p class="panel-note">Es una referencia del mercado: no cambia el precio esperado de tu departamento ni garantiza lo que pasará.</p>
     <details class="tech"><summary>¿Qué tan confiable es la proyección?</summary>
     <div class="table-wrap" style="margin-top:12px"><table>
       <thead><tr><th>Método, comprobado en ${esc(v.trimestres[0])} a ${esc(v.trimestres.at(-1))}</th><th class="n">Se equivoca en promedio</th></tr></thead>
@@ -335,6 +336,18 @@ function panelTendencia(t, completo) {
         <tr><td>Repetir el último valor</td><td class="n">${num(v.naive.MAPE_porcentaje, 1)}%</td></tr>
       </tbody></table></div>
     <p class="panel-note">${esc(t.aviso)}</p></details></section>`;
+}
+
+// Pruebas con usuarios: una explicación corta de qué es la tendencia y para qué sirve.
+function guiaTendencia(t, nombre) {
+  const estado = { "Al alza": "viene subiendo", "A la baja": "viene bajando", "Estable": "se mantiene" }[t.tendencia] || "cambia poco";
+  const uso = {
+    "Al alza": "Si publicas, el mercado acompaña un precio equilibrado o algo mayor.",
+    "A la baja": "Si publicas, un precio competitivo ayuda a conseguir interesados.",
+    "Estable": "Los departamentos parecidos son tu mejor referencia.",
+  }[t.tendencia] || "";
+  return `<p class="guia-tendencia"><b>¿Qué es esto?</b> Cómo cambia el precio por m² en ${esc(nombre)} y hacia dónde podría ir el próximo año:
+      ${estado} (${pct(t.cambio_porcentaje)}). ${uso} <span class="hint">Datos del BCRP; no cambia tu precio esperado.</span></p>`;
 }
 
 function graficoSerie(historia, pronostico) {
