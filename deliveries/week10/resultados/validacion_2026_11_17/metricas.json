@@ -1,0 +1,82 @@
+{
+  "captura": "2026-11-17",
+  "modelo": "modelo_docente.joblib, congelado (hashes verificados), entrenado con la captura del 14-sep-2026",
+  "flujo": {
+    "anuncios_en_captura": 6345,
+    "validos_tras_preprocesar": 5478,
+    "ya_estaban_en_septiembre_por_id": 746,
+    "posibles_duplicados_de_septiembre": 1085,
+    "duplicados_dentro_de_octubre": 1584,
+    "evaluados": 2063
+  },
+  "metricas_octubre": {
+    "HistGradientBoosting": {
+      "MAE_soles": 534.382383978666,
+      "RMSE_soles": 1041.2910125739209,
+      "MAPE_porcentaje": 16.378452060121454,
+      "R2": 0.7971782808641693
+    },
+    "mediana_distrital": {
+      "MAE_soles": 1054.8991759573437,
+      "RMSE_soles": 2193.635775855008,
+      "MAPE_porcentaje": 27.43814889862768,
+      "R2": 0.09988238601223876
+    },
+    "mediana_global": {
+      "MAE_soles": 1215.8099854580707,
+      "RMSE_soles": 2367.566062151687,
+      "MAPE_porcentaje": 34.89917265865428,
+      "R2": -0.048514477546806045
+    }
+  },
+  "metricas_septiembre_prueba": {
+    "mediana_global": {
+      "MAE_soles": 1215.818759936407,
+      "RMSE_soles": 2253.106832938893,
+      "MAPE_porcentaje": 37.83652183224807,
+      "R2": -0.04351289806633085
+    },
+    "mediana_distrital": {
+      "MAE_soles": 993.2257551669317,
+      "RMSE_soles": 2053.4477568187854,
+      "MAPE_porcentaje": 26.63607610219313,
+      "R2": 0.13323459637610913
+    },
+    "HistGradientBoosting": {
+      "MAE_soles": 553.1782113189673,
+      "RMSE_soles": 1075.5624146343587,
+      "MAPE_porcentaje": 18.845348549313595,
+      "R2": 0.7622034841946597
+    }
+  },
+  "MAE_octubre_IC95": [
+    497.3896088859415,
+    573.1843333510518
+  ],
+  "sensibilidad_excluyendo_solo_por_id": {
+    "evaluados": 4732,
+    "MAE_soles": 543.399770305587,
+    "RMSE_soles": 1076.4524379504053,
+    "MAPE_porcentaje": 16.105662190213245,
+    "R2": 0.7922040918103502,
+    "cobertura": 0.9363905325443787
+  },
+  "cambio_MAE_porcentaje": -3.397788805796531,
+  "intervalo": {
+    "metodo": "Residuos absolutos normalizados por max(mediana redondeada de entrenamiento, precio estimado)",
+    "nivel_nominal": 0.9,
+    "cobertura_octubre": 0.9384391662627242,
+    "cobertura_fija_v1": 0.9263208919049928,
+    "cobertura_septiembre_prueba": 0.9268680445151033
+  },
+  "sesgo": {
+    "mediana_real_menos_estimado_soles": -33.24689017555147,
+    "porcentaje_por_encima_del_estimado": 46.82501211827436
+  },
+  "limites": [
+    "Precios pedidos, no de contrato.",
+    "Una captura de noviembre de 2026: evalúa ese corte temporal, no la estacionalidad.",
+    "La heurística de duplicados puede omitir republicaciones con otro texto o unir viviendas distintas.",
+    "La captura puede tener páginas faltantes por bloqueos del portal (error 403)."
+  ]
+}

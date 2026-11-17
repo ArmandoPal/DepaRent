@@ -116,7 +116,7 @@ En Linux/macOS: `python3 -m venv .venv`, `.venv/bin/python -m pip install ...` y
 ### Pruebas automáticas (desde `deliveries/week10/code`)
 
 ```powershell
-..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py" -q   # 76 pruebas, verificadas el 14-nov-2026
+..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py" -q   # 77 pruebas, verificadas el 17-nov-2026
 ```
 
 ### Probar el tablero con 300 cuentas ficticias

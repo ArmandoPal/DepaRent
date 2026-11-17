@@ -45,7 +45,7 @@ Todo está desplegado y funcionando en https://deparent.onrender.com:
 - **Prueba rápida** del análisis sin cuenta.
 - **Panel de KPIs** para analistas: series diarias, embudo, Pareto por distrito, error y cobertura del modelo, asistente de supervisión; se actualiza cada 10 s.
 - **Ayuda integrada**, **comparador de hasta 3 anuncios** en la búsqueda y **recomendaciones sin cuenta** (`#/para-ti-demo`).
-- **76 pruebas automáticas** pasan (`deliveries/week10/code/test_*.py`).
+- **77 pruebas automáticas** pasan (`deliveries/week10/code/test_*.py`).
 
 ## 3. Qué modelo usamos y qué resultados obtuvimos
 

@@ -21,7 +21,7 @@ repositorio y se pueden regenerar (sección 9).
 | Tendencia distrital (SARIMA) | MAE mediano en 4 trimestres reservados | 2.00 S/ por m² | Naive estacional: 2.54 · Naive: 2.40 |
 | Escenarios de publicación (reglas) | Reglas cumplidas en 296 análisis reales | **100%** | — |
 | Recomendador por perfil del inquilino (modelo 7) | precision@12 en 60 perfiles de prueba | **82%** | Mejor orden del buscador: 23% · al azar: 25% |
-| Producto | Pruebas automáticas | **76 de 76 pasan** | — |
+| Producto | Pruebas automáticas | **77 de 77 pasan** | — |
 
 **Lo que funciona:** el modelo de precio no se degradó en ocho semanas y reduce casi a la mitad el error de
 la mediana del distrito; la app es coherente en todos los casos probados.
@@ -73,11 +73,13 @@ El 44% queda a menos del 10% del precio y el 71% a menos del 20%.
 | Prueba de septiembre (14-sep) | 629 | S/ 553 | 18.8% | 0.762 | 92.7% | S/ 993 |
 | Octubre (23-oct) | 1,712 | S/ 512 (476–551) | 16.4% | 0.785 | 94.2% | S/ 948 |
 | Noviembre (9-nov) | 2,026 | S/ 541 (503–580) | 16.8% | 0.782 | 93.5% | S/ 1,024 |
+| Noviembre (17-nov) | 2,063 | S/ 534 (497–573) | 16.4% | 0.797 | 93.8% | S/ 1,055 |
 
 Ocho semanas después del entrenamiento el error sigue en el mismo nivel; los intervalos de octubre y noviembre
 se superponen. **No hace falta reentrenar por ahora.** El sesgo es pequeño: la mediana de (precio pedido −
 estimado) es −S/ 44 en noviembre (−S/ 65 en octubre). Detalle en `week10/resultados/validacion_octubre/` y
-`week10/resultados/validacion_noviembre/`.
+`week10/resultados/validacion_noviembre/` y `validacion_2026_11_17/`. Las dos muestras de noviembre comparten
+muchos anuncios (siguen publicados entre una y otra fecha), así que no son evidencias independientes.
 
 ### 3.3 Análisis de errores por rango de precio
 
@@ -202,7 +204,7 @@ primera visita tras 15 minutos de inactividad tarda 30–60 s mientras el servic
 
 | Evidencia | Qué cubre | Resultado |
 |---|---|---|
-| 76 pruebas automáticas en `week10/code/test_*.py` | Preprocesamiento idéntico al de la Semana 7, los 5 modelos, API, cuentas con contraseña con sal, aislamiento entre propietarios, filtros de búsqueda, que no se expongan datos personales, errores 404/422, rango proporcional, panel de KPIs y demo de 300 cuentas | 76/76 pasan (17-nov-2026) |
+| 77 pruebas automáticas en `week10/code/test_*.py` | Preprocesamiento idéntico al de la Semana 7, los 5 modelos, API, cuentas con contraseña con sal, aislamiento entre propietarios, filtros de búsqueda, que no se expongan datos personales, errores 404/422, rango proporcional, panel de KPIs y demo de 300 cuentas | 77/77 pasan (17-nov-2026) |
 | `week10/resultados/simulacion_v2/` | 54 consultas del simulador iguales a la inferencia del modelo, verificadas con SHA-256 | PASS |
 | `resultados/coherencia_producto.json` | Sección 6 | 100% de las reglas |
 | `week10/resultados/demos_ejecutadas.json` | Casos de demostración ejecutados de punta a punta | OK |
@@ -275,14 +277,14 @@ inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisi
 
 | Hallazgo | Quiénes | Severidad | Estado en la versión actual |
 |---|---|---|---|
-| El esquema de distribución se confunde con el plano real | P2 y P3 | Importante | **Pendiente**: el aviso «referencial» es pequeño y está en el texto de la lista |
+| El esquema de distribución se confunde con el plano real | P2 y P3 | Importante | Atendido en parte: debajo del esquema dice «Esquema aproximado del departamento»; volver a comprobar |
 | El rango del precio necesita relectura o se confunde con el estimado | P2 y P3 | Importante / menor | Atendido en parte: el rango ahora es proporcional y se describe como estimado; volver a comprobar |
 | Sin resultados en el distrito elegido; sugerir distritos cercanos antes de subir el presupuesto | P3 | Importante | **Pendiente**: el mensaje actual sugiere subir el presupuesto o cambiar el distrito |
 | «Por debajo del estimado» se lee como «ganga» | P2 | Importante | Atendido en parte: se llama «por debajo de la estimación» y hay una nota antes de la tabla; volver a comprobar |
 | Dudas en la portada (¿también para inquilinos?, ¿se puede estimar sin cuenta?) | P2 y P3 | Menor | Atendido: la portada muestra «Quiero estimar» y «Quiero buscar» |
 | Explicar mejor por qué aparece cada recomendación | P2 | Menor | Pendiente: los motivos existen, falta hacerlos más visibles |
-| Demasiado texto y pocos elementos visuales; el formulario y el cálculo del precio confunden o abruman | P5 y P6 | Importante | **Pendiente**: textos más breves, iconos y pasos guiados en el formulario |
-| El margen de error del precio parece demasiado amplio | P6 | Importante | Pendiente: explicar qué representa el rango y por qué varía |
+| Demasiado texto y pocos elementos visuales; el formulario y el cálculo del precio confunden o abruman | P5 y P6 | Importante | Atendido (17-nov): formulario en 3 o 4 pasos con iconos, precio y rango grandes arriba, tres precios en tarjetas, explicaciones plegadas y accesos con icono al ingresar; volver a comprobar |
+| El margen de error del precio parece demasiado amplio | P6 | Importante | Atendido en parte (17-nov): barra visual del rango y «¿Por qué el rango es tan amplio?»; el rango en sí no cambió |
 
 **Propietarios (P5 y P6).** Ambos completaron sus tareas **con ayuda** (P5: T1 y T2 en 6 min; P6: T1, T2 y T3 en
 5 min). Los informes no tienen cierre C1–C5 ni tiempos por tarea, y el de P6 quedó incompleto en el original.
@@ -365,12 +367,15 @@ foto del mercado del 17 de noviembre, no una lista de ofertas vigentes.
 - **Precios pedidos, no de contrato.** El modelo aprende lo que piden los propietarios.
 - **Rango de precio en alquileres altos.** El rango proporcional cubre el 93.5% en noviembre, pero solo el 65.8% desde
   S/ 7,000 y el 91.3% bajo S/ 1,500 (sección 3.3).
-- **Distritos con pocos datos** y la categoría "Otros" tienen errores inestables.
+- **Distritos con pocos datos** y la categoría "Otros" tienen errores inestables. En Los Olivos, Comas, San Martín de
+  Porres, Callao, Ate y "Otros" el error medio supera el 30% y el modelo suele **sobreestimar** (en Los Olivos, el 96%
+  de los anuncios de noviembre quedó por debajo del estimado). Desde el 17-nov la app muestra un aviso en esos distritos
+  (`evidencia_distrital.poco_confiable`).
 - **Perfiles débiles** (silhouette 0.21): orientan, no segmentan.
 - **Tendencia** con poca evidencia de validación (4 trimestres) y derivada del precio de venta, no del alquiler.
 - **Paraderos ATU de 2021.** La accesibilidad usa el centro aproximado del distrito si no se marca la ubicación.
 - **Capturas de mercado.** La descarga de anuncios se hizo del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios); entre el 28-oct y el 8-nov no hubo una
-  captura completa, por eso la validación de noviembre usa la del 9-nov.
+  captura completa; la validación de noviembre se hizo con las del 9 y del 17-nov.
 - **Recomendador evaluado sin usuarios reales.** Se midió con 60 perfiles de prueba; falta saber si a personas reales les gustan sus recomendaciones.
 - **Pocas pruebas con usuarios.** Cuatro sesiones (§6c) orientan sobre la utilidad, pero no permiten generalizar.
 
@@ -382,7 +387,7 @@ Desde la raíz del repositorio, con el entorno de `week10/README.md`:
 
 ```powershell
 cd deliveries\week10\code
-..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 76 pruebas
+..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 77 pruebas
 ..\..\..\.venv\Scripts\python.exe validar_octubre.py --captura 2026-11-09  # validación temporal (requiere data_diaria/)
 cd ..\..\week12\code
 ..\..\..\.venv\Scripts\python.exe evaluar_producto.py   # error por rango + coherencia (secciones 3.3 y 6)
@@ -410,5 +415,5 @@ cd ..\..\week12\code
    34.2% a 65.8% en noviembre, aún lejos del 90%.
 3. ✅ La app explica junto a los tres precios por qué se sugiere uno: al alza → renta superior; estable → equilibrado;
    a la baja → competitivo.
-4. ✅ Mercado de la app actualizado con la captura completa del 17-nov (2,998 anuncios únicos); la validación
-   temporal sigue con la del 9-nov.
+4. ✅ Mercado de la app actualizado con la captura completa del 17-nov (2,998 anuncios únicos) y validación
+   temporal repetida con esa captura (MAE S/ 534).

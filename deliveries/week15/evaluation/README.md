@@ -7,7 +7,7 @@ proporcional ya está incorporado (ver `REVISION_DepaRent_13-11-2026.md` en la r
 | Tema | Archivo |
 |---|---|
 | Métricas de prueba y baselines (MAE, RMSE, MAPE, R²) | `deliveries/week10/resultados/metricas.json` |
-| Validación temporal | `deliveries/week10/resultados/validacion_octubre/`, `validacion_noviembre/` |
+| Validación temporal | `deliveries/week10/resultados/validacion_octubre/`, `validacion_noviembre/`, `validacion_2026_11_17/` |
 | Error por rango de precio | `deliveries/week12/resultados/error_por_rango_precio.csv` |
 | Error por distrito | `deliveries/week10/resultados/error_por_distrito.csv`, `validacion_*/error_por_distrito.csv` |
 | Perfil competitivo | `deliveries/week10/resultados/metricas_perfil.json` |
@@ -15,7 +15,7 @@ proporcional ya está incorporado (ver `REVISION_DepaRent_13-11-2026.md` en la r
 | Coherencia de la app de punta a punta | `deliveries/week12/resultados/coherencia_producto.json` |
 | Recomendador según el perfil del inquilino (modelo 7) | `deliveries/week12/EvaluationReport.md` §6b · `deliveries/week12/resultados/recomendador_*.{json,csv}` |
 | Casos de estudio | `deliveries/week12/EvaluationReport.md` §7 · `deliveries/week12/resultados/casos_estudio.json` |
-| Pruebas automáticas (76) | `deliveries/week10/code/test_*.py` |
+| Pruebas automáticas (77) | `deliveries/week10/code/test_*.py` |
 | Pruebas con usuarios | `deliveries/week12/pruebas_usuarios/` · `EvaluationReport.md` §6c (2 sesiones de 5, inquilinos; faltan propietarios) |
 
 ## Cifras para el informe y la presentación

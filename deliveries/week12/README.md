@@ -21,8 +21,8 @@ duplica el código: agrega la evaluación, los casos de estudio, la documentaci�
   recomendación como lista, distritos cercanos cuando no hay resultados, explicación del rango, nota «¿Qué es esto?» en
   la tendencia y el motivo del precio sugerido junto a los tres escenarios.
 - **Datos (17-nov):** mercado de la app actualizado con la captura del 17 de noviembre (6,345 anuncios descargados,
-  2,998 únicos). Se volvieron a correr los perfiles, los casos de estudio, la coherencia y el recomendador; la
-  validación temporal sigue con la captura del 9-nov.
+  2,998 únicos). Se volvieron a correr los perfiles, los casos de estudio, la coherencia, el recomendador y la
+  validación temporal (`week10/resultados/validacion_2026_11_17/`: MAE S/ 534, cobertura 93.8%).
 
 ## Contenido
 
@@ -49,7 +49,7 @@ Con el entorno de `week10/README.md` (`.venv` con `week10/code/requirements.txt`
 
 ```powershell
 cd deliveries\week10\code
-..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 76 pruebas
+..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"     # 77 pruebas
 cd ..\..\week12\code
 ..\..\..\.venv\Scripts\python.exe evaluar_producto.py
 ..\..\..\.venv\Scripts\python.exe casos_estudio.py
