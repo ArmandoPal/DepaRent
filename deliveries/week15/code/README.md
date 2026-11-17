@@ -8,9 +8,7 @@ inferencia y evaluación**. Las rutas son relativas a la raíz del repositorio.
 | Script | Qué hace |
 |---|---|
 | `deliveries/week04/acquisition.md` | Cómo se obtuvo la captura de septiembre (Adondevivir, Urbania, BCRP, ATU) |
-| `scraper/descarga_diaria.py` | Descarga diaria de anuncios de Adondevivir y Urbania → `data_diaria/` (fuera de git) |
-| `scraper/programar_tarea.ps1` | Programa la descarga diaria en Windows |
-| `.github/workflows/actualizar-mercado.yml` | La misma descarga diaria en GitHub Actions (hoy bloqueada por los portales, error 403) |
+| `scraper/descarga_diaria.py` | Descarga de anuncios de Adondevivir y Urbania → `data_diaria/` (fuera de git); se usó del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios) |
 
 ## 2. Preprocesamiento
 | Script | Qué hace |

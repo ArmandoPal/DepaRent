@@ -31,11 +31,11 @@ digraph G {
   ART [label="Artefactos en el repo\nmodels/*.joblib · resultados/*.json\ndata/mercado.csv · week07/data/", shape=cylinder, fillcolor="#e9ecef"];
 
   subgraph cluster_pipeline { label="Actualización del mercado"; style="rounded,dashed"; color="#adb5bd"; fontname="Helvetica";
-    S [label="Descarga diaria\nscraper/descarga_diaria.py\nAdondevivir + Urbania"];
+    S [label="Descarga de anuncios\nscraper/descarga_diaria.py\nAdondevivir + Urbania\n20-oct al 17-nov-2026"];
     SN [label="data_diaria/snapshots\n(fuera de git: tiene direcciones)", shape=cylinder, fillcolor="#e9ecef"];
     PM [label="preparar_mercado.py\nentrenar_perfil.py\npruebas → commit en main"];
   }
-  GH [label="GitHub\n(repo + Actions diario,\nrespaldo: tarea local de Windows)", shape=component, fillcolor="#e9ecef"];
+  GH [label="GitHub\n(repositorio)", shape=component, fillcolor="#e9ecef"];
 
   P -> F; I -> F; AN -> F [label="cuenta autorizada"];
   F -> A [label="fetch JSON"];

@@ -9,7 +9,7 @@ obtenerlos de nuevo. **Revisar al cierre** (antes del 18-nov) que el mercado ten
 | `deliveries/week04/data/departamentos_alquiler_lima.csv` | Adondevivir y Urbania (anuncios públicos) | 14-sep-2026 | `deliveries/week04/acquisition.md` |
 | `deliveries/week04/data/dataset_alquileres_trimestre_bcrp.csv` | BCRP, series trimestrales de precio y PER | 2013-T3 a 2026-T1 | `deliveries/week04/acquisition.md` |
 | `deliveries/week04/data/paraderos.csv` | ATU, inventario de paraderos | mayo de 2021 | `deliveries/week04/acquisition.md` |
-| `data_diaria/snapshots/AAAA-MM-DD.csv.gz` | Descarga diaria de los mismos portales | desde el 20-oct-2026 | `scraper/descarga_diaria.py` · **no se sube** (tiene direcciones) |
+| `data_diaria/snapshots/AAAA-MM-DD.csv.gz` | Descarga de los mismos portales (8 capturas completas) | 20-oct al 17-nov-2026 | `scraper/descarga_diaria.py` · **no se sube** (tiene direcciones) |
 
 ## Datos procesados
 | Archivo | Uso |

@@ -61,8 +61,7 @@ DepaRent/
 ├── README.md                      ← este archivo
 ├── requirements.txt               dependencias de los notebooks (semanas 6–7)
 ├── render.yaml                    despliegue en Render
-├── .github/workflows/             actualización diaria del mercado (GitHub Actions)
-├── scraper/                       descarga diaria de anuncios (Adondevivir, Urbania)
+├── scraper/                       descarga de anuncios (Adondevivir, Urbania), 20-oct al 17-nov
 └── deliveries/
     ├── week04/   adquisición de datos: datos crudos, diccionario, calidad de datos
     ├── week05/   propuesta, Data Product Canvas, requisitos, presentación
@@ -155,9 +154,10 @@ Abrir `deliveries/week07/code/EDA_week07.ipynb` y ejecutar todo; lee los crudos 
 | `DEPARENT_ORIGENES` | Dominios permitidos si el frontend se sirve aparte |
 
 ### Despliegue
-Render con `render.yaml` (un solo servicio que sirve API y frontend). El mercado se actualiza con
-`.github/workflows/actualizar-mercado.yml` o, si los portales bloquean la nube, con `scraper/programar_tarea.ps1`
-en local. Detalle en [`deliveries/week10/deployed_url.txt`](deliveries/week10/deployed_url.txt).
+Render con `render.yaml` (un solo servicio que sirve API y frontend). El mercado de la app sale de la descarga de
+anuncios con `scraper/descarga_diaria.py`, del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios); se prepara con
+`preparar_mercado.py` y `entrenar_perfil.py` y se sube a `main`. Detalle en
+[`deliveries/week10/deployed_url.txt`](deliveries/week10/deployed_url.txt).
 
 ---
 
@@ -179,7 +179,7 @@ Detalle: [`deliveries/week07/planning/team_responsibilities.md`](deliveries/week
 - El modelo aprende **precios pedidos** en anuncios, no precios de contrato.
 - El rango de precio tiene radio fijo (S/ 1,357): bien calibrado en promedio, menos en departamentos de lujo.
 - Distritos con pocos anuncios tienen error inestable.
-- Los portales bloquean a veces la descarga automática (error 403); la app usa la última captura completa.
+- El mercado de la app es una foto fija (captura del 9-nov-2026); no se actualiza solo.
 - Render gratuito se duerme tras 15 min sin visitas.
 
 Más detalle en [`deliveries/week12/EvaluationReport.md`](deliveries/week12/EvaluationReport.md) §8.

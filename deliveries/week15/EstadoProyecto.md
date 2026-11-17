@@ -95,8 +95,8 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 
 ## 6. Qué dificultades tenemos actualmente
 
-- **Bloqueo de los portales:** desde el 25-oct Urbania responde error 403 a GitHub Actions, por lo que la
-  actualización diaria automática falla; usamos la descarga local como respaldo.
+- **Mercado fijo:** la descarga de anuncios se hizo del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios); la app usa la captura del
+  9-nov y no se actualiza sola.
 - **Rango de precio en alquileres altos:** el rango ahora es proporcional al precio estimado (antes fijo, ±S/ 1,357). En noviembre la cobertura desde S/ 7,000 subió de 34.2% a 65.8%, aún lejos del 90% nominal; en alquileres menores a S/ 1,500 bajó de 99.2% a 91.3%.
 - **Precios pedidos, no de contrato**, y distritos con pocos anuncios con error inestable.
 - **Render gratuito** se duerme tras 15 minutos; la primera visita tarda 30–60 s.

@@ -5,42 +5,29 @@ DESPLIEGUE (Render, un solo servicio: la API FastAPI también sirve el frontend)
 La configuración está en render.yaml (raíz del repositorio) y las dependencias en
 deliveries/week10/code/requirements-deploy.txt. Se probó localmente con un entorno limpio y el mismo comando de arranque.
 
-1. Fusionar la rama week10-prototipo en main (pull request en GitHub).
-   Render despliega desde main y GitHub solo ejecuta tareas programadas desde la rama por defecto.
+1. Fusionar la rama week10-prototipo en main (pull request en GitHub). Render despliega desde main.
 
-2. Dar permiso de escritura a GitHub Actions (lo hace quien administra el repositorio, Luciana-y):
-   Settings > Actions > General > Workflow permissions > "Read and write permissions" > Save.
-   Si main tiene reglas de protección, permitir que github-actions[bot] haga push.
-
-3. Probar la actualización diaria una vez a mano:
-   pestaña Actions > "Actualizar mercado diario" > Run workflow (rama main).
-   Debe terminar en verde y dejar un commit "chore(datos): actualizar el mercado con la captura del AAAA-MM-DD".
-
-4. Crear el servicio en Render (gratis):
+2. Crear el servicio en Render (gratis):
    render.com > iniciar sesión con GitHub > New > Blueprint > elegir el repositorio > Apply.
    Render lee render.yaml, instala las dependencias y arranca. La primera vez tarda unos minutos.
    Comprobar https://<servicio>.onrender.com/api/salud  ->  {"estado":"ok"}  y abrir la raíz del sitio.
    Copiar la URL arriba, en este archivo.
 
-5. Base de datos persistente (gratis, en Neon):
+3. Base de datos persistente (gratis, en Neon):
    neon.tech > crear un proyecto (región cercana a la de Render) > Connect > copiar la cadena "pooled"
    (postgresql://...?sslmode=require). En Render: servicio deparent > Environment > DATABASE_URL = esa cadena > Save.
    La cadena tiene la contraseña: no va en el repositorio. Las tablas se crean solas al primer arranque.
 
-AUTOMATIZACIÓN (sin subir datos a mano)
-Todos los días a las 07:00 de Lima, .github/workflows/actualizar-mercado.yml:
-descarga los anuncios -> preparar_mercado.py -> entrenar_perfil.py -> pruebas -> commit en main.
-Render ve el commit y vuelve a desplegar con el mercado nuevo. Si un paso falla (por ejemplo, el portal bloquea la
-descarga), no se publica nada y la app sigue con el último mercado bueno. La captura cruda, que tiene direcciones,
-se queda en la máquina temporal de GitHub y se borra; al repositorio solo llega data/mercado.csv, sin direcciones.
+MERCADO DE LA APP
+La descarga de anuncios se hizo con scraper/descarga_diaria.py del 20-oct al 17-nov-2026 (18 días de descarga,
+8 completos con 6,300-6,900 anuncios). El mercado se prepara con preparar_mercado.py -> entrenar_perfil.py -> pruebas
+-> commit en main, y Render vuelve a desplegar. Hoy la app usa la captura del 9-nov-2026. La captura cruda, que tiene
+direcciones, se queda en data_diaria/ (fuera de git); al repositorio solo llega data/mercado.csv, sin direcciones.
 
 LIMITACIONES DEL PLAN GRATUITO
 - El servicio se duerme tras 15 minutos sin visitas; la primera visita después tarda unos 30-60 segundos.
-- El disco no es persistente: por eso las cuentas, departamentos e interesados van a Postgres en Neon (paso 5).
+- El disco no es persistente: por eso las cuentas, departamentos e interesados van a Postgres en Neon (paso 3).
   Sin DATABASE_URL la app usaría SQLite en el disco del servicio y los perdería en cada despliegue.
-- Los portales bloquean descargas desde servidores en la nube: desde el 25-oct-2026 Urbania responde 403 a GitHub
-  Actions y la tarea diaria falla sin publicar nada (la app sigue con el último mercado bueno, del 23-oct-2026).
-  El respaldo es la tarea programada local (scraper/programar_tarea.ps1) más los mismos pasos y un git push.
 
 OPCIONAL: frontend en Netlify
 No hace falta (Render ya sirve el frontend). Si se quiere: Base directory = deliveries/week10/frontend,

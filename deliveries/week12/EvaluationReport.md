@@ -368,10 +368,10 @@ foto del mercado del 9 de noviembre, no una lista de ofertas vigentes.
 - **Perfiles débiles** (silhouette 0.21): orientan, no segmentan.
 - **Tendencia** con poca evidencia de validación (4 trimestres) y derivada del precio de venta, no del alquiler.
 - **Paraderos ATU de 2021.** La accesibilidad usa el centro aproximado del distrito si no se marca la ubicación.
-- **Descarga diaria inestable.** Los portales bloquean parte de las descargas (error 403); del 28-oct al 8-nov
-  no hubo una captura completa.
+- **Capturas de mercado.** La descarga de anuncios se hizo del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios); entre el 28-oct y el 8-nov no hubo una
+  captura completa, por eso la validación de noviembre usa la del 9-nov.
 - **Recomendador evaluado sin usuarios reales.** Se midió con 60 perfiles de prueba; falta saber si a personas reales les gustan sus recomendaciones.
-- **Sin pruebas con usuarios todavía.** La utilidad está argumentada con casos de estudio, no medida.
+- **Pocas pruebas con usuarios.** Cuatro sesiones (§6c) orientan sobre la utilidad, pero no permiten generalizar.
 
 ---
 

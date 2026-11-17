@@ -1,4 +1,4 @@
-# Lo que necesita la API en producción (Render) y la actualización diaria (GitHub Actions).
+# Lo que necesita la API en producción (Render).
 # Sin Streamlit ni statsmodels: solo los usan la app de respaldo del profesor y entrenar_tendencia.py.
 numpy==2.3.5
 pandas==2.3.3

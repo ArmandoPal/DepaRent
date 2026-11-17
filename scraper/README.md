@@ -1,22 +1,19 @@
-# Descarga diaria de anuncios
+# Descarga de anuncios
 
-Repite cada día la adquisición de la Semana 4 (`deliveries/week04/acquisition.md`) en Adondevivir y
-Urbania, para tener varias capturas en el tiempo y poder validar el modelo con anuncios posteriores.
+Repite la adquisición de la Semana 4 (`deliveries/week04/acquisition.md`) en Adondevivir y Urbania, para tener
+varias capturas en el tiempo y poder validar el modelo con anuncios posteriores.
 
-## Ejecutar a mano
+## Descargas hechas
+Del **20 de octubre al 17 de noviembre de 2026**: 18 días de descarga, **8 completos** (20, 21, 23, 25 y 26 de
+octubre; 9, 10 y 17 de noviembre), cada uno con 6,300–6,900 anuncios. En total, **12,235 anuncios distintos**.
+La app usa la captura del 9 de noviembre. La descarga se dio por terminada el 17 de noviembre.
+
+## Ejecutar
 ```powershell
-py -3 scraper\descarga_diaria.py                     # descarga completa (~6-8 min)
+py -3 scraper\descarga_diaria.py                     # descarga completa (~10-15 min)
 py -3 scraper\descarga_diaria.py --max-paginas 2 --sin-historial   # prueba rápida
 ```
 No requiere instalar librerías (solo Python 3 estándar).
-
-## Programarla todos los días
-```powershell
-powershell -ExecutionPolicy Bypass -File scraper\programar_tarea.ps1            # 07:00 por defecto
-powershell -ExecutionPolicy Bypass -File scraper\programar_tarea.ps1 -Hora 06:30
-```
-Si la PC está apagada a esa hora, la descarga corre apenas se encienda. Para quitarla:
-`Unregister-ScheduledTask -TaskName "DepaRent descarga diaria" -Confirm:$false`
 
 ## Qué se guarda (`data_diaria/`, fuera de git)
 | Archivo | Contenido |

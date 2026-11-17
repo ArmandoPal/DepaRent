@@ -1,4 +1,4 @@
-"""Descarga diaria de anuncios de alquiler de departamentos en Lima (Adondevivir y Urbania).
+"""Descarga de anuncios de alquiler de departamentos en Lima (Adondevivir y Urbania).
 
 Mismo método que la Semana 4 (ver deliveries/week04/acquisition.md): se lee el JSON
 `window.__PRELOADED_STATE__` de cada página del catálogo y se mapean los campos CFT.

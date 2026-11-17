@@ -40,7 +40,7 @@ Todo lo listado funciona hoy en la versión desplegada; las capturas están en `
 | Prueba sin cuenta con tres casos de ejemplo | ☑ | `#/probar` | `04` |
 | Validación temporal con el mercado de octubre | ☑ | `code/validar_octubre.py`, `resultados/validacion_octubre/` | — |
 | Despliegue en Render con base de datos persistente (Postgres en Neon) | ☑ | `render.yaml`, `code/cuentas.py` | — |
-| Actualización diaria del mercado con GitHub Actions | ◐ | `.github/workflows/actualizar-mercado.yml` | ver §5 |
+| Descarga de anuncios para el mercado de la app (del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios)) | ☑ | `scraper/descarga_diaria.py`, `code/preparar_mercado.py` | — |
 
 ## 3. Arquitectura del sistema
 ```mermaid
@@ -60,7 +60,7 @@ flowchart LR
     C --> DB[("Postgres (Neon) en producción · SQLite en local")]
     MOD[("models/*.joblib")] --> M1 & M3
     DAT[("data/mercado.csv · week07/data/")] --> B & M2
-    GH[GitHub Actions diario] -. commit del mercado .-> DAT
+    SC[scraper/descarga_diaria.py] -. preparar_mercado.py .-> DAT
 ```
 
 - **Un solo servicio.** En Render, la API FastAPI sirve también el frontend estático; no hay servidor aparte.
@@ -110,9 +110,8 @@ referencia distrital S/ 3,500, con 457 anuncios de entrenamiento en el distrito.
 - **Paraderos ATU de mayo de 2021**; la red actual puede diferir.
 - **BCRP** no cubre todos los distritos: el 16.3 % de los departamentos usa la serie general.
 - **Clustering débil** (silhouette 0.21): los perfiles orientan, no separan mercados.
-- **Actualización diaria bloqueada.** Desde el 25-oct los portales responden 403 a los servidores de GitHub. La tarea
-  falla sin publicar nada y la app sigue con el mercado del 23-oct. El respaldo es la tarea programada local
-  (`scraper/programar_tarea.ps1`) más `git push`.
+- **Mercado fijo.** La app usa la última captura preparada (9-nov-2026); para actualizarlo hay que correr la descarga,
+  `preparar_mercado.py` y `entrenar_perfil.py`, y subir el resultado.
 - **Plan gratuito de Render.** El servicio se duerme tras 15 minutos sin visitas; la primera carga tarda 30–60 s.
 - **Prototipo académico.** No hay recuperación de contraseña, verificación de correo ni moderación de mensajes.
 

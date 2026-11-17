@@ -28,11 +28,7 @@ Desde `deliveries/week10/code`:
 
 Después hay que reiniciar la API, que carga el mercado al arrancar.
 
-## Actualización automática
-Desde que `main` tenga el flujo `.github/workflows/actualizar-mercado.yml`, el mercado se actualiza solo cada día a las
-07:00 de Lima en los servidores de GitHub: descarga → `preparar_mercado.py` → `entrenar_perfil.py` → pruebas → commit.
-Render vuelve a desplegar con ese commit. No hay que subir datos a mano ni tener la PC encendida. Los pasos para
-activarlo y sus límites están en `../deployed_url.txt`.
-
-Respaldo si los portales bloquean la descarga desde la nube: la tarea programada local (`scraper/programar_tarea.ps1`)
-seguida de los dos comandos de arriba y un `git push`.
+## De dónde salen las capturas
+La descarga de anuncios se hizo con `scraper/descarga_diaria.py` del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios).
+Las capturas quedan en `data_diaria/snapshots/` (fuera de git). El mercado actual de la app usa la del 9-nov-2026.
+Después de preparar un mercado nuevo hay que subirlo a `main` para que Render lo despliegue.
