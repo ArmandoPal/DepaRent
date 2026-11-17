@@ -108,7 +108,7 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 - [x] Rango de precio proporcional al precio (mejora del modelo 3, revisión del profesor del 14-nov).
 - [ ] Cambiar la contraseña de la cuenta analista en producción (la anterior estuvo publicada).
 - [ ] Informe final (`FinalReport.md` → PDF).
-- [ ] Presentación final (`.pptx` + PDF) y video demo de 5–7 min.
+- [ ] Presentación final (`.pptx` + PDF). El video demo ya no se pide (indicación del profesor, 17-nov).
 - [ ] Data Product Canvas final y requisitos finales (`Requirements.md`).
 - [ ] Contribución individual y reflexión del equipo.
 - [ ] Página del proyecto.
@@ -128,7 +128,7 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 | **Adrian Urbina Mendoza** | Líder · adquisición y preprocesamiento | Coordinación e integración en `main`, adquisición y descarga diaria de datos, preprocesamiento, informe final |
 | **Armando Martinez Palomino** | Ingeniería de datos | Integración ATU y BCRP, código del producto y despliegue, Data Product Canvas, requisitos finales, página del proyecto |
 | **Breysi Salazar Medina** | Machine learning | Modelos (precio, perfiles, tendencia, simulador), evaluación, rango proporcional, presentación final |
-| **Luciana Yangali Cáceres** | Aplicación y visualización | Interfaz web, pruebas con usuarios y ajustes según su feedback, video demo |
+| **Luciana Yangali Cáceres** | Aplicación y visualización | Interfaz web, pruebas con usuarios y ajustes según su feedback |
 
 Según `deliveries/week07/planning/team_responsibilities.md` y `deliveries/week12/PlanFinal.md`. El detalle de lo
 que hizo cada uno va en `ContributionStatement.md`.

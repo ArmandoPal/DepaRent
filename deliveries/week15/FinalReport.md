@@ -2,7 +2,7 @@
 
 **Curso:** DS3022 Desarrollo de Producto de Datos · UTEC · 2026-2
 **Equipo:** Adrian Urbina Mendoza, Armando Martinez Palomino, Breysi Salazar Medina, Luciana Yangali Cáceres
-**App:** https://deparent.onrender.com · **Repositorio:** https://github.com/Luciana-y/DepaRent · **Video:** _pendiente_
+**App:** https://deparent.onrender.com · **Repositorio:** https://github.com/Luciana-y/DepaRent
 **Fecha:** 18 de noviembre de 2026
 
 <!--
@@ -88,4 +88,4 @@ citados en §3._
 
 ## Anexos
 - Instrucciones de ejecución: `README.md` raíz.
-- Enlaces: app, repositorio, video, página del proyecto, presentación.
+- Enlaces: app, repositorio, página del proyecto, presentación.

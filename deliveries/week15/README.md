@@ -2,7 +2,7 @@
 
 **Fecha:** miércoles 18 de noviembre de 2026 (presentación pública y entrega).
 **App desplegada:** https://deparent.onrender.com
-**Video demo:** _pendiente_ · **Página del proyecto:** _pendiente_
+**Página del proyecto:** _pendiente_ · El video demo ya no se pide (indicación del profesor, 17-nov).
 
 Esta carpeta junta la entrega final. El código del producto **sigue en `deliveries/week10/`**, porque Render
 despliega desde esas rutas; aquí se indexa por etapa (`code/README.md`) para no duplicarlo.
@@ -20,12 +20,12 @@ Estado: ✅ listo · 🟡 en progreso · ⬜ pendiente. Responsables según `wee
 | 5 | Modelos y artefactos | `week10/models/` | ✅ | Breysi |
 | 6 | `FinalReport.pdf` + fuente editable | `FinalReport.md` → PDF | ⬜ esqueleto listo | Adrian (+ cada uno su sección) |
 | 7 | `PresentationFinal.pptx` + PDF | `presentation/` | ⬜ | Breysi |
-| 8 | Video demo de 5–7 min (YouTube) | `video/README.md` | ⬜ | Luciana |
+| 8 | ~~Video demo de 5–7 min~~ | — | No aplica: el profesor lo retiró de la entrega (17-nov) | — |
 | 9 | Data Product Canvas final | `DataProductCanvas.pdf` | ⬜ | Armando |
 | 10 | Especificación final de requisitos | `Requirements.md` | ⬜ esqueleto listo | Armando |
 | 11 | Diagramas finales de arquitectura y flujo | `architecture/` | ✅ (actualizar si cambia algo) | Adrian |
-| 12 | Resultados de evaluación, baselines y casos de estudio | `evaluation/README.md` → `week12/EvaluationReport.md` | 🟡 2 de 5 pruebas con usuarios (§6c) | Luciana / Breysi |
-| 13 | Página del proyecto (descripción, equipo, imagen, video, instrucciones, enlaces) | `project_page/` | ⬜ | Armando |
+| 12 | Resultados de evaluación, baselines y casos de estudio | `evaluation/README.md` → `week12/EvaluationReport.md` | ✅ 5 de 5 pruebas con usuarios (§6c) | Luciana / Breysi |
+| 13 | Página del proyecto (descripción, equipo, imagen, instrucciones, enlaces) | `project_page/` | ⬜ | Armando |
 | 14 | `README.md` raíz completo (instalación, ejecución, dependencias, datos, modelo, despliegue, limitaciones, solución de problemas) | `/README.md` | ⬜ | Adrian |
 | 15 | Contribución de cada integrante | `ContributionStatement.md` | ⬜ esqueleto listo | todos |
 | 16 | Reflexión sobre el trabajo en equipo (también va a Canvas) | `Reflection.md` | ⬜ esqueleto listo | todos |
@@ -37,7 +37,7 @@ Estado: ✅ listo · 🟡 en progreso · ⬜ pendiente. Responsables según `wee
 - Se entrega el `.pptx` editable **y** el PDF, en el repositorio y con el enlace en Canvas.
 
 ## Antes de entregar
-- [ ] Todos los enlaces (app, video, página) funcionan en una ventana de incógnito.
+- [ ] Todos los enlaces (app, página, informe, presentación) funcionan en una ventana de incógnito.
 - [ ] Un integrante clona el repositorio desde cero y sigue el README raíz sin ayuda.
 - [ ] No hay credenciales, cadenas de conexión ni datos con direcciones en el repositorio.
 - [ ] Archivos sueltos de la raíz (`.tex.txt`, guiones, PDF de la guía, indicaciones) fuera del repositorio o en `.gitignore`.
@@ -57,6 +57,6 @@ week15/
 ├── data/README.md             datos finales y cómo obtenerlos
 ├── evaluation/README.md       índice de resultados de evaluación
 ├── presentation/              PresentationFinal.pptx y .pdf
-├── video/README.md            enlace al video demo
+├── video/README.md            video demo: ya no se pide
 └── project_page/              página del proyecto
 ```
