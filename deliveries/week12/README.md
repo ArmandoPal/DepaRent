@@ -15,7 +15,7 @@ duplica el código: agrega la evaluación, los casos de estudio, la documentaci�
 - **Revisión del profesor (14-nov) integrada en `main`:** rango de precio proporcional al estimado, panel de análisis con
   gráficos, ayuda integrada, comparador de hasta 3 anuncios, recomendaciones sin cuenta y demo local de 300 cuentas
   (`/REVISION_DepaRent_13-11-2026.md`).
-- **Pruebas con usuarios:** 2 sesiones con inquilinos (P2 y P3) en `pruebas_usuarios/` y resumen en
+- **Pruebas con usuarios:** 2 sesiones con inquilinos (P2 y P3) y 2 con propietarios (P5 y P6) en `pruebas_usuarios/` y resumen en
   `EvaluationReport.md` §6c.
 - **Ajustes de interfaz según esas pruebas:** etiqueta «No es el plano real» en el esquema, motivos de cada
   recomendación como lista, distritos cercanos cuando no hay resultados, explicación del rango, nota «¿Qué es esto?» en
@@ -31,7 +31,7 @@ duplica el código: agrega la evaluación, los casos de estudio, la documentaci�
 | `GuionPruebasUsuarios.md` | Guion para las pruebas con 5 usuarios (tareas, preguntas, cuestionario) |
 | `plantilla_observaciones.csv` | Plantilla anónima para anotar cada sesión |
 | `PlanFinal.md` | Tareas y responsables hasta la Semana 15 |
-| `pruebas_usuarios/` | Sesiones P2 y P3 (Word y Excel), `observaciones.csv` consolidado y resumen |
+| `pruebas_usuarios/` | Sesiones P2 y P3 (Word y Excel), P5 y P6 (Word), `observaciones.csv` consolidado y resumen |
 | `architecture/system_architecture.png` (`.dot`) | Arquitectura actualizada: Render, FastAPI, 6 componentes, Neon, actualización diaria |
 | `architecture/product_workflow.png` (`.dot`) | Flujos del propietario y del inquilino |
 | `code/evaluar_producto.py` | Error por rango de precio y 13 reglas de coherencia sobre 300 departamentos reales |

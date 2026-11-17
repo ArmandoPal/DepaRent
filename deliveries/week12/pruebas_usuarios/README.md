@@ -9,8 +9,27 @@ tiempos y notas son de cada participante.
 |---|---|---|---|---|
 | P2 | Inquilino | 11-nov-2026 | `P2_inquilino.docx` | `P2_observaciones.xlsx` |
 | P3 | Inquilina | sin registrar | `P3_inquilino.docx` | `P3_observaciones.xlsx` |
+| P5 | Propietario | sin registrar | `P5_propietario.docx` | solo en `observaciones.csv` |
+| P6 | Propietario | sin registrar | `P6_propietario.docx` | solo en `observaciones.csv` |
 
-`observaciones.csv` reúne las dos sesiones en el formato de la plantilla.
+`observaciones.csv` reúne las cuatro sesiones en el formato de la plantilla.
+
+## Sesiones con propietarios (P5 y P6)
+
+Conducidas por Luciana. Llegaron en un solo Word (`Propietarios_Luciana.docx`) y se separaron en un archivo por
+participante. Cada informe da un tiempo total para la sesión, no uno por tarea, así que en `observaciones.csv` cada
+sesión ocupa una sola fila. No hay preguntas de cierre (C1–C5) ni notas de utilidad.
+
+| | Tareas | Completó | Tiempo | Severidad | Frase textual |
+|---|---|---|---|---|---|
+| P5 | T1, T2 | Con ayuda | 6 min | Importante | «Veo mucho texto y muy pocas imágenes o dinamismo, no entiendo bien que estoy tocando se ve muy frío.» |
+| P6 | T1, T2, T3 | Con ayuda | 5 min | Importante | «Mucho texto, me confunde un poco y me abruma.» |
+
+- **En común:** demasiado texto. A P5 le costó entender la interfaz y el formulario después de iniciar sesión;
+  P6 se abrumó con la explicación del cálculo del precio.
+- **P6** valoró el diseño y que el rango fuera accesible, pero consideró que el margen de error es demasiado amplio.
+- **Propuestas de los informes:** textos más breves, más iconos e imágenes, mejor jerarquía visual del formulario,
+  indicaciones paso a paso, resultado del precio más visual y una explicación del margen de error.
 
 ## Resultados por tarea
 
@@ -50,6 +69,8 @@ tiempos y notas son de cada participante.
 - `P2_observaciones.xlsx`: Excel había convertido los tiempos en fechas (3.2 → 3 de febrero, etc.). Se
   restauraron 3.2, 3.8 y 4.5 min según el Word; el tiempo del buscador (2.1 min) se recuperó de la fecha
   2 de enero, porque el Word no lo indica.
+- `Propietarios_Luciana.docx`: se dividió en `P5_propietario.docx` y `P6_propietario.docx` sin cambiar el texto.
+  El informe de P6 está incompleto en el original: la lista de mejoras termina en «Mejorar» y no hay conclusión.
 - `P3_observaciones.xlsx`: los tiempos se alinearon con el Word (T2 2.5, T5 4.0, buscador 1.5 min). T7
   recomendados (5.1 min) solo figura en el Excel. La fecha de la sesión no quedó registrada.
 - `P3_inquilino.docx`: decía «resultado simulado» y «respuesta simulada» porque el escenario lo fijaba el guion.
@@ -58,8 +79,9 @@ tiempos y notas son de cada participante.
 
 ## Limitaciones
 
-- **2 sesiones** frente a la meta de 5 del guion, y ninguna con propietarios: las tareas T3 (precio de
-  publicación), T4 (simulador de mejoras) y T6 (publicar) no se han probado con personas.
+- **4 sesiones** frente a la meta de 5 del guion: 2 con inquilinos y 2 con propietarios. T3 (precio de publicación)
+  se probó solo con P6; T4 (simulador de mejoras) y T6 (publicar) siguen sin probarse con personas.
+- P5 y P6 no tienen fecha, cierre C1–C5 ni tiempos por tarea.
 - Se probó la versión anterior a la revisión del profesor. Algunos hallazgos ya se atendieron (ver
   `../EvaluationReport.md` §6c) y deben volver a comprobarse con la versión actual.
 - Con dos personas las notas orientan, pero no permiten generalizar la ventaja del recomendador.

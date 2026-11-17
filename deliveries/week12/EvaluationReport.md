@@ -205,7 +205,7 @@ primera visita tras 15 minutos de inactividad tarda 30–60 s mientras el servic
 | `week10/resultados/simulacion_v2/` | 54 consultas del simulador iguales a la inferencia del modelo, verificadas con SHA-256 | PASS |
 | `resultados/coherencia_producto.json` | Sección 6 | 100% de las reglas |
 | `week10/resultados/demos_ejecutadas.json` | Casos de demostración ejecutados de punta a punta | OK |
-| Pruebas con usuarios | Utilidad y claridad de la interfaz | 2 sesiones con inquilinos (§6c); faltan propietarios |
+| Pruebas con usuarios | Utilidad y claridad de la interfaz | 4 sesiones: 2 con inquilinos y 2 con propietarios (§6c) |
 
 ---
 
@@ -262,8 +262,9 @@ cercanía se mide al centro del distrito porque el mercado no guarda direcciones
 
 ## 6c. Observaciones de uso (pruebas con usuarios)
 
-Detalle, archivos y correcciones en `pruebas_usuarios/README.md`. Hay **dos sesiones con personas reales**, ambas
-inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisión del profesor.
+Detalle, archivos y correcciones en `pruebas_usuarios/README.md`. Hay **cuatro sesiones con personas reales**: dos
+inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisión del profesor, y dos propietarios
+(P5 y P6, sin fecha registrada).
 
 | Indicador (P2 y P3) | Resultado |
 |---|---|
@@ -279,9 +280,14 @@ inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisi
 | «Por debajo del estimado» se lee como «ganga» | P2 | Importante | Atendido en parte: se llama «por debajo de la estimación» y hay una nota antes de la tabla; volver a comprobar |
 | Dudas en la portada (¿también para inquilinos?, ¿se puede estimar sin cuenta?) | P2 y P3 | Menor | Atendido: la portada muestra «Quiero estimar» y «Quiero buscar» |
 | Explicar mejor por qué aparece cada recomendación | P2 | Menor | Pendiente: los motivos existen, falta hacerlos más visibles |
+| Demasiado texto y pocos elementos visuales; el formulario y el cálculo del precio confunden o abruman | P5 y P6 | Importante | **Pendiente**: textos más breves, iconos y pasos guiados en el formulario |
+| El margen de error del precio parece demasiado amplio | P6 | Importante | Pendiente: explicar qué representa el rango y por qué varía |
 
-**Límite:** dos personas orientan, pero no permiten generalizar. Faltan sesiones con propietarios (T3, T4, T6)
-y al menos tres sesiones más para llegar a la meta del guion.
+**Propietarios (P5 y P6).** Ambos completaron sus tareas **con ayuda** (P5: T1 y T2 en 6 min; P6: T1, T2 y T3 en
+5 min). Los informes no tienen cierre C1–C5 ni tiempos por tarea, y el de P6 quedó incompleto en el original.
+
+**Límite:** cuatro personas orientan, pero no permiten generalizar. Falta una sesión para la meta de 5 del guion,
+y T4 (simulador de mejoras) y T6 (publicar) siguen sin probarse con personas.
 
 ## 7. Casos de estudio
 
@@ -398,7 +404,7 @@ cd ..\..\week12\code
 
 ## 10. Próximos pasos (hacia la Semana 15)
 
-1. 🟡 Pruebas con usuarios: 2 sesiones con inquilinos registradas (§6c); faltan al menos 3, incluidos propietarios.
+1. 🟡 Pruebas con usuarios: 4 sesiones registradas, 2 con inquilinos y 2 con propietarios (§6c); falta 1 y probar T4 y T6.
 2. ✅ Rango de precio proporcional al precio (revisión del profesor, 14-nov): la cobertura desde S/ 7,000 subió de
    34.2% a 65.8% en noviembre, aún lejos del 90%.
 3. ✅ La app explica junto a los tres precios por qué se sugiere uno: al alza → renta superior; estable → equilibrado;
