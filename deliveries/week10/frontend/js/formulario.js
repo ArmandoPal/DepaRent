@@ -1,9 +1,19 @@
 import { llamar } from "./api.js";
-import { $, conBoton, esc, titulo } from "./util.js";
+import { ICONO_CAMPO, icono } from "./iconos.js";
+import { $, $$, conBoton, esc, mensaje, titulo } from "./util.js";
 
 const GRUPOS = [
   ["Tamaño", "Lo que más pesa en el precio.", ["area_total", "dormitorios", "banos", "estacionamientos"]],
   ["Edificio", "Si no lo sabes, déjalo vacío: el modelo usa la mediana de los anuncios.", ["antiguedad", "mantenimiento"]],
+];
+
+/* Formulario por pasos (pruebas con propietarios P5 y P6: el formulario largo confundía).
+   Cada paso: [id, título, icono, una línea de ayuda, grupos que contiene]. */
+const PASOS = [
+  ["ubicacion", "¿Dónde está?", "ubicacion", "Elige el distrito. La dirección es opcional: afina la cercanía al transporte.", ["departamento", "ubicacion"]],
+  ["tamano", "¿Cómo es?", "tamano", "Área, dormitorios y baños son obligatorios.", ["tamano"]],
+  ["extras", "Edificio y extras", "edificio", "Si no sabes un dato, déjalo en «No sé».", ["edificio", "amenidades"]],
+  ["precio", "Tu precio", "moneda", "Si lo dejas vacío, te mostramos tres precios para elegir.", ["publicacion"], true],
 ];
 
 /**
@@ -11,30 +21,31 @@ const GRUPOS = [
  * opciones: datos de /api/opciones · conNombre: pide un nombre (propietario) · conDemos: casos de ejemplo
  * conMapa: mapa para elegir la ubicación con un clic · compacto: etiquetas sobre los campos (para paneles angostos).
  * conPrecio: campo opcional con el precio al que el propietario quiere publicar.
+ * pasos: muestra un paso a la vez (ubicación → tamaño → edificio y extras → precio) con Atrás y Siguiente.
  * Devuelve { leer, cargar, ... }.
  */
-export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, conMapa = false, conPrecio = false, compacto = false, textoBoton = "Analizar", secundario = "" } = {}) {
+export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, conMapa = false, conPrecio = false, compacto = false, pasos = false, textoBoton = "Analizar", secundario = "" } = {}) {
+  const etiqueta = (campo) => `${ICONO_CAMPO[campo] ? icono(ICONO_CAMPO[campo], "icono-campo") : ""}${esc(opciones.etiquetas[campo])}`;
   const numerico = (campo) => {
     const [min, max] = opciones.limites[campo];
     const obligatorio = ["area_total", "dormitorios", "banos"].includes(campo);
-    return `<div class="field"><label for="f-${campo}">${esc(opciones.etiquetas[campo])}</label>
+    return `<div class="field"><label for="f-${campo}">${etiqueta(campo)}</label>
       <input class="input num" id="f-${campo}" name="${campo}" type="number" inputmode="numeric" min="${min}" max="${max}" step="1" ${obligatorio ? "required" : 'placeholder="No sé"'}></div>`;
   };
   const amenidad = (campo) => `<div class="field"><label for="f-${campo}">${esc(opciones.etiquetas[campo])}</label>
     <select class="input" id="f-${campo}" name="${campo}"><option value="0">No</option><option value="1">Sí</option><option value="">No sé</option></select></div>`;
-  const grupo = (nombre, ayuda, cuerpo) => `<section class="form-group"><div><h2>${nombre}</h2>${ayuda ? `<p class="hint">${ayuda}</p>` : ""}</div><div class="fields">${cuerpo}</div></section>`;
-  contenedor.innerHTML = `
-    <form class="vivienda-form ${compacto ? "compact" : ""}" novalidate>
-      <div class="form-groups">
-        ${grupo("Departamento", conDemos ? "Empieza desde un ejemplo y cámbialo." : "", `
+  const grupo = (id, nombre, ayuda, cuerpo) => `<section class="form-group" data-grupo="${id}"><div><h2>${nombre}</h2>${ayuda ? `<p class="hint">${ayuda}</p>` : ""}</div><div class="fields">${cuerpo}</div></section>`;
+  const html = {
+    departamento: grupo("departamento", "Departamento", conDemos ? "Empieza desde un ejemplo y cámbialo." : "", `
           ${conDemos ? `<div class="field wide"><label for="f-demo">Caso de ejemplo</label><select class="input" id="f-demo" name="demo">${opciones.demos.map((d, i) => `<option value="${i}">${esc(d.nombre)}</option>`).join("")}</select></div>` : ""}
           ${conNombre ? '<div class="field wide"><label for="f-nombre">Nombre</label><input class="input" id="f-nombre" name="nombre" maxlength="80" placeholder="Depa de Lince, piso 5" required></div>' : ""}
           <div class="field wide"><label for="f-distrito">Distrito</label><select class="input" id="f-distrito" name="distrito_norm" required>
-            ${opciones.distritos.map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>`)}
-        ${GRUPOS.map(([nombre, ayuda, campos]) => grupo(nombre, ayuda, campos.map(numerico).join(""))).join("")}
-        ${grupo("Amenidades", "Las que el anuncio diría.", opciones.binarias.map(amenidad).join(""))}
-        ${grupo("Ubicación", conMapa ? "Opcional. Busca la dirección, haz clic en el mapa o escribe las coordenadas; si no marcas nada usamos el centro del distrito."
-          : "Opcional. Busca la dirección o escribe las coordenadas; sin ellas usamos el centro del distrito.", `
+            ${opciones.distritos.map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>`),
+    tamano: grupo("tamano", GRUPOS[0][0], GRUPOS[0][1], GRUPOS[0][2].map(numerico).join("")),
+    edificio: grupo("edificio", GRUPOS[1][0], GRUPOS[1][1], GRUPOS[1][2].map(numerico).join("")),
+    amenidades: grupo("amenidades", "Amenidades", "Las que el anuncio diría.", opciones.binarias.map(amenidad).join("")),
+    ubicacion: grupo("ubicacion", "Ubicación", conMapa ? "Opcional. Busca la dirección, haz clic en el mapa o escribe las coordenadas; si no marcas nada usamos el centro del distrito."
+      : "Opcional. Busca la dirección o escribe las coordenadas; sin ellas usamos el centro del distrito.", `
           <div class="field wide">
             <label for="f-direccion">Buscar dirección</label>
             <div class="search-row"><input class="input" id="f-direccion" type="search" autocomplete="off" placeholder="Por ejemplo: Av. Arequipa, Lince · o -12.0464, -77.0428">
@@ -44,12 +55,26 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
           </div>
           ${conMapa ? '<div class="field wide"><div class="map map-picker" aria-label="Mapa para elegir la ubicación"></div></div>' : ""}
           <div class="field"><label for="f-latitud">Latitud</label><input class="input num" id="f-latitud" name="latitud" type="number" step="0.000001" placeholder="-12.088"></div>
-          <div class="field"><label for="f-longitud">Longitud</label><input class="input num" id="f-longitud" name="longitud" type="number" step="0.000001" placeholder="-77.034"></div>`)}
-        ${conPrecio ? grupo("Publicación", "Opcional. Si ya sabes a cuánto quieres alquilarlo, escríbelo y lo publicamos a ese precio. Si lo dejas vacío, primero ves el precio esperado y decides después.", `
+          <div class="field"><label for="f-longitud">Longitud</label><input class="input num" id="f-longitud" name="longitud" type="number" step="0.000001" placeholder="-77.034"></div>`),
+    publicacion: conPrecio ? grupo("publicacion", "Publicación", "Opcional. Si ya sabes a cuánto quieres alquilarlo, escríbelo y lo publicamos a ese precio. Si lo dejas vacío, primero ves el precio esperado y decides después.", `
           <div class="field wide"><label for="f-precio">Precio al que quiero publicarlo (S/ al mes)</label>
-            <input class="input num" id="f-precio" name="precio_publicar" type="number" inputmode="numeric" min="300" max="50000" step="10" placeholder="Por ejemplo 2500"></div>`) : ""}
-      </div>
-      <div class="form-actions">${secundario}<button type="submit" class="btn primary">${esc(textoBoton)}</button></div>
+            <input class="input num" id="f-precio" name="precio_publicar" type="number" inputmode="numeric" min="300" max="50000" step="10" placeholder="Por ejemplo 2500"></div>`) : "",
+  };
+  const listaPasos = PASOS.filter(([id]) => id !== "precio" || conPrecio);
+  // En pasos, cada paso muestra su título grande; los títulos de los grupos sobran.
+  const cuerpo = pasos
+    ? `<ol class="pasos" aria-label="Pasos">${listaPasos.map(([id, nombre, ic], i) => `<li>
+          <button type="button" class="paso-chip" data-ir-paso="${i}">${icono(ic)}<span><small>Paso ${i + 1}</small>${esc(nombre)}</span></button></li>`).join("")}</ol>
+        ${listaPasos.map(([id, nombre, ic, ayuda, grupos, opcional], i) => `<section class="paso" data-paso="${i}" aria-labelledby="paso-t-${id}" ${i ? "hidden" : ""}>
+          <div class="paso-cabecera">${icono(ic, "icono-paso")}<div><h2 id="paso-t-${id}" tabindex="-1">${esc(nombre)}${opcional ? ' <span class="etiqueta-opcional">Opcional</span>' : ""}</h2><p class="hint">${esc(ayuda)}</p></div></div>
+          <div class="form-groups">${grupos.map((g) => html[g]).join("")}</div></section>`).join("")}`
+    : `<div class="form-groups">${["departamento", "tamano", "edificio", "amenidades", "ubicacion", "publicacion"].map((g) => html[g]).join("")}</div>`;
+  contenedor.innerHTML = `
+    <form class="vivienda-form ${compacto ? "compact" : ""} ${pasos ? "por-pasos" : ""}" novalidate>
+      ${cuerpo}
+      <div class="form-actions">${pasos ? '<button type="button" class="btn" data-atras hidden>Atrás</button><span class="paso-cuenta hint" aria-live="polite"></span>' : ""}${secundario}
+        ${pasos ? `<button type="button" class="btn primary" data-siguiente>Siguiente ${icono("flecha", "icono-btn")}</button>` : ""}
+        <button type="submit" class="btn primary" ${pasos ? "hidden" : ""}>${esc(textoBoton)}</button></div>
       <div class="form-msg" role="alert"></div>
     </form>`;
   const form = $("form", contenedor);
@@ -112,7 +137,72 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
     });
     cargar(opciones.demos[0].entrada);
   }
+  if (pasos) activarPasos(form, mapa, listaPasos.length);
   return { form, leer, cargar, cargarDesdePortada, fijarUbicacion, mensaje: $(".form-msg", form), boton: $("button[type=submit]", form) };
+}
+
+/* Un paso a la vez. Siguiente valida solo los campos del paso visible; Enter avanza en vez de enviar.
+   Este listener se registra antes que el de la vista: si el formulario no está en el último paso, la vista no recibe el envío. */
+function activarPasos(form, mapa, total) {
+  const paneles = $$(".paso", form), chips = $$(".paso-chip", form);
+  const atras = $("[data-atras]", form), siguiente = $("[data-siguiente]", form);
+  const enviar = $("button[type=submit]", form), cuenta = $(".paso-cuenta", form), aviso = $(".form-msg", form);
+  let actual = 0, alcanzado = 0;
+
+  // Primer campo inválido del paso, con un mensaje que nombra el campo.
+  const invalido = (i) => $$("input, select", paneles[i]).find((el) => !el.checkValidity());
+  const textoError = (el) => {
+    const nombre = form.querySelector(`label[for="${el.id}"]`)?.textContent.trim() || "este dato";
+    return el.validity.valueMissing ? `Completa: ${nombre}.` : `Revisa: ${nombre} (${el.min !== "" ? `entre ${el.min} y ${el.max}` : "valor no válido"}).`;
+  };
+
+  function mostrar(i, enfocar = true) {
+    actual = i;
+    alcanzado = Math.max(alcanzado, i);
+    paneles.forEach((p, j) => { p.hidden = j !== i; });
+    chips.forEach((c, j) => {
+      c.closest("li").dataset.estado = j === i ? "actual" : j < i || j <= alcanzado ? "hecho" : "";
+      if (j === i) c.setAttribute("aria-current", "step"); else c.removeAttribute("aria-current");
+      c.disabled = j > alcanzado;
+    });
+    atras.hidden = i === 0;
+    siguiente.hidden = i === total - 1;
+    enviar.hidden = i !== total - 1;
+    cuenta.textContent = `Paso ${i + 1} de ${total}`;
+    mensaje(aviso, "");
+    if (i === 0) mapa?.refrescar();
+    if (enfocar) $("h2", paneles[i]).focus({ preventScroll: true });
+    if (enfocar) form.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
+  function avanzar() {
+    const malo = invalido(actual);
+    if (malo) { mensaje(aviso, textoError(malo)); malo.focus(); return; }
+    if (actual < total - 1) mostrar(actual + 1);
+  }
+
+  siguiente.addEventListener("click", avanzar);
+  atras.addEventListener("click", () => mostrar(actual - 1));
+  chips.forEach((c, j) => c.addEventListener("click", () => {
+    // Hacia adelante solo se salta si los pasos intermedios están completos.
+    for (let k = actual; k < j; k++) {
+      const malo = invalido(k);
+      if (malo) { mostrar(k); mensaje(aviso, textoError(malo)); malo.focus(); return; }
+    }
+    mostrar(j);
+  }));
+  form.addEventListener("submit", (e) => {
+    if (actual < total - 1) { e.preventDefault(); e.stopImmediatePropagation(); avanzar(); return; }
+    const conError = paneles.findIndex((_, k) => invalido(k));
+    if (conError >= 0) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      const malo = invalido(conError);
+      mostrar(conError);
+      mensaje(aviso, textoError(malo));
+      malo.focus();
+    }
+  });
+  mostrar(0, false);
 }
 
 const LIMA = [-12.0464, -77.0428];
@@ -207,5 +297,7 @@ function mapaUbicacion(elemento, opciones, campo) {
   });
   // El panel acaba de pintarse: Leaflet necesita medir el contenedor ya visible.
   setTimeout(() => { mapa.invalidateSize(); sincronizar(); }, 0);
-  return { sincronizar };
+  // Al volver al paso de ubicación, Leaflet tiene que medir otra vez el contenedor que estuvo oculto.
+  const refrescar = () => setTimeout(() => mapa.invalidateSize(), 0);
+  return { sincronizar, refrescar };
 }

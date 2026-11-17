@@ -1,5 +1,6 @@
 import { llamar } from "./api.js";
-import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, enlazarFilas, notaTecnica, avisoSencillo } from "./util.js";
+import { icono } from "./iconos.js";
+import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, enlazarFilas, notaTecnica, avisoSencillo, avisoDistritoPocoConfiable } from "./util.js";
 
 const PESTANAS = [["resumen", "Resumen"], ["comparables", "Parecidos"], ["acceso", "Accesibilidad"], ["tendencia", "Tendencia"], ["simulador", "Simular una mejora"]];
 
@@ -126,71 +127,106 @@ function panelResumen(a, opciones, acciones) {
   const p = a.precio, ev = a.evidencia_distrital;
   const validacion = opciones?.validacion;
   const avisos = a.avisos.map(avisoSencillo);
-  if (ev?.muestra_pequena) avisos.unshift(`En ${titulo(ev.distrito)} tenemos pocos datos (menos de 20 departamentos): toma el margen de error con cautela.`);
+  if (ev?.muestra_pequena && !ev.poco_confiable) avisos.unshift(`En ${titulo(ev.distrito)} tenemos pocos datos (menos de 20 departamentos): toma el margen de error con cautela.`);
   return `
     ${avisos.length ? `<div style="margin-bottom:16px">${avisos.map((t) => `<p class="notice">${esc(t)}</p>`).join("")}</div>` : ""}
     <div class="grid">
-      <div class="kpis span-6">
-        <div class="kpi"><p class="kpi-label">Precio esperado</p><p class="kpi-value is-main num">${soles(p.precio_estimado_soles)}<small>al mes</small></p>
-          <p class="delta">Precio típico en el distrito: ${soles(p.baseline_distrital_soles)}</p></div>
-        <div class="kpi"><p class="kpi-label">Rango estimado</p><p class="kpi-value num">${soles(p.limite_inferior_soles)} <small>a</small> ${soles(p.limite_superior_soles)}</p>
-          <p class="delta rango-claro">Es una franja orientativa: la mayoría de departamentos parecidos se piden dentro de ella. El precio esperado es el punto más probable.</p>
-          <p class="delta">${validacion ? `En ${esc(validacion.mes)} cubrió ${Math.round(validacion.cobertura * 100)} de cada 100 anuncios evaluados; no garantiza este caso.` : "Cobertura reciente no disponible; no garantiza este caso."}</p></div>
-        <div class="kpi"><p class="kpi-label">Margen de error en el distrito</p>
-          <p class="kpi-value num">${ev ? soles(ev.error_absoluto_medio_soles) : '<span class="dash">—</span>'}</p>
-          <p class="delta">${ev ? `En promedio, comprobado con ${ev.anuncios_prueba} departamentos de ${esc(titulo(ev.distrito))}` : "Aún no tenemos datos suficientes de este distrito"}</p></div>
-      </div>
+      ${resumenPrecio(a, validacion)}
 
-      <section class="panel span-4 ruler" aria-labelledby="t-regla">
-        <header><h2 id="t-regla">¿A cuánto publicar?</h2><span class="meta">Departamentos parecidos, rango estimado y los tres precios</span></header>
-        ${reglaPrecios(a)}
-        <p class="panel-note">La línea naranja es el precio esperado. Cada punto es uno de los 8 departamentos más parecidos; la barra gris, el rango en el que suele caer el precio.</p>
-      </section>
-
-      <section class="panel span-2" aria-labelledby="t-publicar">
-        <header><h2 id="t-publicar">Precio de publicación</h2></header>
-        ${acciones.alPublicar ? '<p class="hint" style="margin-bottom:8px">Elige uno de los tres precios o escribe el tuyo.</p>' : ""}
+      <section class="panel span-6" aria-labelledby="t-publicar">
+        <header><h2 id="t-publicar">${icono("moneda", "icono-titulo")}¿A cuánto publicar?</h2><span class="meta">Tres precios según el mercado</span></header>
         ${acciones.publicacion ? `<p class="toast">Publicado a ${soles(acciones.publicacion.precio_soles)} (${esc(acciones.publicacion.escenario)}). Ya aparece en la búsqueda.</p>` : ""}
-        <div class="rows">
+        <div class="escenarios">
           ${a.publicacion.escenarios.map((s, i) => `
-            <div class="row scenario-row">
-              <span>${esc(s.escenario)}${s.sugerido ? '<span class="pill main">Sugerido</span>' : ""}
-                <span class="sub">${pct(s.diferencia_vs_esperado_porcentaje)} frente al esperado</span></span>
-              <span style="text-align:right"><b class="num">${soles(s.precio_soles)}</b>
-                ${acciones.alPublicar ? `<button class="card-link" type="button" data-publicar="${i}">Publicar</button>` : ""}</span>
-            </div>`).join("")}
+            <article class="escenario ${s.sugerido ? "sugerido" : ""}">
+              <p class="escenario-nombre">${esc(s.escenario)}${s.sugerido ? `<span class="pill main">${icono("check", "icono-pill")}Sugerido</span>` : ""}</p>
+              <p class="escenario-precio num">${soles(s.precio_soles)}</p>
+              <p class="hint">${esc(DESCRIPCION_ESCENARIO[s.escenario] || "")} · ${pct(s.diferencia_vs_esperado_porcentaje)}</p>
+              ${acciones.alPublicar ? `<button class="btn ${s.sugerido ? "primary" : ""} block" type="button" data-publicar="${i}">${icono("publicar", "icono-btn")}Publicar a ${soles(s.precio_soles)}</button>` : ""}
+            </article>`).join("")}
         </div>
-        <p class="por-que-sugerido"><b>¿Por qué «${esc(a.publicacion.sugerido)}»?</b> ${esc(a.publicacion.motivo)}
-          <span class="hint">La sugerencia sigue la tendencia del distrito: al alza → renta superior; estable → equilibrado; a la baja → competitivo.</span></p>
+        <details class="mas">
+          <summary>¿Por qué sugerimos «${esc(a.publicacion.sugerido)}»?</summary>
+          <p>${esc(a.publicacion.motivo)} La sugerencia sigue la tendencia del distrito: al alza → renta superior; estable → equilibrado; a la baja → competitivo.</p>
+        </details>
         ${acciones.alPublicar ? `<form class="precio-propio" novalidate>
-          <label for="p-propio">${acciones.publicacion ? "Cambiar a otro precio" : "Otro precio"}</label>
+          <label for="p-propio">${acciones.publicacion ? "Cambiar a otro precio" : "¿Prefieres otro precio?"}</label>
           <div class="search-row"><span class="prefijo">S/</span><input class="input num" id="p-propio" type="number" inputmode="numeric" min="300" max="50000" step="10"
             value="${acciones.publicacion ? Math.round(acciones.publicacion.precio_soles) : ""}" placeholder="${Math.round(a.precio.precio_estimado_soles)}">
-            <button class="btn primary" type="submit">${acciones.publicacion ? "Cambiar precio" : "Publicar a este precio"}</button></div>
+            <button class="btn" type="submit">${acciones.publicacion ? "Cambiar precio" : "Publicar a este precio"}</button></div>
           <p class="hint" data-comparacion aria-live="polite"></p>
         </form>` : ""}
         <div class="pub-msg"></div>
       </section>
 
+      <h2 class="seccion-detalle span-6">Más detalles</h2>
+
+      <section class="panel span-6 ruler" aria-labelledby="t-regla">
+        <header><h2 id="t-regla">${icono("grafico", "icono-titulo")}Tu precio frente a los parecidos</h2><span class="meta">Puntos: 8 parecidos · barra: rango · línea naranja: esperado</span></header>
+        ${reglaPrecios(a)}
+      </section>
+
       <section class="panel span-3" aria-labelledby="t-acceso">
-        <header><h2 id="t-acceso">Accesibilidad</h2><span class="pill">${esc(a.accesibilidad.nivel)}</span></header>
+        <header><h2 id="t-acceso">${icono("bus", "icono-titulo")}Transporte</h2><span class="pill">${esc(a.accesibilidad.nivel)}</span></header>
         <p class="big-figure num">${num(a.accesibilidad.dist_paradero_min_m)} m</p>
-        <p class="hint">al paradero ${esc(a.accesibilidad.paradero_cercano_nombre)} (${esc(a.accesibilidad.paradero_cercano_tipo)})</p>
+        <p class="hint">al paradero ${esc(a.accesibilidad.paradero_cercano_nombre)}</p>
         <div class="bullet" role="img" aria-label="Más cerca que el ${num(a.accesibilidad.porcentaje_anuncios_mas_lejos, 1)}% de los anuncios"><span style="width:${a.accesibilidad.porcentaje_anuncios_mas_lejos}%"></span></div>
-        <p class="hint">Más cerca de un paradero que el ${num(a.accesibilidad.porcentaje_anuncios_mas_lejos, 1)}% de los anuncios · ${a.accesibilidad.paraderos_500m} paraderos a 500 m</p>
+        <p class="hint">Más cerca que el ${num(a.accesibilidad.porcentaje_anuncios_mas_lejos, 0)}% de los anuncios</p>
         <p style="margin-top:12px"><button class="card-link" type="button" data-ir="acceso">Ver el mapa</button></p>
       </section>
 
       <section class="panel span-3" aria-labelledby="t-perfil">
-        <header><h2 id="t-perfil">Tipo de departamento</h2><span class="meta">Según sus características</span></header>
+        <header><h2 id="t-perfil">${icono("casa", "icono-titulo")}Tipo de departamento</h2></header>
         <p class="big-figure">${esc(a.perfil.perfil.perfil)}</p>
-        <p class="hint" style="margin-top:6px">Hay ${num(a.perfil.perfil.anuncios_en_perfil)} departamentos de este tipo; la mayoría pide entre ${soles(a.perfil.perfil.precio_p25_perfil_soles)} y ${soles(a.perfil.perfil.precio_p75_perfil_soles)}.
-          Los 8 más parecidos (${a.perfil.en_mismo_distrito} del mismo distrito) piden entre ${soles(a.perfil.precio_p25_soles)} y ${soles(a.perfil.precio_p75_soles)}.</p>
+        <p class="hint" style="margin-top:6px">Los 8 más parecidos piden entre ${soles(a.perfil.precio_p25_soles)} y ${soles(a.perfil.precio_p75_soles)}.</p>
         <p style="margin-top:12px"><button class="card-link" type="button" data-ir="comparables">Ver los 8 más parecidos</button></p>
       </section>
 
       <section class="panel span-6" aria-labelledby="t-tend">${panelTendencia(a.tendencia, false)}</section>
     </div>`;
+}
+
+const DESCRIPCION_ESCENARIO = {
+  "Competitivo": "Para alquilar más rápido",
+  "Equilibrado": "El precio esperado",
+  "Renta superior": "Si tu depa destaca",
+};
+
+/* Pruebas con propietarios (P5 y P6): el precio y su rango, grandes y arriba; el resto, plegado.
+   P6 dijo que el margen de error parecía muy amplio: «¿Por qué es tan amplio?» lo explica sin cifras técnicas. */
+function resumenPrecio(a, validacion) {
+  const p = a.precio, ev = a.evidencia_distrital;
+  const min = p.limite_inferior_soles, max = p.limite_superior_soles, esperado = p.precio_estimado_soles;
+  const posicion = Math.min(100, Math.max(0, ((esperado - min) / (max - min)) * 100));
+  const razones = [
+    "Dos departamentos del mismo tamaño y distrito pueden pedir precios distintos por cosas que el anuncio no dice: el estado, el piso, la vista o el ruido.",
+    "El rango crece con el precio: en un departamento caro, la misma diferencia en porcentaje son más soles.",
+    validacion ? `Lo comprobamos con ${num(validacion.evaluados)} anuncios de ${esc(validacion.mes)}: ${Math.round(validacion.cobertura * 100)} de cada 100 pedían un precio dentro de su rango.` : "",
+    ev && !ev.muestra_pequena ? `En ${esc(titulo(ev.distrito))}, el precio esperado se equivoca en promedio ${soles(ev.error_absoluto_medio_soles)} (comprobado con ${num(ev.anuncios_prueba)} departamentos).` : "",
+    // error_por_rango_precio.csv (Semana 12): desde S/ 7,000 el rango acierta bastante menos que en el resto.
+    esperado >= 7000 ? "En alquileres desde S/ 7,000 el rango acierta menos seguido: tómalo con más cautela." : "",
+    "Úsalo como punto de partida y afina con los departamentos parecidos.",
+  ].filter(Boolean);
+  return `<section class="panel span-6 resumen-precio" aria-labelledby="t-esperado">
+    ${avisoDistritoPocoConfiable(ev)}
+    <div class="rp-principal">
+      <p class="rp-etiqueta" id="t-esperado">${icono("moneda", "icono-titulo")}Precio esperado</p>
+      <p class="rp-valor num">${soles(esperado)}<small>al mes</small></p>
+      <p class="hint">Precio típico en el distrito: ${soles(p.baseline_distrital_soles)}</p>
+    </div>
+    <div class="rp-rango">
+      <p class="rp-etiqueta">Rango estimado</p>
+      <div class="rango-barra" role="img" aria-label="Rango de ${soles(min)} a ${soles(max)}; precio esperado ${soles(esperado)}">
+        <span class="rango-marca" style="left:${posicion}%"></span>
+      </div>
+      <div class="rango-extremos num"><span>${soles(min)}</span><span>${soles(max)}</span></div>
+      <p class="rp-frase">La mayoría de departamentos parecidos se piden en esta franja.</p>
+      <details class="mas">
+        <summary>${icono("info", "icono-btn")}¿Por qué el rango es tan amplio?</summary>
+        <ul>${razones.map((r) => `<li>${r}</li>`).join("")}</ul>
+      </details>
+    </div>
+  </section>`;
 }
 
 export function escala(min, max, x0, x1) {

@@ -1,5 +1,6 @@
 import { llamar, sesion } from "./api.js";
 import { esc, num, soles } from "./util.js";
+import { icono } from "./iconos.js";
 
 /* Ventana de bienvenida que aparece una vez después de ingresar o crear la cuenta.
    Toma el foco (dialog modal), se cierra con Esc, con "Ahora no" o al elegir un camino. */
@@ -55,7 +56,7 @@ export async function mostrarBienvenida() {
     <p id="bv-sub" class="hint">Elige un camino; puedes cambiar cuando quieras desde el menú.</p>
     <div class="bv-opciones">
       ${[buscar, alquilar].map((o, i) => `<section class="bv-opcion">
-        <h3>${esc(o.titulo)}</h3><p>${esc(o.texto)}</p>
+        ${icono(i === 0 ? "buscar" : "casa", "icono-acceso")}<h3>${esc(o.titulo)}</h3><p>${esc(o.texto)}</p>
         <div class="bv-acciones"><a class="btn ${i === 0 ? "primary" : ""}" href="${o.href}" data-ir>${esc(o.boton)}</a>${o.extra || ""}</div>
       </section>`).join("")}
     </div>

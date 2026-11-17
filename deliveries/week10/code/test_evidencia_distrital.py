@@ -25,6 +25,13 @@ class EvidenciaDistritalTest(unittest.TestCase):
                 self.assertAlmostEqual(visible["error_absoluto_medio_soles"], sum(errors) / len(errors), places=8)
                 self.assertEqual(visible["muestra_pequena"], len(errors) < 20)
 
+    def test_flags_districts_with_unreliable_estimates(self):
+        # Los Olivos se equivoca en promedio 57% en la prueba; Lince, 11%.
+        self.assertTrue(evidencia_distrital("los olivos")["poco_confiable"])
+        self.assertTrue(evidencia_distrital("san martin de porres")["poco_confiable"])
+        self.assertFalse(evidencia_distrital("lince")["poco_confiable"])
+        self.assertFalse(evidencia_distrital("miraflores")["poco_confiable"])
+
     def test_missing_district_and_bad_numbers(self):
         self.assertIsNone(evidencia_distrital("distrito inexistente"))
         with TemporaryDirectory() as folder:

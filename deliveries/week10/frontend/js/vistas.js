@@ -3,6 +3,7 @@ import { mostrarAnalisis } from "./analisis.js";
 import { formularioVivienda } from "./formulario.js";
 import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, notaTecnica, valoracionSencilla, ETIQUETAS_AMENIDAD, vecinosConOpciones, botonesVecinos } from "./util.js";
 import { marcarBienvenida } from "./bienvenida.js";
+import { icono } from "./iconos.js";
 
 const irA = (ruta) => { location.hash = ruta; };
 const banos = (n) => `${num(n)} ${n === 1 ? "baño" : "baños"}`;
@@ -62,7 +63,8 @@ export async function cerrarSesion() {
 
 export async function vistaMisDepartamentos(lienzo) {
   const accion = '<a class="btn primary" href="#/mis-departamentos/nuevo">Agregar departamento</a>';
-  lienzo.innerHTML = filaTitulo("Mis departamentos", '<span class="skeleton">Cargando tus departamentos</span>', accion) + '<div data-lista></div>';
+  lienzo.innerHTML = filaTitulo("Mis departamentos", '<span class="skeleton">Cargando tus departamentos</span>', accion)
+    + guiaPropietario() + '<div data-lista></div>';
   const deptos = await llamar("/api/departamentos");
   const publicados = deptos.filter((d) => d.publicacion);
   const sub = deptos.length
@@ -92,6 +94,13 @@ export async function vistaMisDepartamentos(lienzo) {
   dibujar();
 }
 
+// Pruebas con propietarios (P5): después de ingresar no quedaba claro qué hacer. Tres pasos con icono, sin párrafos.
+function guiaPropietario() {
+  const pasos = [["casa", "Agrega tus datos", "Distrito, tamaño y extras"], ["moneda", "Mira el precio", "Esperado, rango y parecidos"],
+    ["publicar", "Publica", "Elige uno de tres precios"]];
+  return `<ol class="guia-pasos" aria-label="Cómo funciona">${pasos.map(([ic, t, s], i) => `<li>${icono(ic)}<span><b>${i + 1}. ${t}</b><span class="hint">${s}</span></span></li>`).join("")}</ol>`;
+}
+
 function filaDepartamento(d) {
   const v = d.vivienda, r = d.resumen || {};
   return `<tr data-href="#/mis-departamentos/${d.id}">
@@ -110,9 +119,9 @@ function filaDepartamento(d) {
 
 export async function vistaNuevoDepartamento(lienzo) {
   const op = await obtenerOpciones();
-  lienzo.innerHTML = filaTitulo("Agregar departamento", "Con sus características calculamos el precio esperado, los departamentos más parecidos y tres precios de publicación. También puedes publicarlo directo al precio que tú elijas. Solo lo ven los inquilinos si lo publicas.")
+  lienzo.innerHTML = filaTitulo("Agregar departamento", "Cuatro pasos cortos. Al final verás su precio esperado y a cuánto publicarlo.")
     + '<section class="panel" data-form></section>';
-  const f = formularioVivienda($("[data-form]", lienzo), op, { conNombre: true, conMapa: true, conPrecio: true, textoBoton: "Guardar y analizar",
+  const f = formularioVivienda($("[data-form]", lienzo), op, { conNombre: true, conMapa: true, conPrecio: true, pasos: true, textoBoton: "Guardar y ver el precio",
     secundario: '<a class="btn" href="#/mis-departamentos">Cancelar</a>' });
   f.form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -225,13 +234,13 @@ export async function vistaDetalleDepartamento(lienzo, params, id) {
 
 export async function vistaProbar(lienzo, params = new URLSearchParams()) {
   const op = await obtenerOpciones();
-  lienzo.innerHTML = filaTitulo("Probar el análisis", "Sin cuenta: elige un ejemplo o describe un departamento. Los resultados no se guardan.",
+  lienzo.innerHTML = filaTitulo("Probar el análisis", "Sin cuenta y en tres pasos. Los resultados no se guardan.",
     sesion() ? "" : '<a class="btn" href="#/ingresar?modo=registro">Crear cuenta para guardar</a>')
     + `<figure class="public-scene">
         <img src="assets/lima-apartamento.jpg" width="1024" height="696" loading="lazy" decoding="async" alt="Entrada y jardín de un edificio residencial en Lima">
         <figcaption><strong>Prueba con los datos de tu departamento.</strong><span>Imagen de contexto: no representa un inmueble del análisis. Foto: <a href="https://commons.wikimedia.org/wiki/File:Lima_Peru_city_-_Modern_Apartment_-_outside.jpg">Protontorniyo</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>.</span></figcaption>
       </figure><section class="panel" data-form></section><div data-resultado style="margin-top:24px"></div>`;
-  const f = formularioVivienda($("[data-form]", lienzo), op, { conDemos: true, conMapa: true, textoBoton: "Analizar" });
+  const f = formularioVivienda($("[data-form]", lienzo), op, { conDemos: true, conMapa: true, pasos: true, textoBoton: "Ver el precio" });
   const distrito = params.get("distrito");
   const camposPortada = { area_total: params.get("area"), dormitorios: params.get("dormitorios"), banos: params.get("banos") };
   const valido = distrito && op.distritos.includes(distrito) && Object.entries(camposPortada).every(([campo, texto]) => {
@@ -271,29 +280,30 @@ export async function vistaBuscar(lienzo) {
       <img src="assets/barranco-calle.jpg" width="1280" height="960" loading="lazy" decoding="async" alt="Calle residencial con árboles y fachadas en Barranco, Lima">
       <figcaption><strong>Busca por distrito, precio y características.</strong><span>Vista de Barranco; la foto no corresponde a los anuncios. Foto: <a href="https://commons.wikimedia.org/wiki/File:Lima,_Peru_-_Streets_of_Barranco.jpg">Donairesunovi</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>.</span></figcaption>
     </figure>
-    <p class="notice">Compara el precio pedido con una estimación del modelo. Los anuncios de mercado son una captura histórica; confirma disponibilidad antes de decidir.</p>
+    <p class="aviso-corto">${icono("info", "icono-chip")}Comparamos el precio pedido con lo que estima el modelo. Confirma la disponibilidad en el portal.</p>
     <form class="filters" novalidate>
-      <div class="field"><label for="b-distrito">Distrito</label><select class="input" id="b-distrito" name="distrito"><option value="">Todos</option>
-        ${op.distritos.filter((d) => d !== "otros").map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>
-      <div class="field optional"><label for="b-max">Presupuesto máximo (S/)</label><input class="input num" id="b-max" name="precio_max" type="number" min="0" step="100" placeholder="Sin límite"></div>
-      <div class="field optional"><label for="b-dorm">Dormitorios</label><select class="input" id="b-dorm" name="dormitorios_min"><option value="">Cualquiera</option>${opcionesMin}</select></div>
-      <div class="field optional"><label for="b-orden">Ordenar</label><select class="input" id="b-orden" name="orden">
+      <div class="field"><label for="b-distrito">${icono("ubicacion", "icono-campo")}Distrito</label><select class="input" id="b-distrito" name="distrito" aria-describedby="b-distrito-ayuda"><option value="">Todos</option>
+        ${op.distritos.filter((d) => d !== "otros").map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select>
+        <small class="ayuda-filtro" id="b-distrito-ayuda">Uno a la vez · «Todos» busca en Lima</small></div>
+      <div class="field optional"><label for="b-max">${icono("moneda", "icono-campo")}Hasta (S/ al mes)</label><input class="input num" id="b-max" name="precio_max" type="number" min="0" step="100" placeholder="Sin límite"></div>
+      <div class="field optional"><label for="b-dorm">${icono("cama", "icono-campo")}Dormitorios</label><select class="input" id="b-dorm" name="dormitorios_min"><option value="">Cualquiera</option>${opcionesMin}</select></div>
+      <div class="field optional"><label for="b-orden">${icono("lista", "icono-campo")}Ordenar</label><select class="input" id="b-orden" name="orden">
         <option value="precio">Precio: menor primero</option><option value="precio_desc">Precio: mayor primero</option>
-        <option value="oportunidad">Más baratos de lo esperado</option><option value="area">Mayor área</option><option value="paradero">Más cerca de un paradero</option></select></div>
+        <option value="oportunidad">Más baratos de lo esperado</option><option value="area">Mayor área</option><option value="paradero">Más cerca del transporte</option></select></div>
       <button class="btn" type="button" data-mas-filtros aria-expanded="false" aria-controls="mas-filtros">Más filtros</button>
       <span class="spacer"></span>
       <button class="btn primary" type="submit">Buscar</button>
     </form>
     <section class="panel" id="mas-filtros" hidden style="margin-bottom:16px">
       <div class="fields">
-        <div class="field"><label for="b-min">Presupuesto mínimo (S/)</label><input class="input num" id="b-min" name="precio_min" type="number" min="0" step="100"></div>
-        <div class="field"><label for="b-banos">Baños</label><select class="input" id="b-banos" name="banos_min"><option value="">Cualquiera</option>${opcionesMin}</select></div>
-        <div class="field"><label for="b-amin">Área mínima (m²)</label><input class="input num" id="b-amin" name="area_min" type="number" min="0" step="5"></div>
-        <div class="field"><label for="b-amax">Área máxima (m²)</label><input class="input num" id="b-amax" name="area_max" type="number" min="0" step="5"></div>
-        <div class="field"><label for="b-par">Paradero de transporte</label><select class="input" id="b-par" name="paradero_max_m"><option value="">Sin preferencia</option>
-          <option value="300">A 300 m o menos</option><option value="500">A 500 m o menos</option><option value="1000">A 1 km o menos</option></select></div>
+        <div class="field"><label for="b-min">${icono("moneda", "icono-campo")}Desde (S/ al mes)</label><input class="input num" id="b-min" name="precio_min" type="number" min="0" step="100"></div>
+        <div class="field"><label for="b-banos">${icono("bano", "icono-campo")}Baños</label><select class="input" id="b-banos" name="banos_min"><option value="">Cualquiera</option>${opcionesMin}</select></div>
+        <div class="field"><label for="b-amin">${icono("tamano", "icono-campo")}Área mínima (m²)</label><input class="input num" id="b-amin" name="area_min" type="number" min="0" step="5"></div>
+        <div class="field"><label for="b-amax">${icono("tamano", "icono-campo")}Área máxima (m²)</label><input class="input num" id="b-amax" name="area_max" type="number" min="0" step="5"></div>
+        <div class="field"><label for="b-par">${icono("bus", "icono-campo")}Transporte</label><select class="input" id="b-par" name="paradero_max_m"><option value="">Da igual</option>
+          <option value="300">Paradero a 300 m</option><option value="500">Paradero a 500 m</option><option value="1000">Paradero a 1 km</option></select></div>
         <fieldset class="field wide" style="border:0;padding:0;margin:0"><legend class="hint" style="margin-bottom:6px">Debe tener</legend>
-          <div style="display:flex;flex-wrap:wrap;gap:14px">${op.binarias.map((b) => `<label style="display:flex;gap:6px;align-items:center;font-weight:400"><input type="checkbox" name="amenidades" value="${b}">${esc(ETIQUETAS_AMENIDAD[b])}</label>`).join("")}</div>
+          <div class="chips">${op.binarias.map((b) => `<label class="chip"><input type="checkbox" name="amenidades" value="${b}"><span>${esc(ETIQUETAS_AMENIDAD[b])}</span></label>`).join("")}</div>
         </fieldset>
       </div>
     </section>
@@ -340,7 +350,7 @@ export async function vistaBuscar(lienzo) {
     try {
       const r = await llamar("/api/buscar", { cuerpo: parametros });
       if (turno !== solicitud) return;
-      destino.innerHTML = resultadosBusqueda(r, parametros.valoracion, comparados);
+      destino.innerHTML = resultadosBusqueda(r, parametros.valoracion, comparados, new Set(op.distritos_poco_confiables || []), parametros.distritos[0]);
       $("[data-hallazgo]", lienzo).textContent = r.total
         ? parametros.valoracion
           ? `${num(r.total)} departamentos en esta categoría con los filtros elegidos.`
@@ -397,27 +407,33 @@ export async function vistaBuscar(lienzo) {
   ejecutar();
 }
 
-function resultadosBusqueda(r, valoracion, comparados) {
+function resultadosBusqueda(r, valoracion, comparados, pocoConfiables = new Set(), distritoElegido = null) {
   const total = Object.values(r.conteos).reduce((a, b) => a + b, 0);
   const tarjetas = [["", "Todos", total], ["por_debajo", "Por debajo de la estimación", r.conteos.por_debajo],
     ["en_linea", "Cerca de la estimación", r.conteos.en_linea], ["por_encima", "Por encima de la estimación", r.conteos.por_encima]];
   const pill = (x) => (x.valoracion.startsWith("Por debajo") ? "pos" : x.valoracion.startsWith("Por encima") ? "warn" : "");
-  return `
+  const aviso = distritoElegido && pocoConfiables.has(distritoElegido)
+    ? `<div class="aviso-distrito" role="note" style="margin-bottom:12px"><b>⚠ El precio estimado en ${esc(titulo(distritoElegido))} puede no ser exacto</b>
+        <span>El equipo de DepaRent ha detectado que en este distrito la estimación no es tan precisa y suele salir más alta que el precio real.
+        Por eso muchos anuncios aparecen «por debajo de la estimación» sin serlo: compáralos entre sí.</span></div>`
+    : "";
+  return `${aviso}
     <div class="counts" role="group" aria-label="Filtrar por relación entre precio pedido y estimación">
       ${tarjetas.map(([k, t, n]) => `<button class="count" type="button" data-valoracion="${k}" aria-pressed="${(valoracion || "") === k}"><span>${t}</span><b>${num(n)}</b></button>`).join("")}
     </div>
     <div data-comparacion aria-live="polite">${panelComparacion(comparados)}</div>
     <section class="panel" aria-label="Resultados">
-      <p class="panel-note" style="margin:0 0 14px">Comparación orientativa: un porcentaje negativo indica un precio pedido menor que la estimación; uno positivo, mayor. Esto no confirma un ahorro.</p>
+      <p class="leyenda-diferencia"><span class="pill pos">−%</span> pide menos que lo estimado <span class="pill warn">+%</span> pide más <span class="hint">· es orientativo, no confirma un ahorro</span></p>
       ${r.total ? `<div class="table-wrap"><table class="list-table">
-        <thead><tr><th>Departamento</th><th class="n">Área</th><th class="n">Paradero</th><th class="n">Estimación</th><th class="n">Diferencia</th><th class="n">Precio pedido</th><th>Comparar</th></tr></thead>
+        <thead><tr><th>Departamento</th><th class="n">Área</th><th class="n">Transporte</th><th class="n">Estimación</th><th class="n">Diferencia</th><th class="n">Precio pedido</th><th>Comparar</th></tr></thead>
         <tbody>${r.resultados.map((x) => `<tr data-href="#/anuncio/${x.id}">
           <td><a class="id" href="#/anuncio/${x.id}">${x.nombre ? esc(x.nombre) : `${dorms(x.dormitorios)} · ${banos(x.banos)}`}</a>
-            <span class="sub">${esc(titulo(x.distrito))} · ${esc(x.perfil)}${x.origen === "Publicado en DepaRent" ? " · publicado en DepaRent" : ""}${x.amenidades.length ? " · " + x.amenidades.map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()).join(", ") : ""}</span></td>
+            <span class="sub fila-distrito">${icono("ubicacion", "icono-chip")}${esc(titulo(x.distrito))}${x.origen === "Publicado en DepaRent" ? ' <span class="pill pos">En DepaRent</span>' : ""}</span>
+            ${x.amenidades.length ? `<span class="sub fila-amenidades">${x.amenidades.map((a) => esc(ETIQUETAS_AMENIDAD[a])).join(" · ")}</span>` : ""}</td>
           <td class="n more" data-label="Área">${num(x.area_total)} m²</td>
-          <td class="n more" data-label="Paradero a">${num(x.dist_paradero_min_m)} m</td>
-          <td class="n more" data-label="Estimación">${soles(x.precio_estimado_soles)}</td>
-          <td class="n more" data-label="Diferencia"><span class="pill ${pill(x)}" title="${esc(valoracionSencilla(x.valoracion))}">${pct(x.diferencia_estimado_porcentaje)}</span></td>
+          <td class="n more" data-label="Transporte"><span class="con-icono">${icono("bus", "icono-chip")}${num(x.dist_paradero_min_m)} m</span></td>
+          <td class="n more" data-label="Estimación">${soles(x.precio_estimado_soles)}${pocoConfiables.has(x.distrito) ? `<span class="marca-poco-confiable" title="El equipo de DepaRent ha detectado que en ${esc(titulo(x.distrito))} la estimación no es tan precisa y suele salir más alta que el precio real.">⚠</span>` : ""}</td>
+          <td class="n more" data-label="Diferencia"><span class="pill ${pocoConfiables.has(x.distrito) ? "" : pill(x)}" title="${esc(valoracionSencilla(x.valoracion))}">${pct(x.diferencia_estimado_porcentaje)}</span></td>
           <td class="n key"><b>${soles(x.precio_soles)}</b></td>
           <td class="compare-cell"><button class="btn compare-add" type="button" data-comparar="${esc(x.id)}" aria-pressed="${comparados.has(x.id)}">${comparados.has(x.id) ? "Quitar" : "Comparar"}</button></td></tr>`).join("")}</tbody>
       </table></div>
@@ -431,6 +447,11 @@ function resultadosBusqueda(r, valoracion, comparados) {
 
 function panelComparacion(comparados) {
   const elegidos = [...comparados.values()];
+  // Vacío: una sola línea. Así los resultados quedan más arriba.
+  if (!elegidos.length) {
+    return `<section class="compare-vacio" aria-labelledby="titulo-comparar"><h2 id="titulo-comparar">${icono("lista", "icono-chip")}Compara hasta 3</h2>
+      <span class="hint">Pulsa «Comparar» en dos o tres resultados para verlos lado a lado.</span></section>`;
+  }
   return `<section class="panel compare-panel" aria-labelledby="titulo-comparar">
     <header><h2 id="titulo-comparar">Compara hasta 3 departamentos</h2><span class="meta">${elegidos.length} de 3 elegidos</span></header>
     <p class="panel-note">Las opciones elegidas permanecen aquí aunque cambies los filtros de búsqueda.</p>

@@ -291,6 +291,8 @@ def opciones():
         "distritos": MODELO_PRECIO["distritos"], "limites": LIMITS, "binarias": BINARY, "etiquetas": ETIQUETAS,
         "cambiables": sorted(CAMBIABLES), "demos": DEMOS,
         "centros": {d: centro_distrito(d) for d in MODELO_PRECIO["distritos"]},
+        # Distritos donde la estimación falla mucho (error medio ≥ 30%); la interfaz los marca con un aviso.
+        "distritos_poco_confiables": [d for d in MODELO_PRECIO["distritos"] if (evidencia_distrital(d) or {}).get("poco_confiable")],
         "metricas": {"precio": MODELO_PRECIO["metricas"]["metricas_prueba"], "intervalo": MODELO_PRECIO["metricas"]["intervalo"],
                      "particiones": MODELO_PRECIO["metricas"]["particiones"],
                      "perfil": {k: MODELO_PERFIL["metricas"][k] for k in ("k", "silhouette", "ari_medio_semillas", "filas")},
@@ -510,6 +512,7 @@ def ver_anuncio(anuncio_id: str, usuario=Depends(usuario_opcional), conexion=Dep
     return limpiar({
         "anuncio": formatear(fila), "vivienda": vivienda, "publicacion": publicacion, "original": original,
         "precio": predecir(vivienda, MODELO_PRECIO), "perfil": competencia,
+        "evidencia_distrital": evidencia_distrital(vivienda["distrito_norm"]),
         # Sin nombres de paraderos ni mapa: revelarían la ubicación del anuncio original.
         "acceso": {"dist_paradero_min_m": distancia, "paraderos_500m": int(fila["paraderos_500m"]),
                    "nivel": nivel_accesibilidad(distancia, fila["paraderos_500m"], red["ref_500m_mediana"]),

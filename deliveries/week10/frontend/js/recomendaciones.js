@@ -1,17 +1,19 @@
 import { llamar, obtenerOpciones, sesion } from "./api.js";
 import { cerrarSesion } from "./vistas.js";
+import { ICONO_HOGAR, icono } from "./iconos.js";
 import { $, $$, esc, num, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD, vecinosConOpciones, botonesVecinos } from "./util.js";
 
 /* ---------- Inquilino (modelo 7): cuestionario → mi perfil → recomendaciones → guardados ----------
    El perfil y los guardados viven en la cuenta (API), así se ven desde cualquier dispositivo. */
 
 const DESCRIPCION_HOGAR = {
-  familia: "Pesan 3 dormitorios, área, juegos infantiles, áreas verdes, seguridad y cochera.",
-  pareja: "Pesan 1 o 2 dormitorios, balcón o terraza, gimnasio y parrilla.",
-  estudiante: "Pesan el paradero cercano, el tamaño justo y el coworking.",
-  mascota: "Solo departamentos que admiten mascotas; pesan terraza y áreas verdes.",
-  mayor: "Pesan el ascensor, el paradero cercano y la seguridad.",
+  familia: "Priorizamos 3 dormitorios, área, juegos infantiles, áreas verdes, seguridad y cochera.",
+  pareja: "Priorizamos 1 o 2 dormitorios, balcón o terraza, gimnasio y parrilla.",
+  estudiante: "Priorizamos el paradero cercano, el tamaño justo y el coworking.",
+  mascota: "Solo departamentos que admiten mascotas; priorizamos terraza y áreas verdes.",
+  mayor: "Priorizamos el ascensor, el paradero cercano y la seguridad.",
 };
+const ICONO_PRIORIDAD = { precio: "moneda", espacio: "tamano", transporte: "bus", amenidades: "estrella", seguridad: "check" };
 
 const irA = (ruta) => { location.hash = ruta; };
 const filaTitulo = (h1, sub, acciones = "") =>
@@ -50,7 +52,7 @@ export async function vistaEditarPerfil(lienzo) {
       <fieldset class="perfil-grupo"><legend>¿Para quién es el departamento?</legend>
         <div class="hogares">${Object.entries(hogares).map(([k, nombre]) => `
           <label class="hogar"><input type="radio" name="hogar" value="${k}" ${p.hogar === k ? "checked" : ""} required>
-            <span><b>${esc(nombre)}</b><small>${esc(DESCRIPCION_HOGAR[k] || "")}</small></span></label>`).join("")}</div>
+            ${icono(ICONO_HOGAR[k] || "casa", "icono-hogar")}<span><b>${esc(nombre)}</b><small>${esc(DESCRIPCION_HOGAR[k] || "")}</small></span></label>`).join("")}</div>
       </fieldset>
       <div class="fields">
         <div class="field"><label for="r-max">Presupuesto máximo (S/ al mes)</label>
@@ -61,9 +63,10 @@ export async function vistaEditarPerfil(lienzo) {
       </div>
       <fieldset class="perfil-grupo"><legend>¿Qué te importa más? <small>(hasta 3)</small></legend>
         <div class="chips">${Object.entries(prioridades).map(([k, nombre]) => `
-          <label class="chip"><input type="checkbox" name="prioridades" value="${k}" ${p.prioridades?.includes(k) ? "checked" : ""}><span>${esc(nombre)}</span></label>`).join("")}</div>
+          <label class="chip"><input type="checkbox" name="prioridades" value="${k}" ${p.prioridades?.includes(k) ? "checked" : ""}><span>${icono(ICONO_PRIORIDAD[k], "icono-chip")}${esc(k === "transporte" ? "Transporte" : nombre)}</span></label>`).join("")}</div>
       </fieldset>
-      <fieldset class="perfil-grupo"><legend>Distritos que te interesan <small>(si no marcas ninguno, buscamos en todos)</small></legend>
+      <fieldset class="perfil-grupo"><legend>Distritos</legend>
+        <p class="hint ayuda-corta">Marca los que te interesan. Sin marcar, buscamos en toda Lima.</p>
         <div class="chips">${distritos.map((d) => `
           <label class="chip"><input type="checkbox" name="distritos" value="${esc(d)}" ${p.distritos?.includes(d) ? "checked" : ""}><span>${esc(titulo(d))}</span></label>`).join("")}</div>
       </fieldset>
@@ -71,7 +74,8 @@ export async function vistaEditarPerfil(lienzo) {
         <div class="chips">${ORDENES.map(([k, nombre]) => `
           <label class="chip"><input type="radio" name="orden" value="${k}" ${(p.orden || "afinidad") === k ? "checked" : ""}><span>${esc(nombre)}</span></label>`).join("")}</div>
       </fieldset>
-      <fieldset class="perfil-grupo"><legend>¿Dónde trabajas o estudias? <small>(opcional: acerca las recomendaciones)</small></legend>
+      <fieldset class="perfil-grupo"><legend>¿Dónde trabajas o estudias? <span class="etiqueta-opcional">Opcional</span></legend>
+        <p class="hint ayuda-corta">Te mostramos primero los que quedan cerca.</p>
         <div class="search-row"><input class="input" id="r-lugar" placeholder="Por ejemplo: Av. La Marina, San Miguel" value="${esc(p.lugar_nombre || "")}" autocomplete="off">
           <button class="btn" type="button" data-buscar-lugar>Buscar</button>
           ${p.lugar ? '<button class="btn ghost" type="button" data-quitar-lugar>Quitar</button>' : ""}</div>
@@ -149,16 +153,14 @@ export async function vistaEditarPerfil(lienzo) {
 export async function vistaMiPerfil(lienzo) {
   const [op, { usuario, perfil }] = await Promise.all([obtenerOpciones(), llamar("/api/perfil")]);
   lienzo.innerHTML = `
-    ${filaTitulo("Mi perfil", "Tus datos y lo que el sistema usa para recomendarte departamentos.")}
+    ${filaTitulo(`Hola, ${esc(usuario.nombre.trim().split(/\s+/)[0])}`, "¿Qué quieres hacer?")}
+    ${accesosRapidos(perfil)}
     <section class="panel perfil-card" aria-label="Cuenta">
       <h2>Cuenta</h2>
       <dl><div><dt>Nombre</dt><dd>${esc(usuario.nombre)}</dd></div><div><dt>Correo</dt><dd>${esc(usuario.email)}</dd></div></dl>
     </section>
     ${perfil ? `
-    <section class="panel perfil-card" aria-label="Perfil de búsqueda">
-      <div class="perfil-head"><h2>Lo que buscas</h2><a class="btn" href="#/mi-perfil/editar">Editar</a></div>
-      <dl>${filasPerfil(op, perfil).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
-    </section>
+    ${loQueBuscas(op, perfil)}
     <div class="perfil-actions"><a class="btn primary" href="#/para-ti">Ver mis recomendaciones</a>
       <a class="btn" href="#/para-ti?ver=guardados">Mis guardados</a></div>`
     : `<section class="panel"><div class="empty"><p>Todavía no nos cuentas qué buscas. Responde unas preguntas y te recomendamos departamentos.</p>
@@ -168,16 +170,38 @@ export async function vistaMiPerfil(lienzo) {
   $("[data-salir]", lienzo).addEventListener("click", cerrarSesion);
 }
 
-function filasPerfil(op, perfil) {
-  return [
-    ["Hogar", `${op.recomendador.hogares[perfil.hogar] || ""}. ${DESCRIPCION_HOGAR[perfil.hogar] || ""}`],
-    ["Presupuesto", perfil.presupuesto_max ? `hasta ${soles(perfil.presupuesto_max)} al mes` : "sin tope"],
-    ["Dormitorios", perfil.dormitorios_min ? `${perfil.dormitorios_min} o más` : "según tu hogar"],
-    ["Te importa", perfil.prioridades?.length ? perfil.prioridades.map((k) => op.recomendador.prioridades[k]).join(", ") : "sin prioridades marcadas"],
-    ["Distritos", perfil.distritos?.length ? perfil.distritos.map(titulo).join(", ") : "todos"],
-    ["Trabajo o estudio", perfil.lugar ? (perfil.lugar_nombre || "ubicación marcada") : "no indicado"],
-    ["Orden de resultados", NOMBRE_ORDEN[perfil.orden || "afinidad"]],
+// Pruebas con propietarios (P5): tras ingresar no sabía qué estaba tocando. Cuatro accesos grandes, con icono y una línea.
+function accesosRapidos(perfil) {
+  const accesos = [
+    ["moneda", "Estimar el precio de mi depa", "Precio esperado y a cuánto publicarlo", "#/mis-departamentos/nuevo"],
+    ["lista", "Mis departamentos", "Revisa, edita o publica", "#/mis-departamentos"],
+    ["corazon", "Recomendados para mí", perfil ? "Según lo que buscas" : "Responde unas preguntas rápidas", perfil ? "#/para-ti" : "#/mi-perfil/editar"],
+    ["buscar", "Buscar departamentos", "Por distrito, precio y tamaño", "#/buscar"],
   ];
+  return `<nav class="accesos" aria-label="Acciones principales">${accesos.map(([ic, t, s, href]) =>
+    `<a class="acceso" href="${href}">${icono(ic, "icono-acceso")}<span><b>${t}</b><span class="hint">${s}</span></span></a>`).join("")}</nav>`;
+}
+
+// "Lo que buscas": el hogar como cabecera, cuatro datos en tarjetas y las listas como etiquetas.
+function loQueBuscas(op, perfil) {
+  const datos = [
+    ["moneda", "Presupuesto", perfil.presupuesto_max ? soles(perfil.presupuesto_max) : "Sin tope", perfil.presupuesto_max ? "al mes, como máximo" : ""],
+    ["cama", "Dormitorios", perfil.dormitorios_min ? `${perfil.dormitorios_min} o más` : "Según tu hogar", ""],
+    ["ubicacion", "Trabajo o estudio", perfil.lugar ? ((perfil.lugar_nombre || "").split(",")[0] || "Ubicación marcada") : "No indicado",
+      perfil.lugar ? (perfil.lugar_nombre || "").split(",").slice(1, 2).join("").trim() : ""],
+    ["lista", "Orden", NOMBRE_ORDEN[perfil.orden || "afinidad"], ""],
+  ];
+  const etiquetas = (lista, vacio, conIcono) => lista.length
+    ? lista.map(([texto, ic]) => `<span class="etiqueta">${conIcono && ic ? icono(ic, "icono-chip") : ""}${esc(texto)}</span>`).join("")
+    : `<span class="etiqueta vacia">${esc(vacio)}</span>`;
+  return `<section class="panel perfil-busqueda" aria-labelledby="t-busca">
+    <div class="perfil-head"><h2 id="t-busca">Lo que buscas</h2><a class="btn" href="#/mi-perfil/editar">Editar</a></div>
+    <div class="pb-hogar">${icono(ICONO_HOGAR[perfil.hogar] || "casa", "icono-paso")}
+      <div><b>${esc(op.recomendador.hogares[perfil.hogar] || "")}</b><p class="hint">${esc(DESCRIPCION_HOGAR[perfil.hogar] || "")}</p></div></div>
+    <div class="pb-datos">${datos.map(([ic, k, v, sub]) => `<div class="pb-dato">${icono(ic, "icono-titulo")}<div><span class="hint">${esc(k)}</span><b>${esc(v)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</div></div>`).join("")}</div>
+    <div class="pb-fila"><span class="pb-etiqueta">Te importa</span><div class="pb-etiquetas">${etiquetas((perfil.prioridades || []).map((k) => [op.recomendador.prioridades[k], ICONO_PRIORIDAD[k]]), "Sin prioridades marcadas", true)}</div></div>
+    <div class="pb-fila"><span class="pb-etiqueta">Distritos</span><div class="pb-etiquetas">${etiquetas((perfil.distritos || []).map((d) => [titulo(d)]), "Toda Lima", false)}</div></div>
+  </section>`;
 }
 
 /* ---------- 3. Recomendaciones y 4. Guardados ---------- */
@@ -277,8 +301,7 @@ export async function vistaRecomendaciones(lienzo, params) {
         destino.innerHTML = r.recomendaciones.length ? `
           <ol class="reco-list">${ordenar(r.recomendaciones, orden).map((x, i) => tarjeta(x, i, estado)).join("")}</ol>
           <p class="panel-note">${esc(r.aviso)} Elegimos estos ${r.recomendaciones.length} según lo que suele necesitar tu tipo de hogar, tus prioridades,
-            la cercanía a tu trabajo o estudio y si el precio es bueno para lo que ofrece; luego los ordenamos como prefieras. El dibujo de cada tarjeta es un esquema
-            aproximado hecho con los dormitorios, baños y metros del anuncio: no es el plano real del departamento.</p>`
+            la cercanía a tu trabajo o estudio y si el precio es bueno para lo que ofrece; luego los ordenamos como prefieras.</p>`
           : `<section class="panel"><div class="empty"><p>Ningún departamento cumple tu presupuesto y tus filtros. Prueba subir el presupuesto, quitar distritos o bajar el mínimo de dormitorios.</p>
               <a class="btn primary" href="#/mi-perfil/editar">Editar mi perfil</a></div></section>`;
         activarGuardar(destino, lienzo, estado);
@@ -342,19 +365,25 @@ function tarjeta(x, i, estado, puedeGuardar = true) {
   const dichos = (x.motivos || []).join(" ").toLowerCase();
   const amenidades = [...(x.amenidades || []).map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()), ...(x.amenidades_extra || [])]
     .filter((a) => !yaDicha(a, dichos));
+  // El enlace cubre la cabecera de la tarjeta; el "por qué" (desplegable) y las amenidades van fuera del enlace
+  // para que abrirlos no lleve a la ficha.
   return `<li class="reco-card ${puedeGuardar ? "" : "sin-guardar"}">
     <a class="reco-link" href="#/anuncio/${esc(x.id)}" aria-label="Ver ficha: ${esc(dorm)} en ${esc(titulo(x.distrito))}">
       <span class="reco-rank" aria-label="Recomendación ${i + 1}">${i + 1}</span>
-      <figure class="reco-plano"><span class="plano-aviso">No es el plano real</span>${plano(x.dormitorios, x.banos, x.area_total)}
-        <figcaption>Esquema aproximado con los ${num(x.area_total)} m², dormitorios y baños del anuncio</figcaption></figure>
+      <figure class="reco-plano">${plano(x.dormitorios, x.banos, x.area_total)}
+        <figcaption>Esquema aproximado del departamento</figcaption></figure>
       <div class="reco-body">
-        <p class="reco-title"><b>${esc(titulo(x.distrito))}</b> · ${esc(dorm)} · ${esc(banos)} · ${num(x.area_total)} m²</p>
-        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · estimación del modelo ${soles(x.precio_estimado_soles)}${x.dist_paradero_min_m != null ? ` · paradero a ${num(x.dist_paradero_min_m)} m` : ""}</p>
-        ${x.motivos?.length ? `<div class="reco-why"><span>Por qué te lo recomendamos</span><ul>${x.motivos.map((m) => `<li>${esc(m)}</li>`).join("")}</ul></div>` : ""}
-        ${amenidades.length ? `<p class="reco-extra"><span>Amenidades:</span> ${amenidades.map(esc).join(" · ")}</p>` : ""}
-        ${x.faltas?.length ? `<p class="reco-miss"><span>Ten en cuenta:</span> ${x.faltas.map(esc).join(" · ")}</p>` : ""}
+        <p class="reco-title"><b>${esc(titulo(x.distrito))}</b></p>
+        <p class="reco-datos">${icono("cama", "icono-chip")}${esc(dorm)} ${icono("bano", "icono-chip")}${esc(banos)} ${icono("tamano", "icono-chip")}${num(x.area_total)} m²
+          ${x.dist_paradero_min_m != null ? `${icono("bus", "icono-chip")}${num(x.dist_paradero_min_m)} m` : ""}</p>
+        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes <span class="hint">· el modelo estima ${soles(x.precio_estimado_soles)}</span></p>
       </div>
     </a>
+    <div class="reco-mas">
+      ${amenidades.length ? `<div class="reco-amenidades" aria-label="Amenidades">${amenidades.map((a) => `<span class="etiqueta">${icono("estrella", "icono-chip")}${esc(a.charAt(0).toUpperCase() + a.slice(1))}</span>`).join("")}</div>` : ""}
+      ${x.motivos?.length ? `<details class="mas reco-why"><summary>¿Por qué te lo recomendamos?</summary><ul>${x.motivos.map((m) => `<li>${esc(m)}</li>`).join("")}</ul></details>` : ""}
+      ${x.faltas?.length ? `<p class="reco-miss"><span>Ten en cuenta:</span> ${x.faltas.map(esc).join(" · ")}</p>` : ""}
+    </div>
     ${puedeGuardar ? `<button class="btn reco-save" type="button" data-guardar="${esc(x.id)}" aria-pressed="${guardado}">${guardado ? "Guardado" : "Guardar"}</button>` : ""}</li>`;
 }
 

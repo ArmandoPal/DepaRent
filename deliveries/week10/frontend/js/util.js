@@ -122,3 +122,13 @@ export function avisoSencillo(texto) {
   }
   return texto;
 }
+
+/* Distritos donde la estimación falla mucho (Los Olivos, Comas, San Martín de Porres...): el modelo suele
+   quedar por encima del precio real. Aviso visible, no una nota técnica. */
+export function avisoDistritoPocoConfiable(ev) {
+  if (!ev?.poco_confiable) return "";
+  const nombre = ev.distrito === "otros" ? "este distrito" : titulo(ev.distrito);
+  return `<div class="aviso-distrito" role="note"><b>⚠ El precio estimado en ${esc(nombre)} puede no ser exacto</b>
+    <span>El equipo de DepaRent ha detectado que en este distrito la estimación no es tan precisa y suele salir más alta que el precio real.
+    Tómala como una referencia aproximada y guíate más por los departamentos parecidos.</span></div>`;
+}
