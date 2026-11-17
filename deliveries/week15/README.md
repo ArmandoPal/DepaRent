@@ -19,7 +19,7 @@ Estado: ✅ listo · 🟡 en progreso · ⬜ pendiente. Responsables según `wee
 | 4 | Scripts de preprocesamiento, análisis, entrenamiento, inferencia y evaluación | `code/README.md` | ✅ | Breysi |
 | 5 | Modelos y artefactos | `week10/models/` | ✅ | Breysi |
 | 6 | `FinalReport.pdf` + fuente editable | `FinalReport.md` → PDF | ⬜ esqueleto listo | Adrian (+ cada uno su sección) |
-| 7 | `PresentationFinal.pptx` + PDF | `presentation/` | ⬜ | Breysi |
+| 7 | `PresentationFinal.pptx` + PDF | `presentation/` | ✅ con guion (`Guion_Presentacion_Final.md`) | Breysi |
 | 8 | ~~Video demo de 5–7 min~~ | — | No aplica: el profesor lo retiró de la entrega (17-nov) | — |
 | 9 | Data Product Canvas final | `DataProductCanvas.pdf` | ⬜ | Armando |
 | 10 | Especificación final de requisitos | `Requirements.md` | ⬜ esqueleto listo | Armando |

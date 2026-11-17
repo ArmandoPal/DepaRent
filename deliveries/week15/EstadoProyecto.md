@@ -108,7 +108,7 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 - [x] Rango de precio proporcional al precio (mejora del modelo 3, revisión del profesor del 14-nov).
 - [ ] Cambiar la contraseña de la cuenta analista en producción (la anterior estuvo publicada).
 - [ ] Informe final (`FinalReport.md` → PDF).
-- [ ] Presentación final (`.pptx` + PDF). El video demo ya no se pide (indicación del profesor, 17-nov).
+- [x] Presentación final (`.pptx` + PDF) y guion en `presentation/`. El video demo ya no se pide (indicación del profesor, 17-nov).
 - [ ] Data Product Canvas final y requisitos finales (`Requirements.md`).
 - [ ] Contribución individual y reflexión del equipo.
 - [ ] Página del proyecto.
