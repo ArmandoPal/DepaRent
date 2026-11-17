@@ -21,7 +21,7 @@ deliveries/week10/code/requirements-deploy.txt. Se probó localmente con un ento
 MERCADO DE LA APP
 La descarga de anuncios se hizo con scraper/descarga_diaria.py del 20-oct al 17-nov-2026 (18 días de descarga,
 8 completos con 6,300-6,900 anuncios). El mercado se prepara con preparar_mercado.py -> entrenar_perfil.py -> pruebas
--> commit en main, y Render vuelve a desplegar. Hoy la app usa la captura del 9-nov-2026. La captura cruda, que tiene
+-> commit en main, y Render vuelve a desplegar. Hoy la app usa la captura del 17-nov-2026. La captura cruda, que tiene
 direcciones, se queda en data_diaria/ (fuera de git); al repositorio solo llega data/mercado.csv, sin direcciones.
 
 LIMITACIONES DEL PLAN GRATUITO

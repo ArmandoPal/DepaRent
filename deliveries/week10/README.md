@@ -105,7 +105,7 @@ Versión Streamlit del profesor (opcional): `..\..\..\.venv\Scripts\python.exe -
 ## Despliegue
 Publicado en **https://deparent.onrender.com**. Configurado para Render con `render.yaml` (raíz del repo): un solo servicio que sirve la API y el frontend, con
 `code/requirements-deploy.txt`. El mercado sale de la descarga de anuncios con `scraper/descarga_diaria.py`
-del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios) y hoy usa la captura del 9-nov. Pasos y límites del plan gratuito en `deployed_url.txt`.
+del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios) y hoy usa la captura del 17-nov. Pasos y límites del plan gratuito en `deployed_url.txt`.
 
 ## Credenciales y datos
 No se requieren variables de entorno ni credenciales para el uso local. Variables opcionales: `DEPARENT_DB` (ruta de

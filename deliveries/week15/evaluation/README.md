@@ -29,5 +29,5 @@ proporcional ya está incorporado (ver `REVISION_DepaRent_13-11-2026.md` en la r
 | Cobertura bajo S/ 1,500 (antes → ahora) | prueba 89.1% → 80.4% · octubre 99.1% → 92.2% · noviembre 99.2% → 91.3% |
 | Perfiles | k = 4, silhouette 0.21, ARI 1.00 |
 | SARIMA | MAE mediano 2.00 S/ por m² contra 2.54 del naive estacional y 2.40 del naive |
-| Coherencia | 297 de 297 análisis cumplen las 13 reglas |
-| Recomendador (60 perfiles de prueba) | precision@12 82% contra 17–24% de los órdenes del buscador y 25% al azar · 3,187 motivos verificados, 100% correctos |
+| Coherencia | 296 de 296 análisis cumplen las 13 reglas |
+| Recomendador (60 perfiles de prueba) | precision@12 82% contra 17–23% de los órdenes del buscador y 25% al azar · 3,127 motivos verificados, 100% correctos |

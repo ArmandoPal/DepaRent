@@ -1,5 +1,5 @@
 {
-  "mercado": "9 de noviembre de 2026",
+  "mercado": "17 de noviembre de 2026",
   "propietario": {
     "vivienda": {
       "distrito_norm": "jesus maria",
@@ -34,10 +34,10 @@
     "perfil": {
       "cluster": 1,
       "perfil": "Estándar tradicional",
-      "anuncios_en_perfil": 1515,
+      "anuncios_en_perfil": 1489,
       "precio_mediana_perfil_soles": 2500.0,
-      "precio_p25_perfil_soles": 1850.0,
-      "precio_p75_perfil_soles": 3081.5
+      "precio_p25_perfil_soles": 1800.0,
+      "precio_p75_perfil_soles": 3030.0
     },
     "comparables": [
       {
@@ -69,12 +69,21 @@
       },
       {
         "Distrito": "Jesus Maria",
-        "Área (m²)": 90.0,
+        "Área (m²)": 95.0,
         "Dormitorios": 3.0,
         "Baños": 2.0,
-        "Antigüedad": 0.0,
-        "Precio pedido (S/)": 2990.0,
-        "Similitud": 0.422
+        "Antigüedad": null,
+        "Precio pedido (S/)": 3000.0,
+        "Similitud": 0.448
+      },
+      {
+        "Distrito": "Jesus Maria",
+        "Área (m²)": 65.0,
+        "Dormitorios": 2.0,
+        "Baños": 1.0,
+        "Antigüedad": 10.0,
+        "Precio pedido (S/)": 1700.0,
+        "Similitud": 0.445
       },
       {
         "Distrito": "Jesus Maria",
@@ -87,15 +96,6 @@
       },
       {
         "Distrito": "Jesus Maria",
-        "Área (m²)": 60.0,
-        "Dormitorios": 2.0,
-        "Baños": 1.0,
-        "Antigüedad": 20.0,
-        "Precio pedido (S/)": 1650.0,
-        "Similitud": 0.392
-      },
-      {
-        "Distrito": "Jesus Maria",
         "Área (m²)": 97.0,
         "Dormitorios": 3.0,
         "Baños": 2.0,
@@ -105,21 +105,21 @@
       },
       {
         "Distrito": "Jesus Maria",
-        "Área (m²)": 129.0,
+        "Área (m²)": 80.0,
         "Dormitorios": 3.0,
         "Baños": 2.0,
-        "Antigüedad": 0.0,
-        "Precio pedido (S/)": 4000.0,
-        "Similitud": 0.361
+        "Antigüedad": 12.0,
+        "Precio pedido (S/)": 2600.0,
+        "Similitud": 0.382
       }
     ],
     "comparables_resumen": {
       "precio_p25_soles": 1925.0,
       "precio_mediana_soles": 2300.0,
-      "precio_p75_soles": 3242.5,
+      "precio_p75_soles": 2700.0,
       "en_mismo_distrito": 8
     },
-    "comparables_que_piden_menos_que_lo_pensado": 5,
+    "comparables_que_piden_menos_que_lo_pensado": 6,
     "accesibilidad": {
       "origen": "centro aproximado del distrito",
       "dist_paradero_min_m": 355.9,
@@ -150,9 +150,9 @@
         },
         {
           "escenario": "Renta superior",
-          "precio_soles": 2890.0,
-          "diferencia_vs_esperado_porcentaje": 14.32,
-          "comparables_mas_baratos_porcentaje": 62.5,
+          "precio_soles": 2650.0,
+          "diferencia_vs_esperado_porcentaje": 4.83,
+          "comparables_mas_baratos_porcentaje": 75.0,
           "sugerido": false
         }
       ],
@@ -340,19 +340,19 @@
       "orden": "oportunidad",
       "limite": 60
     },
-    "total": 118,
+    "total": 106,
     "conteos": {
-      "por_debajo": 37,
-      "en_linea": 68,
-      "por_encima": 13
+      "por_debajo": 30,
+      "en_linea": 59,
+      "por_encima": 17
     },
     "resumen": {
       "precio_p25_soles": 2100.0,
       "precio_mediana_soles": 2300.0,
       "precio_p75_soles": 2500.0,
-      "por_debajo_del_estimado": 37
+      "por_debajo_del_estimado": 30
     },
-    "por_debajo_total": 37,
+    "por_debajo_total": 30,
     "primeros_por_debajo": [
       {
         "distrito": "lince",
@@ -368,26 +368,38 @@
       },
       {
         "distrito": "surquillo",
-        "precio_soles": 2250.0,
-        "precio_estimado_soles": 2942.95,
-        "diferencia_estimado_porcentaje": -23.5,
+        "precio_soles": 2200.0,
+        "precio_estimado_soles": 2939.23,
+        "diferencia_estimado_porcentaje": -25.2,
         "valoracion": "Por debajo del estimado",
-        "area_total": 82.0,
+        "area_total": 85.0,
         "dormitorios": 2.0,
         "banos": 2.0,
-        "dist_paradero_min_m": 294.9,
+        "dist_paradero_min_m": 275.2,
         "perfil": "Estándar tradicional"
       },
       {
         "distrito": "surquillo",
-        "precio_soles": 2200.0,
-        "precio_estimado_soles": 2857.45,
-        "diferencia_estimado_porcentaje": -23.0,
+        "precio_soles": 1250.0,
+        "precio_estimado_soles": 1612.25,
+        "diferencia_estimado_porcentaje": -22.5,
         "valoracion": "Por debajo del estimado",
-        "area_total": 110.0,
+        "area_total": 50.0,
+        "dormitorios": 2.0,
+        "banos": 1.0,
+        "dist_paradero_min_m": 56.0,
+        "perfil": "Estándar tradicional"
+      },
+      {
+        "distrito": "jesus maria",
+        "precio_soles": 2400.0,
+        "precio_estimado_soles": 3012.75,
+        "diferencia_estimado_porcentaje": -20.3,
+        "valoracion": "Por debajo del estimado",
+        "area_total": 77.0,
         "dormitorios": 3.0,
         "banos": 2.0,
-        "dist_paradero_min_m": 271.4,
+        "dist_paradero_min_m": 167.3,
         "perfil": "Estándar tradicional"
       },
       {
@@ -400,18 +412,6 @@
         "dormitorios": 2.0,
         "banos": 2.0,
         "dist_paradero_min_m": 283.2,
-        "perfil": "Estándar tradicional"
-      },
-      {
-        "distrito": "jesus maria",
-        "precio_soles": 1800.0,
-        "precio_estimado_soles": 2250.62,
-        "diferencia_estimado_porcentaje": -20.0,
-        "valoracion": "Por debajo del estimado",
-        "area_total": 85.0,
-        "dormitorios": 2.0,
-        "banos": 1.0,
-        "dist_paradero_min_m": 6.7,
         "perfil": "Estándar tradicional"
       }
     ],
@@ -435,6 +435,6 @@
       "precio_soles",
       "valoracion"
     ],
-    "aviso": "Anuncios del 9 de noviembre de 2026 sin dirección ni contacto en DepaRent: es una foto del mercado ese día, no una lista de ofertas vigentes. La comparación es orientativa: el modelo se entrenó con anuncios de septiembre y se validó con los de noviembre."
+    "aviso": "Anuncios del 17 de noviembre de 2026 sin dirección ni contacto en DepaRent: es una foto del mercado ese día, no una lista de ofertas vigentes. La comparación es orientativa: el modelo se entrenó con anuncios de septiembre y se validó con los de noviembre."
   }
 }

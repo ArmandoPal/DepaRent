@@ -179,7 +179,7 @@ Detalle: [`deliveries/week07/planning/team_responsibilities.md`](deliveries/week
 - El modelo aprende **precios pedidos** en anuncios, no precios de contrato.
 - El rango de precio tiene radio fijo (S/ 1,357): bien calibrado en promedio, menos en departamentos de lujo.
 - Distritos con pocos anuncios tienen error inestable.
-- El mercado de la app es una foto fija (captura del 9-nov-2026); no se actualiza solo.
+- El mercado de la app es una foto fija (captura del 17-nov-2026); no se actualiza solo.
 - Render gratuito se duerme tras 15 min sin visitas.
 
 Más detalle en [`deliveries/week12/EvaluationReport.md`](deliveries/week12/EvaluationReport.md) §8.

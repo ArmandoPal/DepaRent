@@ -1,24 +1,24 @@
 {
-  "fecha": "2026-11-13",
-  "mercado": "data/mercado.csv, captura del 2026-11-09",
+  "fecha": "2026-11-17",
+  "mercado": "data/mercado.csv, captura del 2026-11-17",
   "muestra": 300,
   "semilla": 42,
   "reglas_cumplidas": {
-    "responde_200": 297,
-    "json_estricto": 297,
-    "precio_igual_al_modelo": 297,
-    "tres_escenarios": 297,
-    "escenarios_ordenados": 297,
-    "escenarios_dentro_del_rango": 297,
-    "equilibrado_igual_al_esperado": 297,
-    "una_sola_sugerencia": 297,
-    "ocho_comparables": 297,
-    "comparables_sin_repetir": 297,
-    "perfil_asignado": 297,
-    "nivel_accesibilidad": 297,
-    "tendencia_valida": 297
+    "responde_200": 296,
+    "json_estricto": 296,
+    "precio_igual_al_modelo": 296,
+    "tres_escenarios": 296,
+    "escenarios_ordenados": 296,
+    "escenarios_dentro_del_rango": 296,
+    "equilibrado_igual_al_esperado": 296,
+    "una_sola_sugerencia": 296,
+    "ocho_comparables": 296,
+    "comparables_sin_repetir": 296,
+    "perfil_asignado": 296,
+    "nivel_accesibilidad": 296,
+    "tendencia_valida": 296
   },
-  "analizadas": 297,
+  "analizadas": 296,
   "reglas_cumplidas_porcentaje": {
     "responde_200": 100.0,
     "json_estricto": 100.0,
@@ -35,15 +35,19 @@
     "tendencia_valida": 100.0
   },
   "rechazadas_por_validacion": {
-    "anuncios": 3,
+    "anuncios": 4,
     "detalle": [
+      {
+        "status": 422,
+        "detalle": "[{'type': 'int_type', 'loc': ['body', 'vivienda', 'dormitorios'], 'msg': 'Input should be a valid integer', 'input': None}, {'type': 'int_type', 'loc': ['body',"
+      },
       {
         "status": 422,
         "detalle": "[{'type': 'int_type', 'loc': ['body', 'vivienda', 'dormitorios'], 'msg': 'Input should be a valid integer', 'input': None}]"
       },
       {
         "status": 422,
-        "detalle": "[{'type': 'int_type', 'loc': ['body', 'vivienda', 'dormitorios'], 'msg': 'Input should be a valid integer', 'input': None}]"
+        "detalle": "[{'type': 'int_type', 'loc': ['body', 'vivienda', 'banos'], 'msg': 'Input should be a valid integer', 'input': None}]"
       },
       {
         "status": 422,
@@ -54,27 +58,27 @@
   },
   "comparables": {
     "porcentaje_en_el_mismo_distrito_medio": 100.0,
-    "similitud_mediana": 0.421
+    "similitud_mediana": 0.388
   },
   "escenario_sugerido": {
-    "Equilibrado": 133,
-    "Renta superior": 164
+    "Renta superior": 169,
+    "Equilibrado": 127
   },
   "perfiles": {
-    "Estándar tradicional": 145,
-    "Amplio de alta gama": 30,
-    "Moderno que admite mascotas": 45,
-    "Compacto moderno con amenidades": 77
+    "Amplio de alta gama": 39,
+    "Estándar tradicional": 130,
+    "Moderno que admite mascotas": 44,
+    "Compacto moderno con amenidades": 83
   },
   "niveles_accesibilidad": {
-    "Media": 160,
-    "Alta": 136,
-    "Baja": 1
+    "Alta": 141,
+    "Media": 153,
+    "Baja": 2
   },
   "tiempo_respuesta_ms": {
-    "mediana": 90.4,
-    "p95": 114.9,
-    "maximo": 188.1,
+    "mediana": 69.2,
+    "p95": 80.4,
+    "maximo": 254.4,
     "nota": "Medido en local con TestClient; no incluye red ni el arranque en frío de Render."
   }
 }

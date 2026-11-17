@@ -20,8 +20,9 @@ duplica el código: agrega la evaluación, los casos de estudio, la documentaci�
 - **Ajustes de interfaz según esas pruebas:** etiqueta «No es el plano real» en el esquema, motivos de cada
   recomendación como lista, distritos cercanos cuando no hay resultados, explicación del rango, nota «¿Qué es esto?» en
   la tendencia y el motivo del precio sugerido junto a los tres escenarios.
-- **Datos:** la app sigue con la captura del 9-nov. Los intentos de descarga del 12-nov y del 16-nov fueron bloqueados
-  por los portales (error 403: 30 y 218 anuncios frente a ~6,500 de una captura completa), así que no se usaron.
+- **Datos (17-nov):** mercado de la app actualizado con la captura del 17 de noviembre (6,345 anuncios descargados,
+  2,998 únicos). Se volvieron a correr los perfiles, los casos de estudio, la coherencia y el recomendador; la
+  validación temporal sigue con la captura del 9-nov.
 
 ## Contenido
 

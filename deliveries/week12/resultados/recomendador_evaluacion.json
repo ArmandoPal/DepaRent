@@ -2,104 +2,104 @@
   "perfiles_evaluados": 60,
   "K": 12,
   "semillas_azar": 30,
-  "mercado": "data/mercado.csv, captura del 2026-11-09",
+  "mercado": "data/mercado.csv, captura del 2026-11-17",
   "resumen": {
     "azar": {
-      "precision": 0.25,
-      "cumplimiento": 0.633,
-      "ndcg": 0.65,
-      "acierto": 0.833,
-      "distritos": 5.853
+      "precision": 0.251,
+      "cumplimiento": 0.629,
+      "ndcg": 0.651,
+      "acierto": 0.845,
+      "distritos": 5.882
     },
     "buscador_area": {
-      "precision": 0.221,
-      "cumplimiento": 0.601,
-      "ndcg": 0.624,
+      "precision": 0.215,
+      "cumplimiento": 0.586,
+      "ndcg": 0.606,
       "acierto": 0.683,
-      "distritos": 5.033
+      "distritos": 4.633
     },
     "buscador_oportunidad": {
-      "precision": 0.242,
-      "cumplimiento": 0.604,
-      "ndcg": 0.625,
-      "acierto": 0.783,
-      "distritos": 4.2
+      "precision": 0.233,
+      "cumplimiento": 0.587,
+      "ndcg": 0.606,
+      "acierto": 0.7,
+      "distritos": 4.333
     },
     "buscador_precio": {
-      "precision": 0.172,
-      "cumplimiento": 0.513,
-      "ndcg": 0.525,
+      "precision": 0.166,
+      "cumplimiento": 0.516,
+      "ndcg": 0.524,
       "acierto": 0.55,
-      "distritos": 4.5
+      "distritos": 5.0
     },
     "recomendador": {
-      "precision": 0.817,
-      "cumplimiento": 0.942,
-      "ndcg": 0.974,
+      "precision": 0.818,
+      "cumplimiento": 0.939,
+      "ndcg": 0.977,
       "acierto": 0.983,
-      "distritos": 5.117
+      "distritos": 5.067
     }
   },
   "precision_por_hogar": {
     "estudiante": {
-      "azar": 0.478,
-      "buscador_area": 0.333,
-      "buscador_oportunidad": 0.375,
-      "buscador_precio": 0.465,
-      "recomendador": 0.91
+      "azar": 0.447,
+      "buscador_area": 0.306,
+      "buscador_oportunidad": 0.368,
+      "buscador_precio": 0.5,
+      "recomendador": 0.903
     },
     "familia": {
       "azar": 0.088,
-      "buscador_area": 0.201,
-      "buscador_oportunidad": 0.181,
+      "buscador_area": 0.132,
+      "buscador_oportunidad": 0.104,
       "buscador_precio": 0.0,
-      "recomendador": 0.736
+      "recomendador": 0.715
     },
     "mascota": {
-      "azar": 0.352,
-      "buscador_area": 0.458,
-      "buscador_oportunidad": 0.5,
-      "buscador_precio": 0.292,
-      "recomendador": 0.875
+      "azar": 0.355,
+      "buscador_area": 0.456,
+      "buscador_oportunidad": 0.519,
+      "buscador_precio": 0.269,
+      "recomendador": 0.9
     },
     "mayor": {
-      "azar": 0.169,
-      "buscador_area": 0.062,
-      "buscador_oportunidad": 0.042,
+      "azar": 0.178,
+      "buscador_area": 0.076,
+      "buscador_oportunidad": 0.069,
       "buscador_precio": 0.021,
-      "recomendador": 0.903
+      "recomendador": 0.91
     },
     "pareja": {
-      "azar": 0.164,
-      "buscador_area": 0.049,
-      "buscador_oportunidad": 0.111,
-      "buscador_precio": 0.083,
+      "azar": 0.19,
+      "buscador_area": 0.104,
+      "buscador_oportunidad": 0.104,
+      "buscador_precio": 0.042,
       "recomendador": 0.66
     }
   },
   "precision_por_variante": {
     "completo": {
-      "azar": 0.193,
-      "buscador_area": 0.175,
-      "buscador_oportunidad": 0.181,
-      "buscador_precio": 0.114,
-      "recomendador": 0.783
+      "azar": 0.195,
+      "buscador_area": 0.179,
+      "buscador_oportunidad": 0.19,
+      "buscador_precio": 0.12,
+      "recomendador": 0.781
     },
     "simple": {
       "azar": 0.308,
-      "buscador_area": 0.267,
-      "buscador_oportunidad": 0.303,
-      "buscador_precio": 0.231,
-      "recomendador": 0.85
+      "buscador_area": 0.251,
+      "buscador_oportunidad": 0.276,
+      "buscador_precio": 0.212,
+      "recomendador": 0.854
     }
   },
   "cobertura_recomendador": {
-    "anuncios_distintos": 249,
-    "mercado": 3074,
-    "porcentaje": 8.1
+    "anuncios_distintos": 254,
+    "mercado": 2998,
+    "porcentaje": 8.5
   },
   "explicaciones": {
-    "verdaderos": 3187,
+    "verdaderos": 3127,
     "falsos": 0,
     "sin_regla": 0,
     "ejemplos_falsos": [],

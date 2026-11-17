@@ -41,7 +41,7 @@ Según el historial de commits, desde la Entrega 1 (Semana 7):
 Todo está desplegado y funcionando en https://deparent.onrender.com:
 
 - **Propietario:** registro, agregar departamentos, análisis completo con los 6 componentes, publicación y lista de interesados.
-- **Inquilino:** búsqueda con filtros sobre 3,074 anuncios reales (captura del 9-nov), ficha de cada anuncio, recomendaciones según su perfil y favoritos.
+- **Inquilino:** búsqueda con filtros sobre 2,998 anuncios reales (captura del 17-nov), ficha de cada anuncio, recomendaciones según su perfil y favoritos.
 - **Prueba rápida** del análisis sin cuenta.
 - **Panel de KPIs** para analistas: series diarias, embudo, Pareto por distrito, error y cobertura del modelo, asistente de supervisión; se actualiza cada 10 s.
 - **Ayuda integrada**, **comparador de hasta 3 anuncios** en la búsqueda y **recomendaciones sin cuenta** (`#/para-ti-demo`).
@@ -56,9 +56,9 @@ Todo está desplegado y funcionando en https://deparent.onrender.com:
 | 1 | Perfil competitivo | K-Means k=4 sin precio + vecinos cercanos | Silhouette 0.21, estable entre semillas (ARI 1.0); 4 perfiles interpretables |
 | 2 | Accesibilidad | Paraderos ATU con cKDTree | Cálculo directo, reproduce el notebook de la Semana 7 |
 | 4 | Tendencia distrital | SARIMA por distrito | Supera al naive estacional en 10 de 13 series; se muestra como contexto |
-| 5 | Escenarios de publicación | Reglas sobre 1 + 3 + 4 | 100% de coherencia en 297 análisis de punta a punta |
+| 5 | Escenarios de publicación | Reglas sobre 1 + 3 + 4 | 100% de coherencia en 296 análisis de punta a punta |
 | 6 | Simulador de mejoras | Contrafactual del modelo 3 | 54 consultas verificadas iguales a la inferencia |
-| 7 | Recomendador | Puntaje por contenido | **precision@12 81.7%** vs. 25% al azar y 17–24% de los órdenes del buscador (60 perfiles) |
+| 7 | Recomendador | Puntaje por contenido | **precision@12 81.8%** vs. 25% al azar y 17–23% de los órdenes del buscador (60 perfiles) |
 
 Detalle: `deliveries/week12/EvaluationReport.md` y `deliveries/week10/models/metadata.md`.
 
@@ -96,7 +96,7 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 ## 6. Qué dificultades tenemos actualmente
 
 - **Mercado fijo:** la descarga de anuncios se hizo del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios); la app usa la captura del
-  9-nov y no se actualiza sola.
+  17-nov y no se actualiza sola.
 - **Rango de precio en alquileres altos:** el rango ahora es proporcional al precio estimado (antes fijo, ±S/ 1,357). En noviembre la cobertura desde S/ 7,000 subió de 34.2% a 65.8%, aún lejos del 90% nominal; en alquileres menores a S/ 1,500 bajó de 99.2% a 91.3%.
 - **Precios pedidos, no de contrato**, y distritos con pocos anuncios con error inestable.
 - **Render gratuito** se duerme tras 15 minutos; la primera visita tarda 30–60 s.

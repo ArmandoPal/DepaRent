@@ -6,7 +6,7 @@ varias capturas en el tiempo y poder validar el modelo con anuncios posteriores.
 ## Descargas hechas
 Del **20 de octubre al 17 de noviembre de 2026**: 18 días de descarga, **8 completos** (20, 21, 23, 25 y 26 de
 octubre; 9, 10 y 17 de noviembre), cada uno con 6,300–6,900 anuncios. En total, **12,235 anuncios distintos**.
-La app usa la captura del 9 de noviembre. La descarga se dio por terminada el 17 de noviembre.
+La app usa la captura del 17 de noviembre. La descarga se dio por terminada el 17 de noviembre.
 
 ## Ejecutar
 ```powershell

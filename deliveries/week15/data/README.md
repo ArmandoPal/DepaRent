@@ -17,7 +17,7 @@ obtenerlos de nuevo. **Revisar al cierre** (antes del 18-nov) que el mercado ten
 | `deliveries/week07/data/departamentos_procesados.csv` | Entrenamiento de los modelos de precio y de perfiles (3,128 anuncios) |
 | `deliveries/week07/data/paraderos_procesado.csv` | Accesibilidad |
 | `deliveries/week07/data/bcrp_procesado.csv`, `bcrp_serie_completa.csv` | Tendencia distrital |
-| `deliveries/week10/data/mercado.csv` (+ `mercado.json`) | Mercado que muestra la app: captura del 9-nov-2026, 3,074 anuncios únicos |
+| `deliveries/week10/data/mercado.csv` (+ `mercado.json`) | Mercado que muestra la app: captura del 17-nov-2026, 2,998 anuncios únicos |
 | `deliveries/week07/data_dictionary.csv` | Diccionario de datos |
 
 ## Particiones y resultados

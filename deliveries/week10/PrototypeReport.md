@@ -110,7 +110,7 @@ referencia distrital S/ 3,500, con 457 anuncios de entrenamiento en el distrito.
 - **Paraderos ATU de mayo de 2021**; la red actual puede diferir.
 - **BCRP** no cubre todos los distritos: el 16.3 % de los departamentos usa la serie general.
 - **Clustering débil** (silhouette 0.21): los perfiles orientan, no separan mercados.
-- **Mercado fijo.** La app usa la última captura preparada (9-nov-2026); para actualizarlo hay que correr la descarga,
+- **Mercado fijo.** La app usa la última captura preparada (17-nov-2026); para actualizarlo hay que correr la descarga,
   `preparar_mercado.py` y `entrenar_perfil.py`, y subir el resultado.
 - **Plan gratuito de Render.** El servicio se duerme tras 15 minutos sin visitas; la primera carga tarda 30–60 s.
 - **Prototipo académico.** No hay recuperación de contraseña, verificación de correo ni moderación de mensajes.

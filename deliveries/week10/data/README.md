@@ -3,7 +3,7 @@
 ## Qué usa la app
 | Archivo | Uso | Fecha |
 |---|---|---|
-| `mercado.csv` | Búsqueda, fichas, comparables y perfiles: 3,074 anuncios únicos | Captura diaria del 9-nov-2026 |
+| `mercado.csv` | Búsqueda, fichas, comparables y perfiles: 2,998 anuncios únicos | Captura del 17-nov-2026 |
 | `mercado.json` | De qué captura sale el mercado; la app muestra esa fecha en sus textos | — |
 | `demo_casos.json` | Tres perfiles hipotéticos precargados (Lince, Miraflores, San Isidro) | Copia del profesor |
 | `deparent.sqlite` | Cuentas, departamentos e interesados (se crea sola; **no se sube**) | En vivo |
@@ -30,5 +30,5 @@ Después hay que reiniciar la API, que carga el mercado al arrancar.
 
 ## De dónde salen las capturas
 La descarga de anuncios se hizo con `scraper/descarga_diaria.py` del 20-oct al 17-nov-2026 (18 días de descarga, 8 completos con 6,300–6,900 anuncios).
-Las capturas quedan en `data_diaria/snapshots/` (fuera de git). El mercado actual de la app usa la del 9-nov-2026.
+Las capturas quedan en `data_diaria/snapshots/` (fuera de git). El mercado actual de la app usa la del 17-nov-2026.
 Después de preparar un mercado nuevo hay que subirlo a `main` para que Render lo despliegue.

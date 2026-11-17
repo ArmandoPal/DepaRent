@@ -2,7 +2,7 @@
 
 **Producto:** DepaRent, estimación y estrategia de precio de alquiler de departamentos en Lima.
 **Equipo:** Adrian Urbina Mendoza, Armando Martinez Palomino, Breysi Salazar Medina, Luciana Yangali Cáceres.
-**App desplegada:** https://deparent.onrender.com · **Mercado actual:** captura del 9 de noviembre de 2026 (3,074 anuncios únicos).
+**App desplegada:** https://deparent.onrender.com · **Mercado actual:** captura del 17 de noviembre de 2026 (2,998 anuncios únicos).
 
 Este informe responde tres preguntas: **¿los modelos aciertan lo suficiente?**, **¿la app entrega resultados
 coherentes?** y **¿le sirve a un propietario y a un inquilino?** Todos los números salen de archivos del
@@ -19,16 +19,16 @@ repositorio y se pueden regenerar (sección 9).
 | Rango de precio proporcional (90% nominal) | Cobertura | **92.7%** (sept.) · 94.2% (oct.) · 93.5% (nov.) | Rango fijo anterior: 92.2% · 93.5% · 92.2% |
 | Perfil competitivo (K-Means, k = 4) | Silhouette / estabilidad | 0.21 / ARI = 1.00 | Semana 7: 0.18 |
 | Tendencia distrital (SARIMA) | MAE mediano en 4 trimestres reservados | 2.00 S/ por m² | Naive estacional: 2.54 · Naive: 2.40 |
-| Escenarios de publicación (reglas) | Reglas cumplidas en 297 análisis reales | **100%** | — |
-| Recomendador por perfil del inquilino (modelo 7) | precision@12 en 60 perfiles de prueba | **82%** | Mejor orden del buscador: 24% · al azar: 25% |
+| Escenarios de publicación (reglas) | Reglas cumplidas en 296 análisis reales | **100%** | — |
+| Recomendador por perfil del inquilino (modelo 7) | precision@12 en 60 perfiles de prueba | **82%** | Mejor orden del buscador: 23% · al azar: 25% |
 | Producto | Pruebas automáticas | **76 de 76 pasan** | — |
 
 **Lo que funciona:** el modelo de precio no se degradó en ocho semanas y reduce casi a la mitad el error de
 la mediana del distrito; la app es coherente en todos los casos probados.
 **Lo que hay que mejorar:** el rango ahora crece con el precio estimado y en los departamentos desde S/ 7,000 subió
 de 34% a 66% de cobertura en noviembre, pero sigue lejos del 90%; en los de menos de S/ 1,500 bajó de 99% a 91%.
-San Isidro y Magdalena empeoraron frente a septiembre, y las pruebas con usuarios reales van en 2 de 5, sin
-propietarios (§6c).
+San Isidro y Magdalena empeoraron frente a septiembre, y las pruebas con usuarios reales van en 4 de 5: 2 con
+inquilinos y 2 con propietarios (§6c).
 
 ---
 
@@ -139,18 +139,18 @@ K-Means sobre 11 atributos estandarizados, **sin precio** (para que el perfil no
 
 k = 4 tiene la mejor separación y es totalmente estable. Mejora el clustering de la Semana 7 (0.178, que usaba
 el precio por m²). Reentrenar con octubre dio 0.148 y grupos sin el rasgo que les da nombre: por eso los
-anuncios nuevos **se asignan** a los perfiles de septiembre (silhouette del mercado asignado: 0.207).
+anuncios nuevos **se asignan** a los perfiles de septiembre (silhouette del mercado asignado: 0.211).
 
-| Perfil (mercado del 9-nov) | Anuncios | Área mediana | Rasgo | Precio mediano (p25–p75) |
+| Perfil (mercado del 17-nov) | Anuncios | Área mediana | Rasgo | Precio mediano (p25–p75) |
 |---|---:|---:|---|---:|
-| Estándar tradicional | 1,497 | 73 m² | 9 años, casi sin amenidades | S/ 2,500 (1,850–3,100) |
-| Compacto moderno con amenidades | 792 | 60 m² | 89% con gimnasio, 72% con piscina | S/ 2,691 (2,300–3,300) |
-| Moderno que admite mascotas | 463 | 65 m² | 100% admite mascotas | S/ 2,550 (2,025–3,113) |
-| Amplio de alta gama | 322 | 200 m² | El triple de área | S/ 7,735 (5,400–10,268) |
+| Estándar tradicional | 1,489 | 72 m² | 8 años, casi sin amenidades | S/ 2,500 (1,800–3,030) |
+| Compacto moderno con amenidades | 789 | 60 m² | 90% con gimnasio, 73% con piscina | S/ 2,700 (2,300–3,250) |
+| Moderno que admite mascotas | 403 | 65 m² | 100% admite mascotas | S/ 2,600 (2,175–3,110) |
+| Amplio de alta gama | 317 | 200 m² | El triple de área | S/ 8,170 (5,834–10,650) |
 
 **Lectura.** Un silhouette de 0.21 es bajo: los perfiles **orientan, no separan mercados**. Se usan para elegir
-con quién compararse, no para fijar el precio. En los 297 análisis de la sección 6, los 8 comparables fueron
-siempre del mismo distrito, sin repetidos, con similitud mediana de 0.42.
+con quién compararse, no para fijar el precio. En los 296 análisis de la sección 6, los 8 comparables fueron
+siempre del mismo distrito, sin repetidos, con similitud mediana de 0.39.
 
 ---
 
@@ -176,8 +176,9 @@ SARIMA gana con claridad al naive estacional, pero contra el último valor la ve
 ## 6. Coherencia del producto de punta a punta
 
 `code/evaluar_producto.py` toma 300 departamentos del mercado actual (semilla 42) y los envía a
-`POST /api/analizar`, el mismo endpoint que usa la pantalla "Analizar". 3 se rechazaron con error 422 y un
-mensaje claro porque el anuncio no informa los dormitorios (el formulario los exige). En los **297 restantes**:
+`POST /api/analizar`, el mismo endpoint que usa la pantalla "Analizar". 4 se rechazaron con error 422 y un
+mensaje claro porque el anuncio no informa los dormitorios o los baños (el formulario los exige). En los
+**296 restantes**:
 
 | Regla | Cumple |
 |---|---:|
@@ -190,18 +191,18 @@ mensaje claro porque el anuncio no informa los dormitorios (el formulario los ex
 | 8 comparables, sin repetir | 100% |
 | Perfil, nivel de accesibilidad y etiqueta de tendencia asignados | 100% |
 
-Escenario sugerido: renta superior en 164 casos y equilibrado en 133. **El competitivo no se sugirió nunca**,
+Escenario sugerido: renta superior en 169 casos y equilibrado en 127. **El competitivo no se sugirió nunca**,
 porque solo se sugiere cuando el distrito tiene tendencia a la baja y hoy ninguna serie la tiene. Es correcto
 según la regla, pero conviene explicarlo en la app para que no parezca un error.
 
-**Tiempo de respuesta** (en local, sin red): mediana 83 ms, percentil 95: 147 ms. En Render (plan gratuito) la
+**Tiempo de respuesta** (en local, sin red): mediana 69 ms, percentil 95: 80 ms. En Render (plan gratuito) la
 primera visita tras 15 minutos de inactividad tarda 30–60 s mientras el servicio despierta.
 
 ### Evidencia de pruebas
 
 | Evidencia | Qué cubre | Resultado |
 |---|---|---|
-| 76 pruebas automáticas en `week10/code/test_*.py` | Preprocesamiento idéntico al de la Semana 7, los 5 modelos, API, cuentas con contraseña con sal, aislamiento entre propietarios, filtros de búsqueda, que no se expongan datos personales, errores 404/422, rango proporcional, panel de KPIs y demo de 300 cuentas | 76/76 pasan (16-nov-2026) |
+| 76 pruebas automáticas en `week10/code/test_*.py` | Preprocesamiento idéntico al de la Semana 7, los 5 modelos, API, cuentas con contraseña con sal, aislamiento entre propietarios, filtros de búsqueda, que no se expongan datos personales, errores 404/422, rango proporcional, panel de KPIs y demo de 300 cuentas | 76/76 pasan (17-nov-2026) |
 | `week10/resultados/simulacion_v2/` | 54 consultas del simulador iguales a la inferencia del modelo, verificadas con SHA-256 | PASS |
 | `resultados/coherencia_producto.json` | Sección 6 | 100% de las reglas |
 | `week10/resultados/demos_ejecutadas.json` | Casos de demostración ejecutados de punta a punta | OK |
@@ -230,19 +231,19 @@ se compara con los órdenes que ya ofrece el buscador y con un orden al azar.
 
 | Orden de los 12 primeros | precision@12 (cumple todo) | Requisitos cumplidos | nDCG@12 | Perfiles con al menos 1 que cumple todo | Distritos distintos |
 |---|---:|---:|---:|---:|---:|
-| **Recomendador** | **81.7%** | **94.2%** | **0.974** | **98.3%** | 5.1 |
-| Al azar (promedio de 30) | 25.0% | 63.3% | 0.650 | 83.3% | 5.9 |
-| Buscador: más barato que el estimado | 24.2% | 60.4% | 0.625 | 78.3% | 4.2 |
-| Buscador: mayor área | 22.1% | 60.1% | 0.624 | 68.3% | 5.0 |
-| Buscador: menor precio | 17.2% | 51.3% | 0.525 | 55.0% | 4.5 |
+| **Recomendador** | **81.8%** | **93.9%** | **0.977** | **98.3%** | 5.1 |
+| Al azar (promedio de 30) | 25.1% | 62.9% | 0.651 | 84.5% | 5.9 |
+| Buscador: más barato que el estimado | 23.3% | 58.7% | 0.606 | 70.0% | 4.3 |
+| Buscador: mayor área | 21.5% | 58.6% | 0.606 | 68.3% | 4.6 |
+| Buscador: menor precio | 16.6% | 51.6% | 0.524 | 55.0% | 5.0 |
 
-Por tipo de hogar (precision@12): estudiante 91%, persona mayor 90%, con mascota 88%, familia 74%, pareja 66%;
-los órdenes del buscador quedan entre 0% y 50%. Ordenar por menor precio es el peor para una familia (0%): los
+Por tipo de hogar (precision@12): persona mayor 91%, estudiante 90%, con mascota 90%, familia 72%, pareja 66%;
+los órdenes del buscador quedan entre 0% y 52%. Ordenar por menor precio es el peor para una familia (0%): los
 más baratos son los más chicos. La precisión baja cuando hay pocos candidatos que cumplan todo, por ejemplo una
-pareja con S/ 1,800 en Barranco, Miraflores o San Isidro (19 candidatos): ahí el sistema muestra lo más cercano
+pareja con S/ 1,800 en Barranco, Miraflores o San Isidro (20 candidatos): ahí el sistema muestra lo más cercano
 y lo que falta aparece en "Ten en cuenta".
 
-**Explicaciones verdaderas.** Se comprobaron contra los datos del anuncio los **3,187 motivos** "Tiene:" de las 60
+**Explicaciones verdaderas.** Se comprobaron contra los datos del anuncio los **3,127 motivos** "Tiene:" de las 60
 listas (dormitorios, m², paradero, amenidades, distancia al trabajo, porcentaje frente al estimado): **100% correctos**.
 Esto comprueba que la app no inventa motivos, no que el dato sea correcto: si la regla que lee el texto del anuncio
 se equivoca, el motivo también. Al revisar a mano un anuncio de Barranco marcado "admite mascotas", su texto decía
@@ -251,8 +252,8 @@ regla más estricta, solo para capturas nuevas (`NEGACIONES_ESTRICTAS` en `prepr
 los 496** anuncios marcados así (5.8%); la reproducción de septiembre no cambia. Las cifras de esta sección ya usan
 el mercado corregido.
 
-**Cobertura y diversidad.** Entre los 60 perfiles se recomendaron 249 anuncios distintos (8.1% del mercado); cada
-lista trae 5 distritos en promedio, igual que el orden por área y más que el orden por precio.
+**Cobertura y diversidad.** Entre los 60 perfiles se recomendaron 254 anuncios distintos (8.5% del mercado); cada
+lista trae 5 distritos en promedio, igual o más que los órdenes del buscador (4.3 a 5.0).
 
 **Límites de esta evaluación.** Los requisitos son distintos de los pesos, pero miran los mismos atributos: la
 tabla demuestra que el sistema **ordena según lo que el usuario declara** mucho mejor que el buscador, no que a
@@ -291,7 +292,7 @@ y T4 (simulador de mejoras) y T6 (publicar) siguen sin probarse con personas.
 
 ## 7. Casos de estudio
 
-Ejecutados con la API de la app sobre el mercado del 9 de noviembre (`code/casos_estudio.py` →
+Ejecutados con la API de la app sobre el mercado del 17 de noviembre (`code/casos_estudio.py` →
 `resultados/casos_estudio.json`). Las personas son ficticias; los anuncios del caso 2 son reales, sin datos de
 contacto ni dirección.
 
@@ -303,12 +304,12 @@ precio.
 
 **Lo que hace en DepaRent** (pantalla "Analizar"):
 
-1. **Ingresa los datos** y obtiene el estimado: **S/ 2,528 al mes** (rango S/ 1,171 a 3,885). La app le dice que
+1. **Ingresa los datos** y obtiene el estimado: **S/ 2,528 al mes** (rango S/ 1,517 a 3,539). La app le dice que
    en Jesús María el modelo se equivocó en promedio S/ 246 con 32 anuncios de prueba: el estimado es confiable
    en ese distrito.
-2. **Revisa sus 8 comparables**, todos de Jesús María (perfil "Estándar tradicional"). Piden entre S/ 1,650 y
-   4,100; la mediana es S/ 2,300. **5 de los 8 piden menos que los S/ 2,800 que tenía en mente**, y los que
-   piden más tienen 3 dormitorios o más de 90 m².
+2. **Revisa sus 8 comparables**, todos de Jesús María (perfil "Estándar tradicional"). Piden entre S/ 1,700 y
+   4,100; la mediana es S/ 2,300. **6 de los 8 piden menos que los S/ 2,800 que tenía en mente**, y los dos que
+   piden más tienen 3 dormitorios y más de 90 m².
 3. **Mira el contexto:** accesibilidad media (paradero a unos 360 m del centro del distrito) y tendencia estable
    (+0.7% proyectado). No hay señal de mercado para pedir más.
 4. **Elige el precio** entre tres escenarios:
@@ -317,13 +318,13 @@ precio.
    |---|---:|---:|---:|
    | Competitivo | S/ 2,230 | −11.8% | 50% |
    | **Equilibrado (sugerido)** | **S/ 2,530** | 0% | 62.5% |
-   | Renta superior | S/ 2,890 | +14.3% | 62.5% |
+   | Renta superior | S/ 2,650 | +4.8% | 75% |
 
 5. **Prueba mejoras:** con el simulador, agregar un balcón solo sube el estimado S/ 24 (+1%), así que no vale la
    pena para el precio. En el laboratorio de área, 14 m² más (84 m²) darían S/ 2,728 (+7.9%).
 
-**Decisión.** Publica en **S/ 2,530** en vez de S/ 2,800. Sus S/ 2,800 estaban casi en el escenario de renta
-superior, que la app no sugiere con un mercado estable. Así se ubica en la mitad de sus comparables, que es lo
+**Decisión.** Publica en **S/ 2,530** en vez de S/ 2,800. Sus S/ 2,800 quedaban incluso por encima del escenario de
+renta superior (S/ 2,650), que la app no sugiere con un mercado estable. Así se ubica en la mitad de sus comparables, que es lo
 que da más probabilidad de alquilar sin regatear.
 **Lo que este caso muestra:** la app convierte una intuición ("vi uno a 2,800") en una decisión con evidencia
 (estimado, comparables reales, tendencia) y explica por qué. También muestra un límite: el simulador mide
@@ -336,26 +337,26 @@ Lince o Surquillo, y con un paradero a menos de 300 m.
 
 **Lo que hace en DepaRent** (pantalla "Buscar"):
 
-1. **Aplica los filtros:** **118 departamentos** cumplen todo. La mediana pedida es S/ 2,300 (la mitad central
+1. **Aplica los filtros:** **106 departamentos** cumplen todo. La mediana pedida es S/ 2,300 (la mitad central
    va de S/ 2,100 a 2,500).
-2. **Mira la valoración** de cada anuncio frente al estimado del modelo: **37 piden menos que el estimado**
-   (más de 10% por debajo), 68 están en línea y 13 por encima.
+2. **Mira la valoración** de cada anuncio frente al estimado del modelo: **30 piden menos que el estimado**
+   (más de 10% por debajo), 59 están en línea y 17 por encima.
 3. **Ordena por oportunidad** y revisa primero los que piden menos:
 
    | Distrito | Pide | Estimado | Diferencia | Área | Dorm. | Baños | Paradero |
    |---|---:|---:|---:|---:|---:|---:|---:|
    | Lince | S/ 2,400 | S/ 3,219 | −25% | 90 m² | 3 | 2 | 165 m |
-   | Surquillo | S/ 2,250 | S/ 2,943 | −24% | 82 m² | 2 | 2 | 295 m |
-   | Surquillo | S/ 2,200 | S/ 2,857 | −23% | 110 m² | 3 | 2 | 271 m |
+   | Surquillo | S/ 2,200 | S/ 2,939 | −25% | 85 m² | 2 | 2 | 275 m |
+   | Surquillo | S/ 1,250 | S/ 1,612 | −22% | 50 m² | 2 | 1 | 56 m |
+   | Jesús María | S/ 2,400 | S/ 3,013 | −20% | 77 m² | 3 | 2 | 167 m |
    | Jesús María | S/ 2,400 | S/ 3,006 | −20% | 77 m² | 2 | 2 | 283 m |
-   | Jesús María | S/ 1,800 | S/ 2,251 | −20% | 85 m² | 2 | 1 | 7 m |
 
 4. **Abre la ficha** de los dos primeros, compara con sus comparables y va al anuncio original para contactar.
 
-**Lo que este caso muestra:** en vez de revisar más de 100 anuncios uno por uno, el inquilino empieza por los 37
+**Lo que este caso muestra:** en vez de revisar más de 100 anuncios uno por uno, el inquilino empieza por los 30
 con mejor relación entre precio y características. **Límite:** "por debajo del estimado" puede deberse a algo
 que el modelo no ve (estado del inmueble, piso, ruido); la app lo presenta como orientativo y avisa que es una
-foto del mercado del 9 de noviembre, no una lista de ofertas vigentes.
+foto del mercado del 17 de noviembre, no una lista de ofertas vigentes.
 
 ---
 
@@ -409,5 +410,5 @@ cd ..\..\week12\code
    34.2% a 65.8% en noviembre, aún lejos del 90%.
 3. ✅ La app explica junto a los tres precios por qué se sugiere uno: al alza → renta superior; estable → equilibrado;
    a la baja → competitivo.
-4. 🟡 Captura diaria: los intentos del 12-nov y del 16-nov fueron bloqueados por los portales (403); la app y la
-   validación temporal siguen con la captura completa del 9-nov.
+4. ✅ Mercado de la app actualizado con la captura completa del 17-nov (2,998 anuncios únicos); la validación
+   temporal sigue con la del 9-nov.

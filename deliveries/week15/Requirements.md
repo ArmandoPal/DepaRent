@@ -20,13 +20,13 @@ _…_
 | ID | Requisito | Estado | Evidencia |
 |---|---|---|---|
 | RF1 | Analizar y valorar el inmueble (precio esperado y rango) | ✅ | Pantalla "Probar" · `POST /api/analizar` · `test_tendencia_escenarios_api.py` |
-| RF2 | Recomendar una estrategia de publicación (tres escenarios) | ✅ | `escenarios_precio.py` · 297/297 casos coherentes (`week12/resultados/coherencia_producto.json`) |
+| RF2 | Recomendar una estrategia de publicación (tres escenarios) | ✅ | `escenarios_precio.py` · 296/296 casos coherentes (`week12/resultados/coherencia_producto.json`) |
 | _…_ | _completar con los de la Semana 5/7_ | | |
 
 ## 4. Requisitos no funcionales
 | ID | Requisito | Estado | Evidencia |
 |---|---|---|---|
-| RNF1 | Tiempo de respuesta del análisis | ✅ | mediana 83 ms en local (`coherencia_producto.json`); 30–60 s al despertar en Render |
+| RNF1 | Tiempo de respuesta del análisis | ✅ | mediana 69 ms en local (`coherencia_producto.json`); 30–60 s al despertar en Render |
 | RNF2 | Privacidad: sin direcciones ni contactos de anunciantes | ✅ | `test_cuentas_busqueda.py` (sin datos personales) |
 | RNF3 | Seguridad de cuentas | ✅ | PBKDF2-SHA256 con sal; sesiones guardadas como hash |
 | _…_ | _completar_ | | |
