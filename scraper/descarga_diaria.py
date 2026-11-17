@@ -48,6 +48,10 @@ HEADERS = {
 }
 TIPO_CAMBIO = 3.75  # PEN por USD, misma tasa de referencia que la Semana 4
 MAX_PAGINAS = 200   # tope de seguridad por portal
+PAUSA_TRAS_FALLO = 120  # segundos de espera después de una página que no se pudo bajar
+# Un día cuenta como descarga completa si trae al menos este porcentaje del día con más anuncios.
+# Los días incompletos (bloqueos del portal) guardan sus precios, pero no deciden qué anuncio sigue activo.
+UMBRAL_DIA_COMPLETO = 0.8
 
 # Columnas idénticas a deliveries/week04/data/departamentos_alquiler_lima.csv
 COLUMNAS = [
@@ -72,15 +76,19 @@ def anonimizar(texto):
     return RE_TELEFONO.sub("[telefono]", texto)
 
 
-def descargar(url, intentos=4):
+def descargar(url, intentos=5):
     for i in range(intentos):
         try:
             req = urllib.request.Request(url, headers=HEADERS)
             with urllib.request.urlopen(req, timeout=30) as resp:
                 return resp.read().decode("utf-8", errors="replace")
         except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
-            espera = 2 ** (i + 1)
-            print(f"  error {e} en {url}; reintento en {espera}s", flush=True)
+            if i == intentos - 1:
+                break
+            # 403/429 = el portal está frenando las descargas: esperar bastante más que ante un fallo de red.
+            bloqueo = isinstance(e, urllib.error.HTTPError) and e.code in (403, 429)
+            espera = (15 if bloqueo else 2) * 2 ** i + random.uniform(0, 3)
+            print(f"  error {e} en {url}; reintento en {espera:.0f}s", flush=True)
             time.sleep(espera)
     return None
 
@@ -175,7 +183,7 @@ def mapear(p, fuente, base, fecha):
 
 
 def recorrer_portal(fuente, conf, fecha, max_paginas):
-    filas, descartados, paginas, errores = [], 0, 0, 0
+    filas, descartados, paginas, errores, seguidos = [], 0, 0, 0, 0
     total_paginas = max_paginas
     n = 1
     while n <= min(total_paginas, max_paginas):
@@ -183,11 +191,17 @@ def recorrer_portal(fuente, conf, fecha, max_paginas):
         store = leer_estado(html) if html else None
         if store is None:
             errores += 1
+            seguidos += 1
             print(f"  {fuente} página {n}: sin datos", flush=True)
-            if errores >= 3:
+            # Antes se cortaba al tercer error en total y quedaban días con 30 anuncios.
+            # Ahora solo se corta tras 3 páginas fallidas seguidas, con una pausa larga entre ellas.
+            if seguidos >= 3:
+                print(f"  {fuente}: 3 páginas seguidas sin datos; se detiene", flush=True)
                 break
+            time.sleep(PAUSA_TRAS_FALLO)
             n += 1
             continue
+        seguidos = 0
         paging = store.get("paging") or {}
         total_paginas = paging.get("totalPages") or total_paginas
         if n > 1 and paging.get("currentPage") not in (None, n):
@@ -233,7 +247,14 @@ def actualizar_historial(dia, filas):
     historial.sort(key=lambda h: (h["fecha"], h["id_anuncio"]))
     escribir_csv(ruta, historial, cols)
 
-    ultimo_dia = max(h["fecha"] for h in historial)
+    por_dia = {}
+    for h in historial:
+        por_dia[h["fecha"]] = por_dia.get(h["fecha"], 0) + 1
+    minimo = UMBRAL_DIA_COMPLETO * max(por_dia.values())
+    completos = [d for d, n in por_dia.items() if n >= minimo]
+    # Activo = visto en la última descarga completa o después. Un día bloqueado ya no deja
+    # a casi todos los anuncios como inactivos.
+    ultimo_dia = max(completos)
     anuncios = {}
     for h in historial:
         a = anuncios.get(h["id_anuncio"])
@@ -249,13 +270,13 @@ def actualizar_historial(dia, filas):
         a["precio_actual_soles"] = h["precio_soles"]
         a["dias_visto"] += 1
     for a in anuncios.values():
-        a["activo"] = int(a["ultima_vez_visto"] == ultimo_dia)
+        a["activo"] = int(a["ultima_vez_visto"] >= ultimo_dia)
         a["dias_publicado"] = (datetime.fromisoformat(a["ultima_vez_visto"])
                                - datetime.fromisoformat(a["primera_vez_visto"])).days + 1
     cols_a = ["id_anuncio", "fuente", "distrito", "primera_vez_visto", "ultima_vez_visto", "dias_visto",
               "dias_publicado", "activo", "precio_inicial_soles", "precio_actual_soles", "n_cambios_precio"]
     escribir_csv(OUT_DIR / "anuncios.csv", list(anuncios.values()), cols_a)
-    return len(anuncios), sum(a["activo"] for a in anuncios.values())
+    return len(anuncios), sum(a["activo"] for a in anuncios.values()), por_dia[dia] >= minimo, ultimo_dia
 
 
 def main():
@@ -293,11 +314,12 @@ def main():
 
     snap = SNAP_DIR / f"{dia}.csv.gz"
     escribir_csv(snap, todas, COLUMNAS + COLUMNAS_EXTRA, comprimido=True)
-    total_ids, activos = (None, None) if args.sin_historial else actualizar_historial(dia, todas)
+    total_ids, activos, completa, ultimo_completo = (
+        (None, None, None, None) if args.sin_historial else actualizar_historial(dia, todas))
 
     log = OUT_DIR / "descargas_log.csv"
     cols_log = ["fecha", "anuncios_dia", "adondevivir", "urbania", "paginas", "errores",
-                "anuncios_historicos", "duracion_min"]
+                "anuncios_historicos", "duracion_min", "completa"]
     filas_log = leer_csv(log) + [{
         "fecha": fecha, "anuncios_dia": len(todas),
         "adondevivir": resumen["adondevivir"]["unicos_agregados"],
@@ -305,12 +327,16 @@ def main():
         "paginas": sum(s["paginas"] for s in resumen.values()),
         "errores": sum(s["errores"] for s in resumen.values()),
         "anuncios_historicos": total_ids, "duracion_min": round((time.time() - inicio) / 60, 1),
+        "completa": "" if completa is None else int(completa),
     }]
     escribir_csv(log, filas_log, cols_log)
 
     print(f"Listo: {len(todas)} anuncios únicos -> {snap}")
     if total_ids is not None:
-        print(f"Historial: {total_ids} anuncios distintos, {activos} activos hoy.")
+        print(f"Historial: {total_ids} anuncios distintos, {activos} activos "
+              f"(según la última descarga completa, {ultimo_completo}).")
+        if not completa:
+            print("Aviso: la descarga de hoy salió incompleta (probable bloqueo del portal).", file=sys.stderr)
 
 
 if __name__ == "__main__":

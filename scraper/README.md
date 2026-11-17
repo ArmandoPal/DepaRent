@@ -38,3 +38,9 @@ Leer un snapshot: `pd.read_csv("data_diaria/snapshots/2026-10-21.csv.gz")`.
   El texto puede seguir teniendo nombres y las direcciones se conservan: por eso `data_diaria/` no se sube.
 - Que un anuncio deje de aparecer (`activo = 0`) no confirma que se alquiló; puede haberse retirado o republicado.
 - Correr dos veces el mismo día reemplaza los datos de ese día, no los duplica.
+- Los portales a veces responden 403 (bloqueo). Ante un 403 o 429 se espera 15, 30, 60 y 120 s antes de reintentar,
+  después de cada página fallida se hace una pausa de 2 min, y el portal solo se abandona tras 3 páginas fallidas
+  **seguidas** (antes bastaban 3 en total y quedaban días con 30 anuncios).
+- **Descarga completa:** un día con al menos el 80% de los anuncios del día con más anuncios. `descargas_log.csv` lo
+  marca en la columna `completa`. `activo` se calcula desde la última descarga completa, así que un día bloqueado
+  no deja a casi todos los anuncios como inactivos. Los precios de los días incompletos sí se guardan.
