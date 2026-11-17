@@ -15,7 +15,7 @@ duplica el código: agrega la evaluación, los casos de estudio, la documentaci�
 - **Revisión del profesor (14-nov) integrada en `main`:** rango de precio proporcional al estimado, panel de análisis con
   gráficos, ayuda integrada, comparador de hasta 3 anuncios, recomendaciones sin cuenta y demo local de 300 cuentas
   (`/REVISION_DepaRent_13-11-2026.md`).
-- **Pruebas con usuarios:** 2 sesiones con inquilinos (P2 y P3) y 2 con propietarios (P5 y P6) en `pruebas_usuarios/` y resumen en
+- **Pruebas con usuarios:** 2 sesiones con inquilinos (P2 y P3), 2 con propietarios (P5 y P6) y 1 con doble rol (P7) en `pruebas_usuarios/` y resumen en
   `EvaluationReport.md` §6c.
 - **Ajustes de interfaz según esas pruebas:** etiqueta «No es el plano real» en el esquema, motivos de cada
   recomendación como lista, distritos cercanos cuando no hay resultados, explicación del rango, nota «¿Qué es esto?» en

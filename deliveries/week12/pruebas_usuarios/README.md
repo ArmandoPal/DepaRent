@@ -11,8 +11,27 @@ tiempos y notas son de cada participante.
 | P3 | Inquilina | sin registrar | `P3_inquilino.docx` | `P3_observaciones.xlsx` |
 | P5 | Propietario | sin registrar | `P5_propietario.docx` | solo en `observaciones.csv` |
 | P6 | Propietario | sin registrar | `P6_propietario.docx` | solo en `observaciones.csv` |
+| P7 | Propietario e inquilino | 17-nov-2026 | `P7_propietario_inquilino.docx` | solo en `observaciones.csv` |
 
-`observaciones.csv` reúne las cuatro sesiones en el formato de la plantilla.
+`observaciones.csv` reúne las cinco sesiones en el formato de la plantilla.
+
+## Sesión con doble rol (P7)
+
+P7 recorrió la app como propietario y como inquilino, con la versión que ya tenía las mejoras pedidas por P5 y P6.
+El equipo registró sus observaciones como notas el 17-nov-2026. Los tiempos de T2, T5 y T7 son **estimados** con el
+promedio de P2 y P3 en la misma tarea (2.9, 3.9 y 4.8 min), **no medidos**; no hay tareas completadas, frases
+textuales ni cierre C1–C5. En `observaciones.csv` hay una fila por tarea comentada (T2, T3, T5, T6, T7 y el perfil del inquilino).
+
+| Recorrido | Observación | Severidad (equipo) |
+|---|---|---|
+| Propietario · T2 | En Los Olivos el precio estimado parecía incorrecto o muy alto | Importante |
+| Propietario · T3 | «Opcional» en el paso «Tu precio» no se notaba | Menor |
+| Propietario · T6 | «Retirar publicación» en otra fila que las demás acciones | Menor |
+| Inquilino · perfil | Las descripciones de hogar repetían «pesan»; «Lo que buscas» poco ordenado | Menor |
+| Inquilino · T7 | Texto largo bajo el esquema, motivo no plegable, amenidades poco visibles | Menor |
+| Inquilino · T5 | Demasiado texto de transporte; la explicación del distrito, más clara y más pequeña | Menor |
+
+Todas se atendieron el 17-nov-2026 (ver `../EvaluationReport.md` §6c) y quedan por volver a comprobar.
 
 ## Sesiones con propietarios (P5 y P6)
 
@@ -79,9 +98,10 @@ sesión ocupa una sola fila. No hay preguntas de cierre (C1–C5) ni notas de ut
 
 ## Limitaciones
 
-- **4 sesiones** frente a la meta de 5 del guion: 2 con inquilinos y 2 con propietarios. T3 (precio de publicación)
-  se probó solo con P6; T4 (simulador de mejoras) y T6 (publicar) siguen sin probarse con personas.
-- P5 y P6 no tienen fecha, cierre C1–C5 ni tiempos por tarea.
+- **5 sesiones**, la meta del guion: 2 con inquilinos, 2 con propietarios y 1 con doble rol (P7). T4 (simulador de
+  mejoras) sigue sin probarse con personas.
+- P5 y P6 no tienen fecha ni tiempos por tarea; P7 tiene tiempos estimados, no medidos. Ninguna de las tres tiene cierre
+  C1–C5.
 - Se probó la versión anterior a la revisión del profesor. Algunos hallazgos ya se atendieron (ver
   `../EvaluationReport.md` §6c) y deben volver a comprobarse con la versión actual.
 - Con dos personas las notas orientan, pero no permiten generalizar la ventaja del recomendador.

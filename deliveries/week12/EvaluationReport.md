@@ -27,8 +27,8 @@ repositorio y se pueden regenerar (sección 9).
 la mediana del distrito; la app es coherente en todos los casos probados.
 **Lo que hay que mejorar:** el rango ahora crece con el precio estimado y en los departamentos desde S/ 7,000 subió
 de 34% a 66% de cobertura en noviembre, pero sigue lejos del 90%; en los de menos de S/ 1,500 bajó de 99% a 91%.
-San Isidro y Magdalena empeoraron frente a septiembre, y las pruebas con usuarios reales van en 4 de 5: 2 con
-inquilinos y 2 con propietarios (§6c).
+San Isidro y Magdalena empeoraron frente a septiembre, y las pruebas con usuarios reales llegaron a 5 de 5: 2 con
+inquilinos, 2 con propietarios y 1 con doble rol (§6c).
 
 ---
 
@@ -208,7 +208,7 @@ primera visita tras 15 minutos de inactividad tarda 30–60 s mientras el servic
 | `week10/resultados/simulacion_v2/` | 54 consultas del simulador iguales a la inferencia del modelo, verificadas con SHA-256 | PASS |
 | `resultados/coherencia_producto.json` | Sección 6 | 100% de las reglas |
 | `week10/resultados/demos_ejecutadas.json` | Casos de demostración ejecutados de punta a punta | OK |
-| Pruebas con usuarios | Utilidad y claridad de la interfaz | 4 sesiones: 2 con inquilinos y 2 con propietarios (§6c) |
+| Pruebas con usuarios | Utilidad y claridad de la interfaz | 5 sesiones: 2 con inquilinos, 2 con propietarios y 1 con doble rol (§6c) |
 
 ---
 
@@ -265,9 +265,10 @@ cercanía se mide al centro del distrito porque el mercado no guarda direcciones
 
 ## 6c. Observaciones de uso (pruebas con usuarios)
 
-Detalle, archivos y correcciones en `pruebas_usuarios/README.md`. Hay **cuatro sesiones con personas reales**: dos
-inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisión del profesor, y dos propietarios
-(P5 y P6, sin fecha registrada).
+Detalle, archivos y correcciones en `pruebas_usuarios/README.md`. Hay **cinco sesiones con personas reales**: dos
+inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisión del profesor, dos propietarios
+(P5 y P6, sin fecha registrada) y una persona con doble rol, propietario e inquilino (P7), que probó la versión con las
+mejoras de P5 y P6.
 
 | Indicador (P2 y P3) | Resultado |
 |---|---|
@@ -285,12 +286,18 @@ inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisi
 | Explicar mejor por qué aparece cada recomendación | P2 | Menor | Pendiente: los motivos existen, falta hacerlos más visibles |
 | Demasiado texto y pocos elementos visuales; el formulario y el cálculo del precio confunden o abruman | P5 y P6 | Importante | Atendido (17-nov): formulario en 3 o 4 pasos con iconos, precio y rango grandes arriba, tres precios en tarjetas, explicaciones plegadas y accesos con icono al ingresar; volver a comprobar |
 | El margen de error del precio parece demasiado amplio | P6 | Importante | Atendido en parte (17-nov): barra visual del rango y «¿Por qué el rango es tan amplio?»; el rango en sí no cambió |
+| En Los Olivos el precio estimado parece incorrecto o muy alto | P7 | Importante | Atendido (17-nov): aviso «El precio estimado puede no ser exacto» en los distritos con error medio de 30% o más |
+| «Opcional» poco visible en «Tu precio»; acciones del departamento publicado en dos filas | P7 | Menor | Atendido (17-nov): etiqueta roja y acciones en una fila |
+| Inquilino: «pesan» en las descripciones, «Lo que buscas» poco ordenado, recomendados y Buscar con mucho texto | P7 | Menor | Atendido (17-nov): «Priorizamos…», tarjetas con iconos, motivo plegable, amenidades como etiquetas y menos texto en Buscar |
 
 **Propietarios (P5 y P6).** Ambos completaron sus tareas **con ayuda** (P5: T1 y T2 en 6 min; P6: T1, T2 y T3 en
 5 min). Los informes no tienen cierre C1–C5 ni tiempos por tarea, y el de P6 quedó incompleto en el original.
 
-**Límite:** cuatro personas orientan, pero no permiten generalizar. Falta una sesión para la meta de 5 del guion,
-y T4 (simulador de mejoras) y T6 (publicar) siguen sin probarse con personas.
+**P7 (doble rol, 17-nov-2026).** Sus observaciones se registraron como notas del equipo. Los tiempos de T2, T5 y T7 son
+estimados con el promedio de P2 y P3 (no medidos) y no hay cierre C1–C5.
+
+**Límite:** cinco personas orientan, pero no permiten generalizar. Se alcanzó la meta de 5 del guion; T4 (simulador
+de mejoras) sigue sin probarse con personas y los cambios del 17-nov no se han vuelto a comprobar.
 
 ## 7. Casos de estudio
 
@@ -410,7 +417,7 @@ cd ..\..\week12\code
 
 ## 10. Próximos pasos (hacia la Semana 15)
 
-1. 🟡 Pruebas con usuarios: 4 sesiones registradas, 2 con inquilinos y 2 con propietarios (§6c); falta 1 y probar T4 y T6.
+1. 🟡 Pruebas con usuarios: 5 sesiones registradas (meta del guion), 2 con inquilinos, 2 con propietarios y 1 con doble rol (§6c); falta probar T4 y volver a comprobar los cambios del 17-nov.
 2. ✅ Rango de precio proporcional al precio (revisión del profesor, 14-nov): la cobertura desde S/ 7,000 subió de
    34.2% a 65.8% en noviembre, aún lejos del 90%.
 3. ✅ La app explica junto a los tres precios por qué se sugiere uno: al alza → renta superior; estable → equilibrado;
