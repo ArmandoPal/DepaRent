@@ -104,7 +104,7 @@ Casos completos en `deliveries/week12/EvaluationReport.md` §7.
 
 ## 7. Qué nos falta completar
 
-- [ ] Pruebas con usuarios: 5 sesiones registradas (meta del guion): inquilinos P2 y P3, propietarios P5 y P6 y P7 con doble rol (`week12/pruebas_usuarios/`, `EvaluationReport.md` §6c); falta probar T4 y volver a comprobar los cambios del 17-nov.
+- [x] Pruebas con usuarios: 5 sesiones registradas (meta del guion): inquilinos P2 y P3, propietarios P5 y P6 y P7 con doble rol (`week12/pruebas_usuarios/`, `EvaluationReport.md` §6c); cambios del 17-nov comprobados por el equipo; T4 queda fuera por decisión del equipo.
 - [x] Rango de precio proporcional al precio (mejora del modelo 3, revisión del profesor del 14-nov).
 - [ ] Cambiar la contraseña de la cuenta analista en producción (la anterior estuvo publicada).
 - [ ] Informe final (`FinalReport.md` → PDF).

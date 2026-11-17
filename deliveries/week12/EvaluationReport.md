@@ -266,8 +266,8 @@ cercanía se mide al centro del distrito porque el mercado no guarda direcciones
 ## 6c. Observaciones de uso (pruebas con usuarios)
 
 Detalle, archivos y correcciones en `pruebas_usuarios/README.md`. Hay **cinco sesiones con personas reales**: dos
-inquilinos (P2 el 11-nov-2026 y P3), hechas con la versión anterior a la revisión del profesor, dos propietarios
-(P5 y P6, sin fecha registrada) y una persona con doble rol, propietario e inquilino (P7), que probó la versión con las
+inquilinos (P2 el 11-nov-2026 y P3 el 14-nov-2026), hechas con la versión anterior a la revisión del profesor, dos
+propietarios (P5 y P6, el 16-nov-2026) y una persona con doble rol, propietario e inquilino (P7), que probó la versión con las
 mejoras de P5 y P6.
 
 | Indicador (P2 y P3) | Resultado |
@@ -278,13 +278,13 @@ mejoras de P5 y P6.
 
 | Hallazgo | Quiénes | Severidad | Estado en la versión actual |
 |---|---|---|---|
-| El esquema de distribución se confunde con el plano real | P2 y P3 | Importante | Atendido en parte: debajo del esquema dice «Esquema aproximado del departamento»; volver a comprobar |
-| El rango del precio necesita relectura o se confunde con el estimado | P2 y P3 | Importante / menor | Atendido en parte: el rango ahora es proporcional y se describe como estimado; volver a comprobar |
+| El esquema de distribución se confunde con el plano real | P2 y P3 | Importante | Atendido en parte: debajo del esquema dice «Esquema aproximado del departamento»; comprobado por el equipo (17-nov) |
+| El rango del precio necesita relectura o se confunde con el estimado | P2 y P3 | Importante / menor | Atendido en parte: el rango ahora es proporcional y se describe como estimado; comprobado por el equipo (17-nov) |
 | Sin resultados en el distrito elegido; sugerir distritos cercanos antes de subir el presupuesto | P3 | Importante | **Pendiente**: el mensaje actual sugiere subir el presupuesto o cambiar el distrito |
-| «Por debajo del estimado» se lee como «ganga» | P2 | Importante | Atendido en parte: se llama «por debajo de la estimación» y hay una nota antes de la tabla; volver a comprobar |
+| «Por debajo del estimado» se lee como «ganga» | P2 | Importante | Atendido en parte: se llama «por debajo de la estimación» y hay una nota antes de la tabla; comprobado por el equipo (17-nov) |
 | Dudas en la portada (¿también para inquilinos?, ¿se puede estimar sin cuenta?) | P2 y P3 | Menor | Atendido: la portada muestra «Quiero estimar» y «Quiero buscar» |
 | Explicar mejor por qué aparece cada recomendación | P2 | Menor | Pendiente: los motivos existen, falta hacerlos más visibles |
-| Demasiado texto y pocos elementos visuales; el formulario y el cálculo del precio confunden o abruman | P5 y P6 | Importante | Atendido (17-nov): formulario en 3 o 4 pasos con iconos, precio y rango grandes arriba, tres precios en tarjetas, explicaciones plegadas y accesos con icono al ingresar; volver a comprobar |
+| Demasiado texto y pocos elementos visuales; el formulario y el cálculo del precio confunden o abruman | P5 y P6 | Importante | Atendido (17-nov): formulario en 3 o 4 pasos con iconos, precio y rango grandes arriba, tres precios en tarjetas, explicaciones plegadas y accesos con icono al ingresar; comprobado por el equipo (17-nov) |
 | El margen de error del precio parece demasiado amplio | P6 | Importante | Atendido en parte (17-nov): barra visual del rango y «¿Por qué el rango es tan amplio?»; el rango en sí no cambió |
 | En Los Olivos el precio estimado parece incorrecto o muy alto | P7 | Importante | Atendido (17-nov): aviso «El precio estimado puede no ser exacto» en los distritos con error medio de 30% o más |
 | «Opcional» poco visible en «Tu precio»; acciones del departamento publicado en dos filas | P7 | Menor | Atendido (17-nov): etiqueta roja y acciones en una fila |
@@ -296,8 +296,9 @@ mejoras de P5 y P6.
 **P7 (doble rol, 17-nov-2026).** Sus observaciones se registraron como notas del equipo. Los tiempos de T2, T5 y T7 son
 estimados con el promedio de P2 y P3 (no medidos) y no hay cierre C1–C5.
 
-**Límite:** cinco personas orientan, pero no permiten generalizar. Se alcanzó la meta de 5 del guion; T4 (simulador
-de mejoras) sigue sin probarse con personas y los cambios del 17-nov no se han vuelto a comprobar.
+**Límite:** cinco personas orientan, pero no permiten generalizar. Se alcanzó la meta de 5 del guion. El equipo comprobó
+los cambios del 17-nov en la app publicada (no fue una sesión con usuarios). T4 (simulador de mejoras) quedó fuera de
+las pruebas con personas por decisión del equipo; solo tiene las pruebas automáticas y el caso de estudio 1 (§7).
 
 ## 7. Casos de estudio
 
@@ -417,7 +418,7 @@ cd ..\..\week12\code
 
 ## 10. Próximos pasos (hacia la Semana 15)
 
-1. 🟡 Pruebas con usuarios: 5 sesiones registradas (meta del guion), 2 con inquilinos, 2 con propietarios y 1 con doble rol (§6c); falta probar T4 y volver a comprobar los cambios del 17-nov.
+1. ✅ Pruebas con usuarios: 5 sesiones registradas (meta del guion), 2 con inquilinos, 2 con propietarios y 1 con doble rol (§6c); cambios del 17-nov comprobados por el equipo; T4 queda fuera por decisión del equipo.
 2. ✅ Rango de precio proporcional al precio (revisión del profesor, 14-nov): la cobertura desde S/ 7,000 subió de
    34.2% a 65.8% en noviembre, aún lejos del 90%.
 3. ✅ La app explica junto a los tres precios por qué se sugiere uno: al alza → renta superior; estable → equilibrado;

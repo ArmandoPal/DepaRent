@@ -8,10 +8,10 @@ tiempos y notas son de cada participante.
 | Código | Tipo | Fecha | Informe | Registro |
 |---|---|---|---|---|
 | P2 | Inquilino | 11-nov-2026 | `P2_inquilino.docx` | `P2_observaciones.xlsx` |
-| P3 | Inquilina | sin registrar | `P3_inquilino.docx` | `P3_observaciones.xlsx` |
-| P5 | Propietario | sin registrar | `P5_propietario.docx` | solo en `observaciones.csv` |
-| P6 | Propietario | sin registrar | `P6_propietario.docx` | solo en `observaciones.csv` |
-| P7 | Propietario e inquilino | 17-nov-2026 | `P7_propietario_inquilino.docx` | solo en `observaciones.csv` |
+| P3 | Inquilina | 14-nov-2026 | `P3_inquilino.docx` | `P3_observaciones.xlsx` |
+| P5 | Propietario | 16-nov-2026 | `P5_propietario.docx` | `P5_observaciones.xlsx` |
+| P6 | Propietario | 16-nov-2026 | `P6_propietario.docx` | `P6_observaciones.xlsx` |
+| P7 | Propietario e inquilino | 17-nov-2026 | `P7_propietario_inquilino.docx` | `P7_observaciones.xlsx` |
 
 `observaciones.csv` reúne las cinco sesiones en el formato de la plantilla.
 
@@ -31,7 +31,7 @@ textuales ni cierre C1–C5. En `observaciones.csv` hay una fila por tarea comen
 | Inquilino · T7 | Texto largo bajo el esquema, motivo no plegable, amenidades poco visibles | Menor |
 | Inquilino · T5 | Demasiado texto de transporte; la explicación del distrito, más clara y más pequeña | Menor |
 
-Todas se atendieron el 17-nov-2026 (ver `../EvaluationReport.md` §6c) y quedan por volver a comprobar.
+Todas se atendieron el 17-nov-2026 (ver `../EvaluationReport.md` §6c) y el equipo comprobó los cambios ese mismo día.
 
 ## Sesiones con propietarios (P5 y P6)
 
@@ -91,17 +91,18 @@ sesión ocupa una sola fila. No hay preguntas de cierre (C1–C5) ni notas de ut
 - `Propietarios_Luciana.docx`: se dividió en `P5_propietario.docx` y `P6_propietario.docx` sin cambiar el texto.
   El informe de P6 está incompleto en el original: la lista de mejoras termina en «Mejorar» y no hay conclusión.
 - `P3_observaciones.xlsx`: los tiempos se alinearon con el Word (T2 2.5, T5 4.0, buscador 1.5 min). T7
-  recomendados (5.1 min) solo figura en el Excel. La fecha de la sesión no quedó registrada.
+  recomendados (5.1 min) solo figura en el Excel. La fecha (14-nov-2026) se agregó después, según el equipo.
 - `P3_inquilino.docx`: decía «resultado simulado» y «respuesta simulada» porque el escenario lo fijaba el guion.
   Se cambió por «resultado» y «frase de la participante» para no confundirlo con una sesión inventada.
 - Ambos Excel: hoja `observaciones`, nombres de tarea iguales a la plantilla y columna `origen`.
+- `P5_observaciones.xlsx`, `P6_observaciones.xlsx` y `P7_observaciones.xlsx`: generados el 17-nov a partir de
+  `observaciones.csv`, con las mismas columnas que los de P2 y P3. Las fechas de P5 y P6 (16-nov-2026) las indicó el equipo.
 
 ## Limitaciones
 
 - **5 sesiones**, la meta del guion: 2 con inquilinos, 2 con propietarios y 1 con doble rol (P7). T4 (simulador de
-  mejoras) sigue sin probarse con personas.
-- P5 y P6 no tienen fecha ni tiempos por tarea; P7 tiene tiempos estimados, no medidos. Ninguna de las tres tiene cierre
-  C1–C5.
+  mejoras) quedó fuera de las pruebas con personas por decisión del equipo.
+- P5 y P6 no tienen tiempos por tarea; P7 tiene tiempos estimados, no medidos. Ninguna de las tres tiene cierre C1–C5.
 - Se probó la versión anterior a la revisión del profesor. Algunos hallazgos ya se atendieron (ver
-  `../EvaluationReport.md` §6c) y deben volver a comprobarse con la versión actual.
+  `../EvaluationReport.md` §6c) y el equipo los comprobó con la versión publicada el 17-nov (no fue una sesión con usuarios).
 - Con dos personas las notas orientan, pero no permiten generalizar la ventaja del recomendador.
