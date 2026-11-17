@@ -1,14 +1,32 @@
 # Presentación final
 
-Aquí van `PresentationFinal.pptx` (editable) y `PresentationFinal.pdf` (exportado). _Pendiente._
+| Archivo | Qué es |
+|---|---|
+| `PresentationFinal.pptx` | Presentación editable: 17 diapositivas y 4 de respaldo, con notas del orador |
+| `PresentationFinal.pdf` | La misma presentación exportada con PowerPoint |
+| `Guion_Presentacion_Final.md` | Qué dice cada integrante, tiempos, transiciones y qué no explicar salvo pregunta |
+| `capturas/` | Capturas reales de la app del 17-nov-2026 (versión publicada) |
+| `crear_presentacion.js` | Genera el `.pptx` (pptxgenjs + sharp) |
+| `exportar_pdf.ps1` | Limpia el `.pptx` y exporta el PDF con PowerPoint |
 
-Estructura de la guía (sección 3), con **participación de los cuatro integrantes**:
+**Pitch de unos 20 minutos** para un público que no sabe machine learning, en cuatro bloques:
 
-| Bloque | Contenido | Fuente |
+| Bloque | Quién | Diapositivas |
 |---|---|---|
-| Problema | Motivación, entrada (características del departamento) y salida (precio, comparables, estrategia) | `FinalReport.md` §1 |
-| Desafíos | Duplicados entre portales, precios pedidos y no de contrato, pocos datos por distrito, bloqueos de los portales | `week10/PrototypeReport.md` §6 |
-| Trabajo relacionado | Portales (Adondevivir, Urbania), modelos hedónicos de precio, valuadores automáticos (AVM) | `FinalReport.md` §3 |
-| Enfoque y resultados | 6 componentes, evaluación contra baselines, validación temporal, error por rango | `week12/EvaluationReport.md` |
-| Impacto | Para quién sirve, limitaciones, mejoras futuras | `FinalReport.md` §11–12 |
-| Demostración | En vivo (con capturas de pantalla de respaldo por si falla internet) | https://deparent.onrender.com |
+| 1. La problemática | Adrian | 1–3 |
+| 2. Cómo lo solucionamos (con demo en vivo) | Armando | 4–8 |
+| 3. La parte técnica: interfaz y panel de análisis | Luciana | 9–11 |
+| 4. Conclusiones y recomendaciones | Breysi | 12–17 |
+
+El estilo sigue la presentación de la Semana 10 (`../../week10/PresentationWeek10.pptx`): naranja del cartel, tinta,
+durazno y café. Las cifras salen de `../../week12/EvaluationReport.md`, `../../week10/resultados/` y
+`../../week12/pruebas_usuarios/`. La diapositiva 14 separa lo medido de las hipótesis de negocio, que no están
+validadas. En la diapositiva 11, las cifras de uso del panel son de la base de demostración con 300 cuentas simuladas.
+
+## Regenerar
+```powershell
+npm install pptxgenjs sharp          # en una carpeta aparte, fuera del repositorio
+$env:NODE_PATH = "<esa carpeta>\node_modules"
+node crear_presentacion.js
+powershell -ExecutionPolicy Bypass -File exportar_pdf.ps1
+```
