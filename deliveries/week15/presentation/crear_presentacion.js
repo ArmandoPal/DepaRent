@@ -6,6 +6,7 @@
 const path = require("path");
 const pptxgen = require("pptxgenjs");
 const sharp = require("sharp");
+const NOTAS = require("./notas.js");
 
 const AQUI = __dirname;
 const CAP = (f) => path.join(AQUI, "capturas", f);
@@ -79,7 +80,7 @@ async function main() {
   imagen(s, CAP("cartel.jpg"), 8.75, 0.9, 3.9, 3.6, { rotate: 3, line: { color: C.tinta, width: 1 } });
   texto(s, "DepaRent", { x: 8.75, y: 4.85, w: 3.95, h: 0.75, fontFace: TIT, fontSize: 34 });
   texto(s, "deparent.onrender.com", { x: 8.75, y: 5.6, w: 3.95, h: 0.4, fontSize: 16, bold: true, underline: { style: "sng" } });
-  s.addNotes("ADRIAN · 1 min. Abrir con la pregunta, sin presentarnos todavía. Ver Guion_Presentacion_Final.md.");
+  s.addNotes(NOTAS[0]);
 
   // 2 · El problema
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "1 · La problemática" });
@@ -94,7 +95,7 @@ async function main() {
   texto(s, "«¿Cuál de estos vale lo que piden?»", { x: 8.25, y: 2.45, w: 4.2, h: 1.2, fontSize: 26, bold: true, color: C.blanco });
   texto(s, "Solo en Lince, con 2 dormitorios y hasta S/ 2,500, hay 32 anuncios.", { x: 8.25, y: 3.85, w: 4.2, h: 0.9, fontSize: 18, color: C.dur });
   texto(s, "En toda Lima, 2,998.", { x: 8.25, y: 4.9, w: 4.2, h: 0.5, fontSize: 18, bold: true, color: C.blanco });
-  s.addNotes("ADRIAN · 1 min 15 s. Contar las dos situaciones como historias, no como datos.");
+  s.addNotes(NOTAS[1]);
 
   // 3 · La oportunidad
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "1 · La problemática" });
@@ -113,7 +114,7 @@ async function main() {
   });
   texto(s, [{ text: "Hoy: ", options: { bold: true } }, { text: "se comparan tres anuncios a mano." }], { x: M, y: 5.15, w: 5.8, h: 0.5, fontSize: 19 });
   texto(s, [{ text: "Con DepaRent: ", options: { bold: true, color: C.narOsc } }, { text: "el mercado completo, ordenado y explicado." }], { x: 6.6, y: 5.15, w: 6.1, h: 0.5, fontSize: 19 });
-  s.addNotes("ADRIAN · 1 min. Transición a Armando: «Armando les cuenta cómo lo resolvimos».");
+  s.addNotes(NOTAS[2]);
 
   // ================= BLOQUE 2 · CÓMO LO SOLUCIONAMOS (Armando) =================
   pres.addSection({ title: "2 · Cómo lo solucionamos" });
@@ -138,7 +139,7 @@ async function main() {
   fila(4.0, "Inquilino", [["Cuenta qué busca", "Hogar, presupuesto y distritos"], ["Recibe opciones", "Con el porqué de cada una"],
     ["Compara", "Precio pedido frente al estimado"], ["Escribe al dueño", "O va al anuncio original"]], C.gris);
   texto(s, "Todo está publicado y se puede usar hoy en deparent.onrender.com.", { x: M, y: 6.1, w: 12, h: 0.4, fontSize: 16, bold: true });
-  s.addNotes("ARMANDO · 50 s. Recorrer las dos filas de izquierda a derecha.");
+  s.addNotes(NOTAS[3]);
 
   // 5 · De datos a decisiones
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "2 · Cómo lo solucionamos" });
@@ -166,7 +167,7 @@ async function main() {
     });
   texto(s, "Por dentro: regresión (precio) · agrupamiento (tipo de departamento) · series de tiempo (tendencia) · reglas (precios de publicación) · recomendación por contenido",
     { x: M, y: 6.3, w: 12.1, h: 0.4, fontSize: 12, color: C.txt });
-  s.addNotes("ARMANDO · 1 min. No nombrar algoritmos salvo la franja de abajo.");
+  s.addNotes(NOTAS[4]);
 
   // 6 · Caso propietario
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "2 · Cómo lo solucionamos" });
@@ -187,7 +188,7 @@ async function main() {
   const h6 = imagen(s, CAP("resultado_precio.jpg"), 5.15, 1.35, 7.58, 3.6);
   pie_imagen(s, "Captura real de la app (17-nov). No garantiza el precio: muestra la evidencia para elegirlo.", 5.15, 1.35 + h6 + 0.1, 7.58);
   texto(s, "De una intuición a una decisión con evidencia", { x: 5.15, y: 5.5, w: 7.58, h: 0.9, fontFace: TIT, fontSize: 22, valign: "middle" });
-  s.addNotes("ARMANDO · 1 min 10 s. Fuente: EvaluationReport.md §7, caso 1 (mercado del 17-nov).");
+  s.addNotes(NOTAS[5]);
 
   // 7 · Demo en vivo
   s = pres.addSlide({ masterName: "OSCURO", sectionTitle: "2 · Cómo lo solucionamos" });
@@ -203,8 +204,7 @@ async function main() {
     texto(s, t, { x: 7.45, y: 2.12 + i * 0.62, w: 5.2, h: 0.45, fontSize: 18, color: C.blanco, valign: "middle" });
   });
   texto(s, "deparent.onrender.com", { x: M, y: 5.45, w: 8, h: 0.7, fontFace: TIT, fontSize: 30, color: C.nar });
-  texto(s, "Si falla internet: usar las capturas de las diapositivas 6, 8 y 9.", { x: M, y: 6.2, w: 9, h: 0.4, fontSize: 14, color: "9AA0A6" });
-  s.addNotes("ARMANDO · 2 min 30 s. Abrir la app 5 minutos antes (Render tarda en despertar). Ingresar antes de presentar.");
+  s.addNotes(NOTAS[6]);
 
   // 8 · Caso inquilino
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "2 · Cómo lo solucionamos" });
@@ -221,7 +221,7 @@ async function main() {
     { x: M, y: 5.6, w: 6.0, h: 0.85, fontSize: 16, italic: true, color: C.cafe });
   const h8 = imagen(s, CAP("buscar_lince.jpg"), 7.0, 1.4, 5.73, 4.6);
   pie_imagen(s, "En la app, el mismo filtro solo en Lince: 32 anuncios, 6 por debajo.", 7.0, 1.4 + h8 + 0.1, 5.73);
-  s.addNotes("ARMANDO · 50 s. Fuente: EvaluationReport.md §7, caso 2. Transición a Luciana.");
+  s.addNotes(NOTAS[7]);
 
   // ================= BLOQUE 3 · INTERFAZ Y PANEL (Luciana) =================
   pres.addSection({ title: "3 · Interfaz y panel" });
@@ -240,7 +240,7 @@ async function main() {
   const y9 = 1.45 + h9b + 0.55;
   const h9c = imagen(s, CAP("mi_perfil.jpg"), 7.1, y9, 5.63, 2.0);
   pie_imagen(s, "Mi perfil · lo que busca, en tarjetas", 7.1, y9 + h9c + 0.08, 5.63);
-  s.addNotes("LUCIANA · 1 min 20 s.");
+  s.addNotes(NOTAS[8]);
 
   // 10 · Pruebas con usuarios
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "3 · Interfaz y panel" });
@@ -268,7 +268,7 @@ async function main() {
   const h10 = imagen(s, CAP("antes_semana10.jpg"), 9.75, 3.15, 2.98, 2.0);
   texto(s, "Hoy", { x: 9.75, y: 3.15 + h10 + 0.15, w: 3, h: 0.3, fontSize: 12, bold: true, color: C.narOsc });
   imagen(s, CAP("resultado_precio.jpg"), 9.75, 3.45 + h10 + 0.15, 2.98, 1.3);
-  s.addNotes("LUCIANA · 1 min 30 s. Fuente: week12/pruebas_usuarios/README.md y EvaluationReport.md §6c.");
+  s.addNotes(NOTAS[9]);
 
   // 11 · Panel de análisis
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "3 · Interfaz y panel" });
@@ -283,7 +283,7 @@ async function main() {
   caja(s, M, 1.4 + h11 + 0.2, 7.2, 0.85, C.dur);
   texto(s, [{ text: "Ojo: ", options: { bold: true } }, { text: "las cifras de uso de esta captura son de una base de demostración con 300 cuentas simuladas, no de usuarios reales. El error del modelo (S/ 534) sí es real." }],
     { x: M + 0.2, y: 1.4 + h11 + 0.2, w: 6.85, h: 0.85, fontSize: 13, valign: "middle" });
-  s.addNotes("LUCIANA · 1 min 20 s. Dejar claro que los usuarios del panel son simulados. Transición a Breysi.");
+  s.addNotes(NOTAS[10]);
 
   // ================= BLOQUE 4 · CONCLUSIONES Y RECOMENDACIONES (Breysi) =================
   pres.addSection({ title: "4 · Conclusiones y recomendaciones" });
@@ -311,7 +311,7 @@ async function main() {
   texto(s, "Además: 296 de 296 análisis coherentes · 77 pruebas automáticas · el rango acierta en 94 de cada 100 anuncios",
     { x: M, y: 6.2, w: 12.1, h: 0.4, fontSize: 15, bold: true });
   texto(s, "Fuente: deliveries/week12/EvaluationReport.md y week10/resultados/validacion_2026_11_17 (MAE, 2,063 anuncios)", { x: M, y: 6.6, w: 12.1, h: 0.3, fontSize: 11, color: C.txt });
-  s.addNotes("BREYSI · 1 min 20 s. Explicar primero qué significa el número y luego el número.");
+  s.addNotes(NOTAS[11]);
 
   // 13 · Por qué no es solo otro portal
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "4 · Conclusiones y recomendaciones" });
@@ -330,7 +330,7 @@ async function main() {
     { text: "Avisa cuando la estimación no es precisa", options: { bullet: true } }], { x: 5.5, y: 2.4, w: 7, h: 3.3, fontSize: 18, paraSpaceAfter: 6, bold: true });
   texto(s, "Portal = información · DepaRent = apoyo a la decisión", { x: M, y: 5.75, w: 12.1, h: 0.55, fontFace: TIT, fontSize: 22, align: "center" });
   texto(s, "No compite con los portales: usa sus anuncios y enlaza al original.", { x: M, y: 6.35, w: 12.1, h: 0.35, fontSize: 13, color: C.txt, align: "center" });
-  s.addNotes("BREYSI · 45 s.");
+  s.addNotes(NOTAS[12]);
 
   // 14 · Valor para el negocio
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "4 · Conclusiones y recomendaciones" });
@@ -347,7 +347,7 @@ async function main() {
     x14 += w + 0.27;
   });
   texto(s, "No medimos ingresos, conversiones ni ahorro: las dos columnas de la derecha son hipótesis para validar.", { x: M, y: 6.45, w: 12.1, h: 0.4, fontSize: 13, color: C.txt, italic: true });
-  s.addNotes("BREYSI · 50 s. Separar siempre lo medido de lo que es hipótesis.");
+  s.addNotes(NOTAS[13]);
 
   // 15 · Limitaciones
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "4 · Conclusiones y recomendaciones" });
@@ -366,7 +366,7 @@ async function main() {
   const h15 = imagen(s, CAP("ficha_los_olivos.jpg"), 8.85, 1.8, 3.88, 3.0);
   pie_imagen(s, "El aviso en la ficha de un anuncio de Los Olivos", 8.85, 1.8 + h15 + 0.08, 3.88);
   texto(s, "No queremos que confíes a ciegas: te damos más información para decidir.", { x: M, y: 5.8, w: 12.1, h: 0.7, fontFace: TIT, fontSize: 20, valign: "middle" });
-  s.addNotes("BREYSI · 50 s. Presentarlo como honestidad del producto, no como disculpa.");
+  s.addNotes(NOTAS[14]);
 
   // 16 · Conclusiones y recomendaciones
   s = pres.addSlide({ masterName: "CLARO", sectionTitle: "4 · Conclusiones y recomendaciones" });
@@ -387,7 +387,7 @@ async function main() {
     texto(s, d, { x: 7.05, y: y + 0.55, w: 5.5, h: 0.85, fontSize: 15 });
   });
   texto(s, "La «Visión» es una dirección posible, no un plan validado.", { x: 6.8, y: 6.4, w: 5.93, h: 0.35, fontSize: 12, color: C.txt, italic: true });
-  s.addNotes("BREYSI · 50 s.");
+  s.addNotes(NOTAS[15]);
 
   // 17 · Cierre
   s = pres.addSlide({ masterName: "NARANJA", sectionTitle: "4 · Conclusiones y recomendaciones" });
@@ -402,7 +402,7 @@ async function main() {
   texto(s, "Pruébalo: deparent.onrender.com", { x: M, y: 5.15, w: 12, h: 0.7, fontFace: TIT, fontSize: 28 });
   texto(s, "Gracias · ¿Preguntas?", { x: M, y: 6.05, w: 6, h: 0.45, fontSize: 18, bold: true });
   texto(s, "Adrian Urbina Mendoza · Armando Martinez Palomino · Breysi Salazar Medina · Luciana Yangali Cáceres", { x: M, y: 6.75, w: 12, h: 0.35, fontSize: 12 });
-  s.addNotes("BREYSI · 30 s. Volver a la pregunta del inicio.");
+  s.addNotes(NOTAS[16]);
 
   // ================= RESPALDO =================
   pres.addSection({ title: "Respaldo" });
@@ -413,7 +413,7 @@ async function main() {
   s = pres.addSlide({ masterName: "RESPALDO", sectionTitle: "Respaldo" });
   titulo(s, "Respaldo · Arquitectura");
   imagen(s, arq, M, 1.35, 12.13, 5.5, { line: { color: C.gris, width: 0 } });
-  s.addNotes("Solo si preguntan. Un solo servicio en Render: la API FastAPI sirve el frontend; cuentas en Postgres (Neon).");
+  s.addNotes(NOTAS[17]);
 
   s = pres.addSlide({ masterName: "RESPALDO", sectionTitle: "Respaldo" });
   titulo(s, "Respaldo · Métricas del modelo de precio");
@@ -427,7 +427,7 @@ async function main() {
     { text: "Rango por precio: ", options: { bold: true } }, { text: "desde S/ 7,000 cubre 65.8%; bajo S/ 1,500, 91.3% (noviembre)" }],
   { x: M, y: 4.0, w: 12.1, h: 1.6, fontSize: 14, paraSpaceAfter: 8 });
   texto(s, "Fuente: deliveries/week12/EvaluationReport.md §1–§6b y week10/resultados/validacion_*", { x: M, y: 6.55, w: 12, h: 0.3, fontSize: 11, color: C.txt });
-  s.addNotes("Solo si preguntan. MAE = error absoluto medio en soles por anuncio. Las dos muestras de noviembre comparten anuncios: no son independientes.");
+  s.addNotes(NOTAS[18]);
 
   s = pres.addSlide({ masterName: "RESPALDO", sectionTitle: "Respaldo" });
   titulo(s, "Respaldo · Métodos");
@@ -438,7 +438,7 @@ async function main() {
     ["Tendencia", "SARIMA sobre series del BCRP", "¿Sube o baja el distrito?", "MAE 2.00 frente a 2.54 y 2.40 de los naive"],
     ["Precios de publicación", "Reglas sobre precio, parecidos y tendencia", "¿A cuánto publico?", "296 de 296 análisis coherentes"],
     ["Recomendador", "Puntaje por contenido según el perfil", "¿Cuál me conviene?", "precision@12 81.8% en 60 perfiles"]], [2.4, 3.6, 2.5, 3.63], 1.45, 13);
-  s.addNotes("Solo si preguntan.");
+  s.addNotes(NOTAS[19]);
 
   s = pres.addSlide({ masterName: "RESPALDO", sectionTitle: "Respaldo" });
   titulo(s, "Respaldo · Datos y validación");
@@ -451,7 +451,7 @@ async function main() {
     { text: "se quitan los anuncios vistos en septiembre y sus duplicados probables entre portales; el modelo no se reentrena. El 17-nov se evaluaron 2,063 anuncios nuevos.", options: { breakLine: true } },
     { text: "Privacidad: ", options: { bold: true } }, { text: "al repositorio no llegan direcciones ni contactos de los anuncios." }],
   { x: M, y: 4.0, w: 12.1, h: 1.4, fontSize: 14, paraSpaceAfter: 8 });
-  s.addNotes("Solo si preguntan.");
+  s.addNotes(NOTAS[20]);
 
   const salida = path.join(AQUI, "PresentationFinal.pptx");
   await pres.writeFile({ fileName: salida });
